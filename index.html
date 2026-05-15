@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BOBBY.OS // Productivity System</title>
+    <meta name="description" content="A powerful productivity system for students and developers.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+<!-- MAIN APP CONTAINER -->
+
+<!-- LOADING SCREEN -->
+<div id="loading-screen">
+    <div class="loading-logo">BOBBY<em>.OS</em></div>
+    <div class="loading-bar"><div class="loading-bar-fill"></div></div>
+    <div class="loading-sub">Initializing System</div>
+</div>
+
+<!-- AUTH SCREEN -->
+<div id="auth-screen">
+    <div class="auth-box">
+        <div class="auth-logo">BOBBY<em>.OS</em></div>
+        <div class="auth-sub">Productivity System</div>
+        <div class="auth-tabs">
+            <button class="auth-tab active" id="at-login">Sign In</button>
+            <button class="auth-tab" id="at-register">Register</button>
+        </div>
+        <div id="form-login">
+            <div class="auth-field"><label>Email</label><input type="email" id="l-email" placeholder="you@example.com"></div>
+            <div class="auth-field"><label>Password</label><input type="password" id="l-pass" placeholder="••••••••"></div>
+            <button class="auth-btn" id="l-btn">Sign In</button>
+            <div class="auth-divider"><span>OR</span></div>
+            <button class="auth-btn google" id="g-btn">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                Sign in with Google
+            </button>
+            <div class="auth-err" id="l-err"></div>
+        </div>
+        <div id="form-register" style="display:none">
+            <div class="auth-field"><label>Full Name</label><input type="text" id="r-name" placeholder="Bobby Fisher"></div>
+            <div class="auth-field"><label>Email</label><input type="email" id="r-email" placeholder="you@example.com"></div>
+            <div class="auth-field"><label>Password</label><input type="password" id="r-pass" placeholder="Min 6 chars"></div>
+            <button class="auth-btn" id="r-btn">Create Account</button>
+            <div class="auth-err" id="r-err"></div>
+        </div>
+        <div class="db-badge">Connected to Cloud Persistence</div>
+    </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app" style="display:none">
+    <div class="topbar">
+        <div class="brand"><h1>BOBBY<em>.OS</em></h1><span class="sub">V6.2 PRO</span></div>
+        <div class="topbar-right">
+            <div id="top-date">Monday, 5 May</div>
+            <div id="sync-ind" class="sync-indicator hidden">✓ saved</div>
+            <div class="auth-user-tag">
+                <div class="auth-avatar" id="u-avatar">B</div>
+                <div class="auth-name" id="u-name">Bobby</div>
+            </div>
+            <button class="logout-btn" id="logout">Logout</button>
+        </div>
+    </div>
+
+    <div class="tabs">
+        <div class="tab active t-habit" id="tab-habit"><div class="tab-dot" style="background:var(--accent)"></div>Habits</div>
+        <div class="tab t-sched" id="tab-sched"><div class="tab-dot" style="background:var(--green)"></div>Schedule</div>
+        <div class="tab t-exam" id="tab-exam"><div class="tab-dot" style="background:var(--red)"></div>Exams <span class="exam-badge" id="exam-badge">0</span></div>
+    </div>
+    <div class="tab-line"></div>
+
+    <div class="wrap">
+        <!-- HABIT PANEL -->
+        <div id="panel-habit" class="panel active">
+            <div class="slbl">Overall Performance</div>
+            <div class="stats-row">
+                <div class="stat-card"><div class="sv ca" id="s-grade">S</div><div class="sl">Current Grade</div></div>
+                <div class="stat-card"><div class="sv cg" id="s-done">0/0</div><div class="sl">Completed</div></div>
+                <div class="stat-card"><div class="sv cy" id="s-streak">0</div><div class="sl">Best Streak</div></div>
+                <div class="stat-card"><div class="sv cw" id="s-pct">0%</div><div class="sl">Consistency</div></div>
+            </div>
+
+            <div class="slbl">Weekly Progress</div>
+            <div class="week-nav">
+                <button class="nav-btn" id="prev">‹</button>
+                <div class="week-info" id="wk-range">Loading...</div>
+                <button class="nav-btn" id="next">›</button>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="padding-left:14px">Habit / Activity</th>
+                            <th class="dc" id="h0">Mon</th><th class="dc" id="h1">Tue</th><th class="dc" id="h2">Wed</th>
+                            <th class="dc" id="h3">Thu</th><th class="dc" id="h4">Fri</th><th class="dc" id="h5">Sat</th>
+                            <th class="dc" id="h6">Sun</th><th class="dc">Strk</th><th class="dc">Perf</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody"></tbody>
+                </table>
+            </div>
+
+            <div class="review-card">
+                <h3>Weekly Reflection</h3>
+                <p class="review-sub">Assess your progress and plan ahead</p>
+                <div class="r-score-row">
+                    <label>How was your week?</label>
+                    <div class="r-btns" id="r-rating">
+                        <button class="r-btn" data-v="1">1</button><button class="r-btn" data-v="2">2</button>
+                        <button class="r-btn" data-v="3">3</button><button class="r-btn" data-v="4">4</button>
+                        <button class="r-btn" data-v="5">5</button>
+                    </div>
+                </div>
+                <div class="r-grid">
+                    <div class="r-field"><label>Biggest Wins</label><textarea id="r1" rows="3" placeholder="What went well?"></textarea></div>
+                    <div class="r-field"><label>Challenges</label><textarea id="r2" rows="3" placeholder="What blocked you?"></textarea></div>
+                    <div class="r-field"><label>Lessons Learned</label><textarea id="r3" rows="3" placeholder="Key takeaways..."></textarea></div>
+                    <div class="r-field"><label>Next Week Targets</label><textarea id="r4" rows="3" placeholder="Specific goals..."></textarea></div>
+                </div>
+                <button class="save-btn" id="save-r">Save Weekly Review</button>
+            </div>
+
+            <div class="legend">
+                <h3>Performance Grading</h3>
+                <div class="lg">
+                    <div class="lg-item"><div class="lg-grade" style="color:#6c63ff">S</div><div class="lg-range">95–100%</div><div class="lg-name">Elite</div></div>
+                    <div class="lg-item"><div class="lg-grade" style="color:#20d68a">A</div><div class="lg-range">85–94%</div><div class="lg-name">Pro</div></div>
+                    <div class="lg-item"><div class="lg-grade" style="color:#84cc16">B</div><div class="lg-range">70–84%</div><div class="lg-name">Good</div></div>
+                    <div class="lg-item"><div class="lg-grade" style="color:#ffbe3d">C</div><div class="lg-range">50–69%</div><div class="lg-name">Avg</div></div>
+                    <div class="lg-item"><div class="lg-grade" style="color:#ff5572">D</div><div class="lg-range">0–49%</div><div class="lg-name">Poor</div></div>
+                    <div class="lg-item"><div class="lg-grade" style="color:var(--dim)">·</div><div class="lg-range">N/A</div><div class="lg-name">Rest</div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCHEDULE PANEL -->
+        <div id="panel-sched" class="panel">
+            <div class="sched-intro">
+                <div>
+                    <p>Customize your <strong>Master Schedule</strong>. Changes sync across all devices.</p>
+                    <p style="font-size:9px; opacity:0.6; margin-top:4px">Type 'habit' ensures it appears in the habit tracking table.</p>
+                </div>
+                <button class="reset-btn" id="reset-sched">Reset Day to Defaults</button>
+            </div>
+            <div class="day-tabs">
+                <button class="day-tab active" data-day="0">Mon</button><button class="day-tab" data-day="1">Tue</button>
+                <button class="day-tab" data-day="2">Wed</button><button class="day-tab" data-day="3">Thu</button>
+                <button class="day-tab" data-day="4">Fri</button><button class="day-tab we" data-day="5">Sat</button>
+                <button class="day-tab we" data-day="6">Sun</button>
+            </div>
+            <div class="sched-editor">
+                <div class="sched-editor-hdr">
+                    <div><h3 id="ed-title">Monday</h3><span id="ed-sub">Weekday schedule</span></div>
+                    <button class="add-slot-btn" id="add-slot">+ Add Activity</button>
+                </div>
+                <div class="slots-list" id="slots-list"></div>
+                <div class="sched-save-row">
+                    <p>Automatic <strong>Cloud Sync</strong> enabled.</p>
+                    <button class="save-btn" id="sched-save" style="margin:0">Refresh Habit Table</button>
+                </div>
+            </div>
+            <div class="slbl">Preview: Generated Habits</div>
+            <div class="sync-card-wrap" id="sync-wrap"></div>
+        </div>
+
+        <!-- EXAM PANEL -->
+        <div id="panel-exam" class="panel">
+            <div class="exam-hdr">
+                <div><h2>CT2 <em>Assessment</em></h2><p>Continuous Test - Series 2</p></div>
+                <div class="cd-chip"><div class="cd-val" id="cd-days">0</div><div class="cd-lbl" id="cd-lbl">days to go</div></div>
+            </div>
+            <div class="epb-wrap">
+                <div class="epb-top"><span>Overall Progress</span><span id="epb-label">0 / 7 done</span></div>
+                <div class="epb-bg"><div class="epb-fill" id="epb-fill" style="width:0%"></div></div>
+            </div>
+            <div class="days-grid" id="days-grid"></div>
+
+            <div class="plan-section-hdr">
+                <div class="slbl" id="plan-lbl">Daily Study Plan</div>
+                <div class="plan-nav">
+                    <button class="plan-nav-btn" id="plan-prev">‹</button>
+                    <div class="plan-nav-date" id="plan-nav-date">Today</div>
+                    <button class="plan-nav-btn" id="plan-next">›</button>
+                </div>
+            </div>
+
+            <div class="plan-card">
+                <div class="plan-hdr">
+                    <h3 id="plan-title">Plan Loading...</h3>
+                    <div class="plan-hdr-right"><span id="plan-date">...</span></div>
+                </div>
+                <div class="plan-rows" id="plan-rows"></div>
+                <div class="add-plan-bar">
+                    <input type="text" class="add-plan-time" id="np-time" placeholder="Time (e.g. 4 PM)">
+                    <input type="text" class="add-plan-desc" id="np-desc" placeholder="What's the task?">
+                    <select class="add-plan-tag" id="np-tag">
+                        <option value="custom">Custom</option><option value="rev">Revision</option>
+                        <option value="exam">CT2</option><option value="cp">CP</option>
+                        <option value="rest">Rest</option><option value="plan">Plan</option>
+                    </select>
+                    <button class="add-plan-btn" id="np-add">Add Task</button>
+                </div>
+            </div>
+
+            <div class="slbl">Upcoming Papers Reference</div>
+            <div class="subs-grid">
+                <div class="sub"><div class="sub-code">EM-4</div><div class="sub-name">Maths IV</div><div class="sub-when">Tue, 5 May (9 AM)</div></div>
+                <div class="sub"><div class="sub-code">ALC</div><div class="sub-name">Automata</div><div class="sub-when">Tue, 5 May (10 AM)</div></div>
+                <div class="sub"><div class="sub-code">DAA</div><div class="sub-name">Algorithms</div><div class="sub-when">Wed, 6 May (9 AM)</div></div>
+                <div class="sub"><div class="sub-code">OS</div><div class="sub-name">Systems</div><div class="sub-when">Wed, 6 May (11 AM)</div></div>
+                <div class="sub"><div class="sub-code">MEA</div><div class="sub-name">Economics</div><div class="sub-when">Thu, 7 May (11 AM)</div></div>
+                <div class="sub"><div class="sub-code">SS</div><div class="sub-name">Signals</div><div class="sub-when">Thu, 7 May (12 PM)</div></div>
+                <div class="sub"><div class="sub-code">DAR</div><div class="sub-name">R Analytics</div><div class="sub-when">Fri, 8 May (9 AM)</div></div>
+            </div>
+
+            <div class="tips">
+                <h3>Exam Success Protocol</h3>
+                <div class="tips-list">
+                    <div class="tip"><span class="ti">⚡</span><div><strong>Active Recall:</strong> Don't just read. Close the book and explain the concept out loud.</div></div>
+                    <div class="tip"><span class="ti">📝</span><div><strong>PYQs First:</strong> Solve previous year questions. Most CT2 papers follow a pattern.</div></div>
+                    <div class="tip"><span class="ti">😴</span><div><strong>Sleep Cycle:</strong> Wake at 3:30 AM as planned. Your brain needs 6 hours to consolidate memory.</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="toast">Action completed ✓</div>
+
+<!-- MAIN SCRIPT LOAD -->
+<script type="module" src="./js/app.js"></script>
+
+</body>
+</html>
