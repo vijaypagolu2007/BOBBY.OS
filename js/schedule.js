@@ -43,7 +43,7 @@ export async function renderSched(uid) {
         lIn.placeholder = 'Activity name';
         lIn.addEventListener('change', () => { 
             slots[idx].label = lIn.value; 
-            if (!slots[idx].id) {
+            if (slots[idx].type === 'habit' && !slots[idx].id) {
                 slots[idx].id = lIn.value.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 8) || 'act';
             }
             syncSave(uid, slots); 
@@ -58,7 +58,7 @@ export async function renderSched(uid) {
         });
         sel.addEventListener('change', () => {
             slots[idx].type = sel.value;
-            if (!slots[idx].id) {
+            if (sel.value === 'habit' && !slots[idx].id) {
                 slots[idx].id = (slots[idx].label || 'habit').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 8) || 'act';
             }
             row.className = 'slot-row' + (sel.value === 'habit' ? ' is-habit' : '');
@@ -166,7 +166,7 @@ function parseNLP(text) {
     if (/sleep|rest|nap/.test(lc)) type = 'sleep';
     else if (/break|lunch|dinner|eat|food/.test(lc)) type = 'break';
     else if (/college|class|lecture|lab/.test(lc)) type = 'college';
-    else if (/free|relax|leisure/.test(lc)) type = 'weekend';
+    else if (/free|relax|leisure/.test(lc)) type = 'free';
 
     // Auto-generate a simple id from the label
     const id = label.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 8) || 'custom';
