@@ -6,9 +6,9 @@ import { dbLoad, dbSave, S } from './db.js';
 
 export const DAY_N = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 export const TYPES = [
-    { v: 'habit', l: 'EVERYDAY' },
-    { v: 'college', l: 'MON - FRI' },
-    { v: 'weekend', l: 'SAT-SUN' },
+    { v: 'habit', l: 'EVERYDAY (Habit)' },
+    { v: 'college', l: 'MON - FRI (College)' },
+    { v: 'weekend', l: 'SAT - SUN (Weekend)' },
     { v: 'sleep', l: 'SLEEP' },
     { v: 'break', l: 'BREAK' }
 ];
@@ -79,7 +79,7 @@ export async function buildHabits(uid) {
         slots.filter(s => s.type === 'habit' && s.id).forEach(s => {
             if (!seen.has(s.id)) {
                 seen.add(s.id);
-                habits.push({ id: s.id, _time: s.time, _label: s.label, _type: s.type, _day: d });
+                habits.push({ id: s.id, _time: s.time, _label: s.label, _day: d });
             }
         });
     }
@@ -91,8 +91,7 @@ export async function buildHabits(uid) {
                 if (dd < 5) inWD = true; else inWE = true; 
             } 
         }
-        const isHabitType = h._type === 'habit';
-        const freq = isHabitType ? 'all' : (inWD && inWE ? 'all' : inWD ? 'wd' : 'we');
+        const freq = inWD && inWE ? 'all' : inWD ? 'wd' : 'we';
         const m = getMeta(h.id);
         return {
             id: h.id, icon: m.icon, name: h._label, time: h._time, freq, color: m.color, bg: m.bg,

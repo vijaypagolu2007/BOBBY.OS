@@ -9,7 +9,6 @@ export function setWeekOff(v) { weekOff = v; }
 
 export async function toggle(uid, id, wk, di) {
     const k = ck(id, wk, di);
-    console.log(`[Habit] Toggling ${id} on ${wk} day ${di}`);
     const data = await dbLoad(uid, 'habits', {});
     data[k] = ((data[k] || 0) + 1) % 3;
     await dbSave(uid, 'habits', data);
