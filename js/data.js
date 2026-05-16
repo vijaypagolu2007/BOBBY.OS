@@ -76,7 +76,7 @@ export async function buildHabits(uid) {
 
     for (let d = 0; d < 7; d++) {
         const slots = allSlots[d];
-        slots.filter(s => s.type === 'habit' && s.id).forEach(s => {
+        slots.filter(s => s.id).forEach(s => {
             if (!seen.has(s.id)) {
                 seen.add(s.id);
                 habits.push({ id: s.id, _time: s.time, _label: s.label, _day: d });
