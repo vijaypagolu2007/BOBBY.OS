@@ -7,10 +7,10 @@
 ---
 
 ## ✅ PHASE 1: Pro-Minimalist Restoration (Complete)
-*Goal: Restored the elite minimalist aesthetic of V6 with modern tech*
+*Goal: Restored the elite minimalist aesthetic of V1.0 with modern tech*
 
 - [x] **Project Scaffolding**: Migrated to Vite/Modular JS structure.
-- [x] **UI Reversion**: Restored the clean, functional V6 aesthetic.
+- [x] **UI Reversion**: Restored the clean, functional V1.0 aesthetic.
 - [x] **Cloud Core**: Integrated Firebase Auth & Firestore for real-time sync.
 - [x] **Security**: UID Partitioning for multi-user isolation.
 
