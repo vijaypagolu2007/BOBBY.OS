@@ -85,18 +85,17 @@ export async function buildHabits(uid) {
     }
     const full = habits.map(h => {
         let inWD = false, inWE = false;
-        let hasHabitType = h._type === 'habit';
+        let isForcedEveryday = h._type === 'habit';
 
         for (let dd = 0; dd < 7; dd++) { 
             const sl = allSlots[dd];
             if (sl.some(ss => ss.id === h.id)) { 
                 if (dd < 5) inWD = true; else inWE = true; 
-                if (sl.some(ss => ss.id === h.id && ss.type === 'habit')) hasHabitType = true;
+                if (sl.some(ss => ss.id === h.id && ss.type === 'habit')) isForcedEveryday = true;
             } 
         }
 
-        // If it's a 'habit' type, force it to show up EVERY DAY in the tracker
-        const freq = (hasHabitType || (inWD && inWE)) ? 'all' : inWD ? 'wd' : 'we';
+        const freq = isForcedEveryday ? 'all' : (inWD && inWE ? 'all' : inWD ? 'wd' : 'we');
         
         const m = getMeta(h.id);
         return {
@@ -109,8 +108,5 @@ export async function buildHabits(uid) {
     const all = [...sorted, ...rest];
     const wdH = all.filter(h => h.freq !== 'we');
     const weH = all.filter(h => h.freq === 'we');
-    const result = [];
-    if (wdH.length) { result.push({ group: true, label: 'Weekday Habits · Mon–Fri', color: '#6c63ff' }); result.push(...wdH); }
-    if (weH.length) { result.push({ group: true, label: 'Weekend · Sat & Sun', color: '#ffbe3d' }); result.push(...weH); }
-    return result;
+    return [...wdH, { group: true, label: 'Weekends Only', color: '#ffbe3d' }, ...weH];
 }
