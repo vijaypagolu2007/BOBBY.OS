@@ -1,8 +1,8 @@
 # 🌌 BOBBY.OS // Evolution Roadmap
 
-> **Current Status**: Phase 1 & Infrastructure Complete  
-> **Active Focus**: Phase 2 — The Power User OS (Intelligence & Productivity)
-> **Target**: V7.0 Ultimate Productivity OS
+> **Current Status**: V1.0 PRO Performance Edition Launched 🚀  
+> **Active Focus**: Phase 2 — The Power User OS (Intelligence & Analytics)
+> **Target**: V1.1 Professional Expansion
 
 ---
 
@@ -26,8 +26,14 @@
 - [ ] **Sleep Tracker**: Log actual sleep time vs scheduled vs target.
 
 ### 📊 Analytics & Progress
-- [ ] **Contribution Heatmap**: GitHub-style grid for daily habit consistency.
-- [ ] **CP Rating Tracker**: Codeforces & LeetCode stats via API integration.
+- [ ] **Cexport async function toggle(uid, id, wk, di) {
+    const k = ck(id, wk, di);
+    console.log(`[Habit] Toggling ${id} on ${wk} day ${di}`);
+    const data = await dbLoad(uid, 'habits', {});
+    data[k] = ((data[k] || 0) + 1) % 3;
+    await dbSave(uid, 'habits', data);
+    await renderHabits(uid);
+}
 - [ ] **Progress Charts**: Weekly/monthly trends for habits and CP problems.
 - [ ] **CT2 Score Tracker**: Record and visualize scores across semesters.
 
@@ -42,10 +48,16 @@
 ## 🟠 PHASE 3: Social & Professional Delivery (Planned)
 *Goal: Intelligence, Reminders, and Customization*
 
-- [ ] **Intelligent Notifications**:
-    - [ ] **Browser Push**: 3:30 AM habit triggers and exam-day alerts.
-    - [ ] **Sync Indicator**: Visual feedback for cloud data state.
-- [ ] **Premium Customization**:
+- [            const [y, m, dom] = wk.split('-');
+            if (!y || !m || !dom || isNaN(parseInt(di))) continue;
+            
+            const d = new Date(parseInt(y), parseInt(m) - 1, parseInt(dom));
+            d.setDate(d.getDate() + parseInt(di));
+            if (isNaN(d.getTime())) continue;
+            
+            const dateStr = localISO(d);
+            dailyCounts.set(dateStr, (dailyCounts.get(dateStr) || 0) + 1);
+**Premium Customization**:
     - [ ] **Theme Switcher**: Red, Green, and Monochrome premium modes.
     - [ ] **UI Scaling**: Compact mode toggle for "Power User" density.
 - [ ] **PWA Mastery**:

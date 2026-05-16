@@ -5,7 +5,13 @@ import { dbLoad, dbSave, S } from './db.js';
 // ══════════════════════════════════════════════════════
 
 export const DAY_N = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-export const TYPES = [{ v: 'habit', l: 'Habit' }, { v: 'college', l: 'College' }, { v: 'sleep', l: 'Sleep' }, { v: 'break', l: 'Break' }, { v: 'free', l: 'Free' }];
+export const TYPES = [
+    { v: 'habit', l: 'EVERYDAY' },
+    { v: 'college', l: 'MON - FRI' },
+    { v: 'weekend', l: 'SAT-SUN' },
+    { v: 'sleep', l: 'SLEEP' },
+    { v: 'break', l: 'BREAK' }
+];
 
 export const EXAM_D = new Set();
 
@@ -36,7 +42,7 @@ const WD = [
 const WE = [
     { time: '3:30–6:00 AM', label: 'Competitive Programming', type: 'habit', id: 'cp' },
     { time: '6:00–6:40 AM', label: 'Fitness + Run', type: 'habit', id: 'fit' },
-    { time: '6:40–9:00 AM', label: 'Free / Rest', type: 'free', id: '' },
+    { time: '6:40–9:00 AM', label: 'Free / Rest', type: 'weekend', id: '' },
     { time: '9:00 AM–1:00 PM', label: 'Dev', type: 'habit', id: 'project' },
     { time: '1:00–2:00 PM', label: 'Lunch + Break', type: 'break', id: '' },
     { time: '2:00–5:00 PM', label: 'GitHub Profile Build', type: 'habit', id: 'oss' },
@@ -73,7 +79,7 @@ export async function buildHabits(uid) {
         slots.filter(s => s.type === 'habit' && s.id).forEach(s => {
             if (!seen.has(s.id)) {
                 seen.add(s.id);
-                habits.push({ id: s.id, _time: s.time, _label: s.label, _day: d });
+                habits.push({ id: s.id, _time: s.time, _label: s.label, _type: s.type, _day: d });
             }
         });
     }
@@ -85,7 +91,8 @@ export async function buildHabits(uid) {
                 if (dd < 5) inWD = true; else inWE = true; 
             } 
         }
-        const freq = inWD && inWE ? 'all' : inWD ? 'wd' : 'we';
+        const isHabitType = h._type === 'habit';
+        const freq = isHabitType ? 'all' : (inWD && inWE ? 'all' : inWD ? 'wd' : 'we');
         const m = getMeta(h.id);
         return {
             id: h.id, icon: m.icon, name: h._label, time: h._time, freq, color: m.color, bg: m.bg,

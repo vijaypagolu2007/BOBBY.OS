@@ -31,8 +31,12 @@ export async function renderHeatmap(uid) {
             // Reconstruct the actual date string for this entry
             // 'wk' is in YYYY-MM-DD format (local time context)
             const [y, m, dom] = wk.split('-');
-            const d = new Date(y, m - 1, dom);
+            if (!y || !m || !dom || isNaN(parseInt(di))) continue;
+            
+            const d = new Date(parseInt(y), parseInt(m) - 1, parseInt(dom));
             d.setDate(d.getDate() + parseInt(di));
+            if (isNaN(d.getTime())) continue;
+            
             const dateStr = localISO(d);
             dailyCounts.set(dateStr, (dailyCounts.get(dateStr) || 0) + 1);
         }

@@ -166,7 +166,7 @@ function parseNLP(text) {
     if (/sleep|rest|nap/.test(lc)) type = 'sleep';
     else if (/break|lunch|dinner|eat|food/.test(lc)) type = 'break';
     else if (/college|class|lecture|lab/.test(lc)) type = 'college';
-    else if (/free|relax|leisure/.test(lc)) type = 'free';
+    else if (/free|relax|leisure/.test(lc)) type = 'weekend';
 
     // Auto-generate a simple id from the label
     const id = label.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 8) || 'custom';
