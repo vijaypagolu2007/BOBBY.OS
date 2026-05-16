@@ -85,17 +85,21 @@ export async function buildHabits(uid) {
     }
     const full = habits.map(h => {
         let inWD = false, inWE = false;
-        let isForcedEveryday = h._type === 'habit';
+        let finalType = h._type;
 
         for (let dd = 0; dd < 7; dd++) { 
             const sl = allSlots[dd];
-            if (sl.some(ss => ss.id === h.id)) { 
+            const matching = sl.find(ss => ss.id === h.id);
+            if (matching) { 
                 if (dd < 5) inWD = true; else inWE = true; 
-                if (sl.some(ss => ss.id === h.id && ss.type === 'habit')) isForcedEveryday = true;
+                // Prioritize 'habit' type if it exists anywhere
+                if (matching.type === 'habit') finalType = 'habit';
+                else if (matching.type === 'college' && finalType !== 'habit') finalType = 'college';
+                else if (matching.type === 'weekend' && finalType !== 'habit' && finalType !== 'college') finalType = 'weekend';
             } 
         }
 
-        const freq = isForcedEveryday ? 'all' : (inWD && inWE ? 'all' : inWD ? 'wd' : 'we');
+        const freq = finalType === 'habit' ? 'all' : (finalType === 'college' ? 'wd' : 'we');
         
         const m = getMeta(h.id);
         return {
