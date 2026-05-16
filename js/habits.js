@@ -1,6 +1,7 @@
 import { buildHabits, EXAM_D } from './data.js';
 import { dbLoad, dbSave } from './db.js';
-import { ck, iso, today, wkDates, wkKey } from './utils.js';
+import { ck, iso, today, wkDates, wkKey, showToast } from './utils.js';
+import { renderHeatmap } from './charts.js';
 
 export let weekOff = 0;
 
@@ -12,6 +13,21 @@ export async function toggle(uid, id, wk, di) {
     data[k] = ((data[k] || 0) + 1) % 3;
     await dbSave(uid, 'habits', data);
     await renderHabits(uid);
+}
+
+export async function markHabitDoneToday(uid, id) {
+    const dates = wkDates(0);
+    const tStr = today();
+    const di = dates.findIndex(d => iso(d) === tStr);
+    if (di === -1) return;
+    const wk = wkKey(0);
+    const k = ck(id, wk, di);
+    const data = await dbLoad(uid, 'habits', {});
+    if (data[k] !== 1) {
+        data[k] = 1;
+        await dbSave(uid, 'habits', data);
+        await renderHabits(uid);
+    }
 }
 
 function getHabitVal(data, id, wk, di) { return (data[ck(id, wk, di)] || 0); }
@@ -36,6 +52,7 @@ function grade(p) {
 }
 
 export async function renderHabits(uid) {
+    await renderHeatmap(uid);
     const H = await buildHabits(uid);
     const habitData = await dbLoad(uid, 'habits', {});
     const wk = wkKey(weekOff);
@@ -127,11 +144,51 @@ export async function renderHabits(uid) {
     const pctEl = document.getElementById('s-pct');
     if (pctEl) pctEl.textContent = `${pct}%`;
 
+    // Weekly review (r1-r4 elements removed from HTML — guard null)
     const rv = await dbLoad(uid, `review:${wk}`, {});
-    document.getElementById('save-r').onclick = () => saveReview(uid, wk);
+    const saveRBtn = document.getElementById('save-r');
+    if (saveRBtn) saveRBtn.onclick = () => saveReview(uid, wk);
     ['r1', 'r2', 'r3', 'r4'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = rv[id] || '';
     });
-    document.querySelectorAll('#r-rating .r-btn').forEach(b => b.classList.toggle('on', parseInt(b.dataset.v) === rv.rating));
+    const rRating = document.querySelectorAll('#r-rating .r-btn');
+    if (rRating.length) {
+        rRating.forEach(b => b.classList.toggle('on', parseInt(b.dataset.v) === rv.rating));
+    }
+}
+
+async function saveReview(uid, wk) {
+    const data = {
+        r1: document.getElementById('r1')?.value || '',
+        r2: document.getElementById('r2')?.value || '',
+        r3: document.getElementById('r3')?.value || '',
+        r4: document.getElementById('r4')?.value || '',
+        rating: parseInt(document.querySelector('#r-rating .r-btn.on')?.dataset.v || 0)
+    };
+    await dbSave(uid, `review:${wk}`, data);
+    
+    // Also append to a master "notes" log
+    const notesLog = await dbLoad(uid, 'notes:log', []);
+    const entryExists = notesLog.find(n => n.wk === wk);
+    if (!entryExists) {
+        notesLog.unshift({ wk, date: today(), data });
+    } else {
+        entryExists.data = data;
+        entryExists.date = today();
+    }
+    await dbSave(uid, 'notes:log', notesLog);
+    
+    showToast('Weekly Reflection Saved 📖');
+}
+
+// Only attach rating button listeners if the elements exist
+const rBtns = document.querySelectorAll('#r-rating .r-btn');
+if (rBtns.length) {
+    rBtns.forEach(b => {
+        b.addEventListener('click', (e) => {
+            document.querySelectorAll('#r-rating .r-btn').forEach(btn => btn.classList.remove('on'));
+            e.target.classList.add('on');
+        });
+    });
 }

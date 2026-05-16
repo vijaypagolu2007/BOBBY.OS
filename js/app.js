@@ -1,22 +1,38 @@
 import { initAuth, checkSession, loginWithGoogle, doLogin, doRegister, doLogout, currentUser } from './auth.js';
+import { auth } from './firebase.js';
 import { dbLoad, dbSave, uKey, listenToUserData, DB, S } from './db.js';
 import { renderHabits, weekOff, setWeekOff } from './habits.js';
 import { renderSched, curDay, setCurDay } from './schedule.js';
-import { renderExam, planDayOffset, setPlanDayOffset, addPlanRow, renderPlanForDate } from './exams.js';
+import { renderExam, planDayOffset, setPlanDayOffset, addPlanRow, renderPlanForDate, setupAITimetable } from './exams.js';
+import { renderNotes } from './notes.js';
 import { wkKey, showToast } from './utils.js';
 import { DAY_N, setSlots, defSlots, getSlots } from './data.js';
+import { initPowerHub } from './power.js';
+import { initDiary } from './diary.js';
 
 async function init() {
     updateTheme();
     const loading = document.getElementById('loading-screen');
     const authScreen = document.getElementById('auth-screen');
 
+    // BUG-2 Fix: Never let the loading screen hang more than 4 seconds
+    const forceHide = setTimeout(() => {
+        if (loading) loading.style.display = 'none';
+    }, 4000);
+
     initAuth(async (user) => {
+        clearTimeout(forceHide);
+        const dbStatus = document.getElementById('db-status');
+        if (dbStatus) {
+            dbStatus.textContent = auth.onAuthStateChanged ? 'Connected to Cloud Persistence' : 'Running in Local-Only Mock Mode';
+            dbStatus.style.color = auth.onAuthStateChanged ? 'var(--accent)' : '#ffb300';
+        }
+
         if (user) {
             await bootApp(user);
-            loading.style.display = 'none';
+            if (loading) loading.style.display = 'none';
         } else {
-            loading.style.display = 'none';
+            if (loading) loading.style.display = 'none';
             authScreen.classList.add('show');
             document.getElementById('app').style.display = 'none';
         }
@@ -40,26 +56,33 @@ async function bootApp(user) {
         if (tab === 'sched') renderSched(user.uid);
         if (tab === 'habit') renderHabits(user.uid);
         if (tab === 'exam') renderExam(user.uid);
+        if (tab === 'power') initPowerHub(user.uid);
     });
 
     const tab = await dbLoad(user.uid, 'ui:tab', 'habit');
     switchTab(tab);
+    
+    // Initialize one-time UI modules
+    setupAITimetable(user.uid);
 }
 
 function switchTab(t) {
     const uid = currentUser?.uid;
-    ['habit', 'sched', 'exam'].forEach(id => {
+    ['habit', 'power', 'sched', 'exam', 'notes'].forEach(id => {
         const panel = document.getElementById(`panel-${id}`);
         const tab = document.getElementById(`tab-${id}`);
         if (panel) panel.classList.toggle('active', id === t);
         if (tab) tab.classList.toggle('active', id === t);
     });
     document.body.className = t === 'sched' ? 'sched-mode' : t === 'exam' ? 'exam-mode' : '';
-    if (uid) dbSave(uid, 'ui:tab', t);
+    // BUG-5 Fix: Fire-and-forget — never block tab switching on a DB save
+    if (uid) dbSave(uid, 'ui:tab', t).catch(() => {});
     
     if (t === 'sched' && uid) renderSched(uid);
     if (t === 'habit' && uid) renderHabits(uid);
     if (t === 'exam' && uid) renderExam(uid);
+    if (t === 'power' && uid) initPowerHub(uid);
+    if (t === 'notes' && uid) initDiary(uid);
 }
 
 function setupEventListeners() {
@@ -109,8 +132,10 @@ function setupEventListeners() {
 
     // Main Tabs
     document.getElementById('tab-habit').addEventListener('click', () => switchTab('habit'));
+    document.getElementById('tab-power').addEventListener('click', () => switchTab('power'));
     document.getElementById('tab-sched').addEventListener('click', () => switchTab('sched'));
     document.getElementById('tab-exam').addEventListener('click', () => switchTab('exam'));
+    document.getElementById('tab-notes').addEventListener('click', () => switchTab('notes'));
 
     // Habit Panel
     document.getElementById('prev').addEventListener('click', () => { 
@@ -122,25 +147,10 @@ function setupEventListeners() {
         if (currentUser) renderHabits(currentUser.uid); 
     });
     
-    document.querySelectorAll('#r-rating .r-btn').forEach(b => {
-        b.addEventListener('click', async () => {
-            if (!currentUser) return;
-            const wk = wkKey(weekOff);
-            const rv = await dbLoad(currentUser.uid, `review:${wk}`, {});
-            rv.rating = parseInt(b.dataset.v);
-            await dbSave(currentUser.uid, `review:${wk}`, rv);
-            renderHabits(currentUser.uid);
-        });
-    });
+    // Weekly Rating listeners removed since section is gone.
+    // Diary replaces this functionality.
     
-    document.getElementById('save-r').addEventListener('click', async () => {
-        if (!currentUser) return;
-        const wk = wkKey(weekOff);
-        const rv = await dbLoad(currentUser.uid, `review:${wk}`, {});
-        ['r1', 'r2', 'r3', 'r4'].forEach(id => { rv[id] = document.getElementById(id).value; });
-        await dbSave(currentUser.uid, `review:${wk}`, rv);
-        showToast('Review saved ✓');
-    });
+    // save-r listener removed since section is gone.
 
     // Schedule Panel
     document.querySelectorAll('.day-tab').forEach(tab => {
@@ -153,14 +163,19 @@ function setupEventListeners() {
     document.getElementById('add-slot').addEventListener('click', async () => {
         if (!currentUser) return;
         const slots = await getSlots(currentUser.uid, curDay);
-        slots.push({ time: '', label: 'New Activity', type: 'free', id: '' });
+        // Generate a unique ID so it syncs to habits page
+        const id = 'act-' + Math.random().toString(36).substr(2, 5);
+        slots.push({ time: '', label: 'New Activity', type: 'habit', id });
         await setSlots(currentUser.uid, curDay, slots); 
         renderSched(currentUser.uid);
+        renderHabits(currentUser.uid); // Trigger habit sync immediately
     });
     
     document.getElementById('sched-save').addEventListener('click', () => { 
-        if (currentUser) renderHabits(currentUser.uid); 
-        showToast('Saved & synced ✓'); 
+        if (currentUser) {
+            renderHabits(currentUser.uid); 
+            showToast('Habit table refreshed ✓');
+        }
     });
     
     document.getElementById('reset-sched').addEventListener('click', async () => {

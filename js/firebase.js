@@ -2,7 +2,6 @@ import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
-// These values should be provided by the user in a .env file
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
     authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -12,7 +11,23 @@ const firebaseConfig = {
     appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
-const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-export const db = getFirestore(app);
-export const googleProvider = new GoogleAuthProvider();
+let app, auth, db, googleProvider;
+
+if (firebaseConfig.apiKey && firebaseConfig.apiKey !== 'your_api_key') {
+    app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    db = getFirestore(app);
+    googleProvider = new GoogleAuthProvider();
+    console.log("BOBBY.OS: Cloud Persistence Active.");
+} else {
+    console.warn("BOBBY.OS: No Firebase API Key found. Running in Local-Only Mock Mode.");
+    // Mock implementations to prevent crashes
+    auth = { 
+        currentUser: null,
+        signOut: async () => { auth.currentUser = null; console.log('Mock Logout'); }
+    };
+    db = {}; 
+    googleProvider = {};
+}
+
+export { auth, db, googleProvider };

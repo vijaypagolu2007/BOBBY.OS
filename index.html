@@ -47,7 +47,7 @@
             <button class="auth-btn" id="r-btn">Create Account</button>
             <div class="auth-err" id="r-err"></div>
         </div>
-        <div class="db-badge">Connected to Cloud Persistence</div>
+        <div class="db-badge" id="db-status">Initializing...</div>
     </div>
 </div>
 
@@ -68,8 +68,10 @@
 
     <div class="tabs">
         <div class="tab active t-habit" id="tab-habit"><div class="tab-dot" style="background:var(--accent)"></div>Habits</div>
+        <div class="tab t-power" id="tab-power"><div class="tab-dot" style="background:var(--accent)"></div>Power Hub</div>
         <div class="tab t-sched" id="tab-sched"><div class="tab-dot" style="background:var(--green)"></div>Schedule</div>
         <div class="tab t-exam" id="tab-exam"><div class="tab-dot" style="background:var(--red)"></div>Exams <span class="exam-badge" id="exam-badge">0</span></div>
+        <div class="tab t-notes" id="tab-notes"><div class="tab-dot" style="background:var(--yellow)"></div>Diary</div>
     </div>
     <div class="tab-line"></div>
 
@@ -83,6 +85,9 @@
                 <div class="stat-card"><div class="sv cy" id="s-streak">0</div><div class="sl">Best Streak</div></div>
                 <div class="stat-card"><div class="sv cw" id="s-pct">0%</div><div class="sl">Consistency</div></div>
             </div>
+
+            <div class="slbl">Contribution Heatmap</div>
+            <div id="habit-heatmap" class="heatmap-card"></div>
 
             <div class="slbl">Weekly Progress</div>
             <div class="week-nav">
@@ -105,25 +110,7 @@
                 </table>
             </div>
 
-            <div class="review-card">
-                <h3>Weekly Reflection</h3>
-                <p class="review-sub">Assess your progress and plan ahead</p>
-                <div class="r-score-row">
-                    <label>How was your week?</label>
-                    <div class="r-btns" id="r-rating">
-                        <button class="r-btn" data-v="1">1</button><button class="r-btn" data-v="2">2</button>
-                        <button class="r-btn" data-v="3">3</button><button class="r-btn" data-v="4">4</button>
-                        <button class="r-btn" data-v="5">5</button>
-                    </div>
-                </div>
-                <div class="r-grid">
-                    <div class="r-field"><label>Biggest Wins</label><textarea id="r1" rows="3" placeholder="What went well?"></textarea></div>
-                    <div class="r-field"><label>Challenges</label><textarea id="r2" rows="3" placeholder="What blocked you?"></textarea></div>
-                    <div class="r-field"><label>Lessons Learned</label><textarea id="r3" rows="3" placeholder="Key takeaways..."></textarea></div>
-                    <div class="r-field"><label>Next Week Targets</label><textarea id="r4" rows="3" placeholder="Specific goals..."></textarea></div>
-                </div>
-                <button class="save-btn" id="save-r">Save Weekly Review</button>
-            </div>
+
 
             <div class="legend">
                 <h3>Performance Grading</h3>
@@ -134,6 +121,142 @@
                     <div class="lg-item"><div class="lg-grade" style="color:#ffbe3d">C</div><div class="lg-range">50–69%</div><div class="lg-name">Avg</div></div>
                     <div class="lg-item"><div class="lg-grade" style="color:#ff5572">D</div><div class="lg-range">0–49%</div><div class="lg-name">Poor</div></div>
                     <div class="lg-item"><div class="lg-grade" style="color:var(--dim)">·</div><div class="lg-range">N/A</div><div class="lg-name">Rest</div></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- POWER HUB PANEL -->
+        <div id="panel-power" class="panel">
+            <div class="power-grid">
+                <!-- Zen Pomodoro -->
+                <div class="power-card p-pomodoro">
+                    <div class="p-card-hdr">
+                        <h3>Zen Pomodoro</h3>
+                        <span class="p-badge">FOCUS_MODE</span>
+                    </div>
+                    <div class="p-timer-display" id="p-timer">25:00</div>
+
+                    <div style="margin: 0 0 12px 0; display:flex; gap:8px;">
+                        <select id="p-duration" style="flex:1; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:8px 12px; color:var(--text); font-family:var(--mono); font-size:11px; outline:none;">
+                            <option value="25">25 min — Classic Pomodoro</option>
+                            <option value="45">45 min — Deep Work</option>
+                            <option value="60">60 min — Flow Session</option>
+                            <option value="90">90 min — Ultra Focus</option>
+                        </select>
+                    </div>
+
+                    <div style="margin: 0 0 16px 0;">
+                        <select id="p-habit-select" style="width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: var(--text); font-family: var(--mono); font-size: 11px; outline: none;">
+                            <option value="">-- Link to Habit (Optional) --</option>
+                        </select>
+                    </div>
+
+                    <div class="p-timer-controls">
+                        <button class="p-btn" id="p-reset">Reset</button>
+                        <button class="p-btn primary" id="p-start">Start Session</button>
+                    </div>
+                </div>
+
+                <!-- CP Rating Tracker -->
+                <div class="power-card p-cp">
+                    <div class="p-card-hdr">
+                        <h3>Codeforces</h3>
+                        <span id="cp-handle-display" style="font-size:10px; color:var(--dim); font-family:var(--mono);">Vijaypagolu96</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom: 8px;">
+                        <span style="font-size:32px; font-weight:800; color:var(--text)" id="cp-rating">1450</span>
+                        <span style="font-size:12px; color:var(--dim)" id="cp-rank">Specialist</span>
+                    </div>
+                    <div class="p-sleep-wave" style="height:3px; background:linear-gradient(90deg, #6c63ff 50%, var(--surface) 50%); margin-bottom: 12px;"></div>
+                    <div style="display:flex; justify-content:space-between; font-size:10px; color:var(--dim); margin-bottom: 8px;">
+                        <span>Max: <strong style="color:var(--text)" id="cp-max">1510</strong></span>
+                        <button id="cp-refresh" style="background:none; border:none; color:var(--accent); cursor:pointer; font-size:10px;">Refresh API</button>
+                    </div>
+                    <div id="cf-handle-wrap" style="display:flex; gap:6px; align-items:center;">
+                        <input id="cf-handle-input" type="text" placeholder="Handle (e.g. tourist)"
+                            style="flex:1; background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:4px 8px; color:var(--text); font-size:10px; outline:none; font-family:var(--mono);">
+                        <button id="cf-handle-save" style="background:var(--glass); border:1px solid var(--border); border-radius:6px; color:var(--accent); padding:4px 8px; cursor:pointer; font-size:10px;">Set</button>
+                    </div>
+                </div>
+
+                <!-- Major Exams -->
+                <div class="power-card p-countdown">
+                    <div class="p-card-hdr">
+                        <h3>Major Exams</h3>
+                        <span class="p-badge" style="background:var(--red-lo); color:var(--red)">UPCOMING</span>
+                    </div>
+                    <div class="p-cd-val">
+                        <span id="p-days">12</span><span class="p-cd-unit"> Days</span>
+                    </div>
+                    <div class="p-cd-sub">
+                        <span id="p-hours">04</span>H : <span id="p-mins">22</span>M
+                    </div>
+                    <div class="p-intensity">
+                        <div class="p-intensity-fill"></div>
+                    </div>
+                    <p class="p-card-note">Cognitive Load: High</p>
+                </div>
+
+                <!-- Night Shift -->
+                <div class="power-card p-sleep">
+                    <div class="p-card-hdr">
+                        <h3>Night Shift</h3>
+                        <span class="p-badge">RECOVERY</span>
+                    </div>
+                    <div class="p-sleep-stats">
+                        <div class="p-stat">
+                            <span class="p-stat-lbl">Target</span>
+                            <span class="p-stat-val">8.0h</span>
+                        </div>
+                        <div class="p-stat">
+                            <span class="p-stat-lbl">Actual</span>
+                            <span class="p-stat-val hi" id="p-sleep-actual">--h</span>
+                        </div>
+                    </div>
+                    <div class="p-sleep-wave" id="p-sleep-wave"></div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <p class="p-card-note" id="p-sleep-eff">Efficiency: --%</p>
+                        <div class="p-add-row" style="margin-top:0;">
+                            <input type="number" id="p-sleep-input" placeholder="e.g. 7.5" step="0.5" min="0" max="24" style="width: 60px;">
+                            <button id="p-sleep-add-btn" style="width: 32px; height: 32px; background: var(--accent); border: none; border-radius: 6px; color: #fff; cursor: pointer;">+</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Daily Target -->
+                <div class="power-card p-target">
+                    <div class="p-card-hdr">
+                        <h3>The Big 3</h3>
+                        <span class="p-badge">CRITICAL</span>
+                    </div>
+                    <ul class="p-target-list">
+                        <li>
+                            <div class="p-chk"></div>
+                            <span>Solve 3 CP Problems</span>
+                        </li>
+                        <li>
+                            <div class="p-chk"></div>
+                            <span>Refactor Auth Module</span>
+                        </li>
+                        <li>
+                            <div class="p-chk"></div>
+                            <span>Leg Day Workout</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Gemini Intelligence -->
+                <div class="power-card p-ai">
+                    <div class="p-card-hdr">
+                        <h3>Gemini Intelligence</h3>
+                        <span class="p-badge" style="background:var(--accent-lo); color:var(--accent)">AI_ADVISOR</span>
+                    </div>
+                    <div class="p-ai-content">
+                        <div class="p-ai-msg" id="ai-suggestion">
+                            "Analyzing your CT2 schedule... Priority: <strong>EM-4</strong>. Suggesting a 2-hour deep focus session on Integrals tonight."
+                        </div>
+                        <button class="p-btn primary" style="margin-top:14px" id="ai-refresh">Optimize Schedule</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -171,7 +294,7 @@
         <!-- EXAM PANEL -->
         <div id="panel-exam" class="panel">
             <div class="exam-hdr">
-                <div><h2>CT2 <em>Assessment</em></h2><p>Continuous Test - Series 2</p></div>
+                <div><h2>Exams & <em>Deadlines</em></h2><p>Your custom study timeline</p></div>
                 <div class="cd-chip"><div class="cd-val" id="cd-days">0</div><div class="cd-lbl" id="cd-lbl">days to go</div></div>
             </div>
             <div class="epb-wrap">
@@ -200,7 +323,7 @@
                     <input type="text" class="add-plan-desc" id="np-desc" placeholder="What's the task?">
                     <select class="add-plan-tag" id="np-tag">
                         <option value="custom">Custom</option><option value="rev">Revision</option>
-                        <option value="exam">CT2</option><option value="cp">CP</option>
+                        <option value="exam">Exam</option><option value="cp">CP</option>
                         <option value="rest">Rest</option><option value="plan">Plan</option>
                     </select>
                     <button class="add-plan-btn" id="np-add">Add Task</button>
@@ -209,21 +332,100 @@
 
             <div class="slbl">Upcoming Papers Reference</div>
             <div class="subs-grid">
-                <div class="sub"><div class="sub-code">EM-4</div><div class="sub-name">Maths IV</div><div class="sub-when">Tue, 5 May (9 AM)</div></div>
-                <div class="sub"><div class="sub-code">ALC</div><div class="sub-name">Automata</div><div class="sub-when">Tue, 5 May (10 AM)</div></div>
-                <div class="sub"><div class="sub-code">DAA</div><div class="sub-name">Algorithms</div><div class="sub-when">Wed, 6 May (9 AM)</div></div>
-                <div class="sub"><div class="sub-code">OS</div><div class="sub-name">Systems</div><div class="sub-when">Wed, 6 May (11 AM)</div></div>
-                <div class="sub"><div class="sub-code">MEA</div><div class="sub-name">Economics</div><div class="sub-when">Thu, 7 May (11 AM)</div></div>
-                <div class="sub"><div class="sub-code">SS</div><div class="sub-name">Signals</div><div class="sub-when">Thu, 7 May (12 PM)</div></div>
-                <div class="sub"><div class="sub-code">DAR</div><div class="sub-name">R Analytics</div><div class="sub-when">Fri, 8 May (9 AM)</div></div>
+                <div style="font-size:12px; color:var(--dim); padding:10px;">Paste a timetable below to populate your subjects...</div>
+            </div>
+
+            <!-- AI Timetable Refiner -->
+            <div class="slbl" style="margin-top: 32px;">AI Timetable Sync <span class="p-badge" style="background:var(--accent-lo); color:var(--accent); margin-left:8px;">GEMINI_VISION</span></div>
+            <div class="power-card p-ai" style="margin-bottom: 24px; max-width: 800px;">
+                <p style="font-size:12px; color:var(--dim); margin-bottom:12px;">Paste your raw timetable text, or upload an image/PDF of your syllabus. Gemini will automatically parse the dates and subjects to configure your Exam Dashboard.</p>
+                <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:12px;">
+                    <textarea id="ai-timetable-input" style="height:100px; background:var(--surface); border:1px solid var(--border-hi); border-radius:8px; padding:12px; color:var(--text); font-family:var(--mono); font-size:11px; outline:none; resize:vertical;" placeholder="Paste Timetable text (e.g. 10th May: Database Systems (CS401) 9:00 AM...)"></textarea>
+                    <textarea id="ai-syllabus-input" style="height:100px; background:var(--surface); border:1px solid var(--border-hi); border-radius:8px; padding:12px; color:var(--text); font-family:var(--mono); font-size:11px; outline:none; resize:vertical;" placeholder="Paste Syllabus / Portions (e.g. CS401: Units 1-3, Integrals, SQL queries...)"></textarea>
+                    
+                    <div style="display:flex; gap:12px;">
+                        <label for="ai-timetable-upload" class="p-btn" style="flex:1; background:var(--glass); border:1px solid var(--border-hi); color:var(--text); cursor:pointer; text-align:center; padding: 12px; border-radius: 8px; font-size:12px; display: flex; align-items: center; justify-content: center; gap:8px;">
+                            <span style="font-size:16px;">📂</span> Upload Image/PDF
+                        </label>
+                        <input type="file" id="ai-timetable-upload" accept="image/*,.pdf" style="display:none;">
+                    </div>
+                </div>
+                <button class="p-btn primary" id="ai-refine-btn" style="width:100%; justify-content:center;">✨ Refine Exam Dashboard</button>
             </div>
 
             <div class="tips">
                 <h3>Exam Success Protocol</h3>
                 <div class="tips-list">
                     <div class="tip"><span class="ti">⚡</span><div><strong>Active Recall:</strong> Don't just read. Close the book and explain the concept out loud.</div></div>
-                    <div class="tip"><span class="ti">📝</span><div><strong>PYQs First:</strong> Solve previous year questions. Most CT2 papers follow a pattern.</div></div>
-                    <div class="tip"><span class="ti">😴</span><div><strong>Sleep Cycle:</strong> Wake at 3:30 AM as planned. Your brain needs 6 hours to consolidate memory.</div></div>
+                    <div class="tip"><span class="ti">📝</span><div><strong>PYQs First:</strong> Solve previous year questions. Exams often follow patterns.</div></div>
+                    <div class="tip"><span class="ti">😴</span><div><strong>Sleep Cycle:</strong> Wake early. Your brain needs 6-8 hours to consolidate memory.</div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NOTES / DAILY DIARY PANEL -->
+        <div id="panel-notes" class="panel">
+            <div class="slbl">Daily Diary</div>
+            <div style="display:flex; gap:24px; align-items:flex-start;">
+
+                <!-- Left: Write Today's Entry -->
+                <div style="flex:1; min-width:0;">
+                    <div class="panel-card" style="padding:20px; margin-bottom:16px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                            <div>
+                                <div style="font-size:16px; font-weight:700; color:var(--text)" id="diary-date">Today</div>
+                                <div style="font-size:11px; color:var(--dim); margin-top:2px;">Write your daily reflection</div>
+                            </div>
+                            <div style="display:flex; gap:8px; align-items:center;">
+                                <span style="font-size:11px; color:var(--dim);">Mood</span>
+                                <div id="diary-mood" style="display:flex; gap:4px;">
+                                    <button class="mood-btn" data-mood="1" title="Terrible">😫</button>
+                                    <button class="mood-btn" data-mood="2" title="Bad">😞</button>
+                                    <button class="mood-btn" data-mood="3" title="Okay">😐</button>
+                                    <button class="mood-btn" data-mood="4" title="Good">😊</button>
+                                    <button class="mood-btn" data-mood="5" title="Great">🔥</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+                            <div>
+                                <label style="font-size:10px; color:var(--green); text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:6px;">✅ Today's Wins</label>
+                                <textarea id="diary-wins" rows="3" placeholder="What did you accomplish today?" style="width:100%; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:10px; color:var(--text); font-size:12px; outline:none; resize:vertical; font-family:var(--mono); box-sizing:border-box;"></textarea>
+                            </div>
+                            <div>
+                                <label style="font-size:10px; color:var(--red); text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:6px;">⚡ Challenges</label>
+                                <textarea id="diary-challenges" rows="3" placeholder="What was hard today?" style="width:100%; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:10px; color:var(--text); font-size:12px; outline:none; resize:vertical; font-family:var(--mono); box-sizing:border-box;"></textarea>
+                            </div>
+                            <div>
+                                <label style="font-size:10px; color:var(--accent); text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:6px;">💡 Learned</label>
+                                <textarea id="diary-learned" rows="3" placeholder="Key lessons from today" style="width:100%; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:10px; color:var(--text); font-size:12px; outline:none; resize:vertical; font-family:var(--mono); box-sizing:border-box;"></textarea>
+                            </div>
+                            <div>
+                                <label style="font-size:10px; color:var(--yellow); text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:6px;">🎯 Tomorrow</label>
+                                <textarea id="diary-tomorrow" rows="3" placeholder="Top priority for tomorrow" style="width:100%; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:10px; color:var(--text); font-size:12px; outline:none; resize:vertical; font-family:var(--mono); box-sizing:border-box;"></textarea>
+                            </div>
+                        </div>
+
+                        <div style="display:flex; gap:8px; align-items:center;">
+                            <div style="flex:1;">
+                                <label style="font-size:10px; color:var(--dim); text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:6px;">Energy Level</label>
+                                <input type="range" id="diary-energy" min="1" max="10" value="7" style="width:100%; accent-color:var(--accent);">
+                                <div style="display:flex; justify-content:space-between; font-size:10px; color:var(--dim); margin-top:2px;">
+                                    <span>Drained</span><span id="diary-energy-val">7/10</span><span>Peak</span>
+                                </div>
+                            </div>
+                            <button id="diary-save" class="save-btn" style="margin-top:16px; padding:10px 24px;">Save Entry 📓</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Past Entries -->
+                <div style="width:300px; flex-shrink:0;">
+                    <div class="slbl" style="font-size:11px; margin-bottom:12px;">Past Entries</div>
+                    <div id="diary-history" style="display:flex; flex-direction:column; gap:10px; max-height:600px; overflow-y:auto;">
+                        <!-- Populated by JS -->
+                    </div>
                 </div>
             </div>
         </div>

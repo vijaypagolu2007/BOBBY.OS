@@ -1,23 +1,9 @@
 import { dbLoad, dbSave } from './db.js';
 import { iso, today, showToast } from './utils.js';
 
-export const EXAMS = [
-    { date: '2026-05-05', day: 'Tuesday', num: '05', month: 'May', papers: [{ code: 'EM-4', name: 'Engineering Mathematics IV', slot: 'S1', time: '9:00–10:00 AM' }, { code: 'ALC', name: 'Automata & Language Theory', slot: 'S2', time: '10:00–11:00 AM' }] },
-    { date: '2026-05-06', day: 'Wednesday', num: '06', month: 'May', papers: [{ code: 'DAA', name: 'Design & Analysis of Algorithms', slot: 'S1', time: '9:00–10:00 AM' }, { code: 'OS', name: 'Operating Systems', slot: 'S2', time: '11:00–12:00 PM' }] },
-    { date: '2026-05-07', day: 'Thursday', num: '07', month: 'May', papers: [{ code: 'MEA', name: 'Managerial Economics & Accountancy', slot: 'S1', time: '11:00–12:00 PM' }, { code: 'SS', name: 'Signals & Systems', slot: 'S2', time: '12:00–1:00 PM' }] },
-    { date: '2026-05-08', day: 'Friday', num: '08', month: 'May', papers: [{ code: 'DAR', name: 'Data Analytics using R', slot: 'S1', time: '9:00–10:00 AM' }] },
-];
+export let EXAMS = [];
 
-export const PRESET_PLANS = {
-    '2026-05-02': [{ t: '3:30–6:00 AM', d: 'CP — last free morning before CT2 prep', tag: 'cp' }, { t: '4:00–5:45 PM', d: 'DAR — R programming, data models, visualization', tag: 'rev' }, { t: '5:45–7:30 PM', d: 'SS — Fourier, Laplace, Z-transform, convolution', tag: 'rev' }, { t: '8:30–9:30 PM', d: 'Plan the weekend. List weak topics.', tag: 'plan' }, { t: '9:30 PM →', d: 'SLEEP', tag: 'rest' }],
-    '2026-05-03': [{ t: '3:30–5:30 AM', d: 'MEA — economics concepts, cost theory', tag: 'rev' }, { t: '5:30–7:30 AM', d: 'DAA — greedy, DP, graph algos, complexity', tag: 'rev' }, { t: '9:00–11:00 AM', d: 'OS — scheduling, memory, paging, deadlocks', tag: 'rev' }, { t: '2:00–4:00 PM', d: 'DAA — second pass: PYQs', tag: 'rev' }, { t: '4:00–5:30 PM', d: 'OS — second pass: weak areas', tag: 'rev' }, { t: '8:30–9:30 PM', d: 'Plan Sunday. List EM-4 + ALC weak topics.', tag: 'plan' }, { t: '9:30 PM →', d: 'SLEEP', tag: 'rest' }],
-    '2026-05-04': [{ t: '3:30–5:30 AM', d: 'EM-4 — integrals, DEs, series, transforms', tag: 'rev' }, { t: '5:30–7:30 AM', d: 'ALC — NFA→DFA, CFG, PDA, pumping lemma', tag: 'rev' }, { t: '9:00–11:00 AM', d: 'EM-4 — second pass: PYQs, formula sheet', tag: 'rev' }, { t: '11 AM–1:00 PM', d: 'ALC — second pass: closure properties', tag: 'rev' }, { t: '2:00–4:00 PM', d: 'SS + DAR — rapid formula sweep', tag: 'rev' }, { t: '8:30–9:30 PM', d: 'Final plan. Pack notes. Tue: EM-4 (9AM) + ALC (10AM).', tag: 'plan' }, { t: '9:30 PM →', d: 'SLEEP — wake 3:30 AM. CT2 starts tomorrow.', tag: 'rest', warn: true }],
-    '2026-05-05': [{ t: '3:30–5:00 AM', d: 'EM-4 — final: formulae, integrals', tag: 'rev' }, { t: '5:00–6:00 AM', d: 'ALC — quick scan: NFA, CFG, pumping lemma', tag: 'rev' }, { t: '9:00–10:00 AM', d: '📝 CT2: EM-4', tag: 'exam', warn: true }, { t: '10:00–11:00 AM', d: '📝 CT2: ALC', tag: 'exam', warn: true }, { t: '11 AM–2:00 PM', d: 'REST — two back-to-back done. Nap.', tag: 'rest' }, { t: '4:00–6:00 PM', d: 'DAA revision — greedy, DP, graphs', tag: 'rev' }, { t: '6:00–7:30 PM', d: 'OS revision — scheduling, memory', tag: 'rev' }, { t: '8:30–9:30 PM', d: 'Plan Wed: DAA (9AM) + OS (11AM).', tag: 'plan' }, { t: '9:30 PM →', d: 'SLEEP', tag: 'rest' }],
-    '2026-05-06': [{ t: '3:30–5:00 AM', d: 'DAA — final: recurrences, Master theorem', tag: 'rev' }, { t: '5:00–6:00 AM', d: 'OS — quick scan: process sync, paging', tag: 'rev' }, { t: '9:00–10:00 AM', d: '📝 CT2: DAA', tag: 'exam', warn: true }, { t: '11:00 AM–12:00 PM', d: '📝 CT2: OS', tag: 'exam', warn: true }, { t: '12:00–2:00 PM', d: 'REST', tag: 'rest' }, { t: '4:00–6:00 PM', d: 'MEA revision — economics, accounting', tag: 'rev' }, { t: '6:00–7:30 PM', d: 'SS revision — Fourier, Laplace', tag: 'rev' }, { t: '8:30–9:30 PM', d: 'Plan Thu: MEA (11AM) + SS (12PM).', tag: 'plan' }, { t: '9:30 PM →', d: 'SLEEP', tag: 'rest' }],
-    '2026-05-07': [{ t: '3:30–5:00 AM', d: 'MEA — final: theories, accounting statements', tag: 'rev' }, { t: '5:00–6:00 AM', d: 'SS — transform pairs, stability', tag: 'rev' }, { t: '11:00 AM–12:00 PM', d: '📝 CT2: MEA', tag: 'exam', warn: true }, { t: '12:00–1:00 PM', d: '📝 CT2: SS', tag: 'exam', warn: true }, { t: '2:00–4:00 PM', d: 'REST', tag: 'rest' }, { t: '4:00–7:30 PM', d: 'DAR — R programming, models, visualization', tag: 'rev' }, { t: '8:30–9:30 PM', d: 'Final plan. Fri: DAR (9AM). Last test.', tag: 'plan' }, { t: '9:30 PM →', d: 'SLEEP — last CT2 test tomorrow', tag: 'rest' }],
-    '2026-05-08': [{ t: '3:30–5:30 AM', d: 'DAR — final: R syntax, data models', tag: 'rev' }, { t: '9:00–10:00 AM', d: '📝 CT2: DAR — LAST ONE!', tag: 'exam', warn: true }, { t: '10:00 AM onwards', d: '🎉 CT2 DONE! Marks submission: 14th May.', tag: 'rest' }, { t: 'From 9 May', d: 'Resume CP at 3:30 AM. SEE on 15 Jun.', tag: 'cp' }],
-    '__post__': [{ t: '3:30–6:00 AM', d: 'CP / DSA — back to grind', tag: 'cp' }, { t: '4:00–7:30 PM', d: 'Subjective revision + SEE prep', tag: 'rev' }, { t: '8:30–9:30 PM', d: 'Planning + Targets', tag: 'plan' }, { t: '9:30 PM →', d: 'SLEEP', tag: 'rest' }],
-};
+export const PRESET_PLANS = {};
 
 export const PC = { rev: 'ptag-rev', exam: 'ptag-exam', cp: 'ptag-cp', rest: 'ptag-rest', plan: 'ptag-plan', custom: 'ptag-custom' };
 export const PL = { rev: 'Revision', exam: 'CT2', cp: 'CP', rest: 'Rest', plan: 'Plan', custom: 'Custom' };
@@ -40,22 +26,38 @@ export async function saveCustomPlanRows(uid, dateStr, rows) {
 }
 
 export async function renderExam(uid) {
+    if (EXAMS.length === 0) {
+        const saved = await dbLoad(uid, 'exams:list', []);
+        if (saved.length > 0) EXAMS = saved;
+    }
+
     const t = today();
     const now = new Date();
-    const FD = '2026-05-05', LD = '2026-05-08', TOTAL = 7;
+    
+    const FD = EXAMS.length > 0 ? EXAMS[0].date : t;
+    const LD = EXAMS.length > 0 ? EXAMS[EXAMS.length - 1].date : t;
+    const TOTAL = EXAMS.length > 0 ? EXAMS.reduce((acc, curr) => acc + curr.papers.length, 0) : 0;
 
     const cdDays = document.getElementById('cd-days');
     const cdLbl = document.getElementById('cd-lbl');
     if (!cdDays || !cdLbl) return;
 
-    if (t > LD) { cdDays.textContent = '🎉'; cdLbl.textContent = 'CT2 done!'; }
-    else if (t >= FD) { const r = EXAMS.filter(e => e.date >= t).length; cdDays.textContent = r; cdLbl.textContent = r === 1 ? 'day left' : 'days left'; }
-    else { const diff = Math.round((new Date(FD + 'T00:00:00') - new Date(t + 'T00:00:00')) / 864e5); cdDays.textContent = diff <= 0 ? '0' : diff; cdLbl.textContent = diff <= 1 ? 'day to go' : 'days to go'; }
+    if (TOTAL === 0) {
+        cdDays.textContent = '-'; cdLbl.textContent = 'No exams scheduled';
+    } else if (t > LD) { 
+        cdDays.textContent = '🎉'; cdLbl.textContent = 'Exams done!'; 
+    } else if (t >= FD) { 
+        const r = EXAMS.filter(e => e.date >= t).length; 
+        cdDays.textContent = r; cdLbl.textContent = r === 1 ? 'day left' : 'days left'; 
+    } else { 
+        const diff = Math.round((new Date(FD + 'T00:00:00') - new Date(t + 'T00:00:00')) / 864e5); 
+        cdDays.textContent = diff <= 0 ? '0' : diff; cdLbl.textContent = diff <= 1 ? 'day to go' : 'days to go'; 
+    }
 
     let dp = 0; EXAMS.forEach(ex => ex.papers.forEach((p, pi) => { const eH = p.slot === 'S1' ? 10 : 13; if (now > new Date(ex.date + 'T' + eH + ':00:00')) dp++; }));
     
     const fillEl = document.getElementById('epb-fill');
-    if (fillEl) fillEl.style.width = `${Math.round(dp / TOTAL * 100)}%`;
+    if (fillEl) fillEl.style.width = TOTAL === 0 ? '0%' : `${Math.round(dp / TOTAL * 100)}%`;
     
     const epbLabel = document.getElementById('epb-label');
     if (epbLabel) epbLabel.textContent = `${dp} / ${TOTAL} done`;
@@ -80,62 +82,66 @@ export async function renderExam(uid) {
     await renderPlanForDate(uid);
 }
 
+export function getExamCountdown() {
+    if (EXAMS.length === 0) return null;
+    const t = today();
+    const now = new Date();
+    
+    // Find the next upcoming exam date (not past)
+    const upcoming = EXAMS.find(e => e.date >= t);
+    if (!upcoming) return { done: true };
+
+    const firstDate = new Date(upcoming.date + 'T00:00:00');
+    const todayDate = new Date(t + 'T00:00:00');
+    const diffMs = firstDate - todayDate;
+    const diffDays = Math.floor(diffMs / 864e5);
+    
+    // Progress calculation
+    const totalPapers = EXAMS.reduce((acc, curr) => acc + curr.papers.length, 0);
+    let donePapers = 0;
+    EXAMS.forEach(ex => ex.papers.forEach(p => {
+        const h = p.slot === 'S1' ? 12 : 16;
+        if (new Date() > new Date(ex.date + 'T' + h + ':00:00')) donePapers++;
+    }));
+
+    return {
+        days: diffDays,
+        hours: 23 - now.getHours(),
+        mins: 59 - now.getMinutes(),
+        intensity: totalPapers === 0 ? 0 : Math.round((donePapers / totalPapers) * 100),
+        total: totalPapers,
+        done: donePapers
+    };
+}
+
 export async function renderPlanForDate(uid) {
     const t = today();
-    const FD = '2026-05-05', LD = '2026-05-08';
     const pd = getPlanDate();
-
     const navDate = new Date(pd + 'T00:00:00');
     const isToday = pd === t;
     const navDateEl = document.getElementById('plan-nav-date');
     if (navDateEl) navDateEl.textContent = isToday ? 'Today' : navDate.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
 
-    const PLAN_TITLES = {
-        '2026-05-02': 'Friday — Begin CT2 Prep',
-        '2026-05-03': 'Saturday — Full Day Revision',
-        '2026-05-04': 'Sunday — Final Pass Before CT2',
-        '__post__': 'Post-CT2 — Back to Grind',
-    };
-
-    let presetKey = pd;
-    if (!PRESET_PLANS[pd]) {
-        if (pd > LD) presetKey = '__post__';
-        else {
-            const allDates = Object.keys(PRESET_PLANS).filter(k => k !== '__post__').sort();
-            const past = [...allDates].reverse().find(d => d <= pd);
-            const future = allDates.find(d => d > pd);
-            presetKey = past || future || FD;
-        }
-    }
-
     const ex = EXAMS.find(e => e.date === pd);
-    const title = ex ? `${ex.day} — ${ex.papers.map(p => p.code).join(' + ')}` : (PLAN_TITLES[presetKey] || `Plan for ${navDate.toLocaleDateString('en-IN', { weekday: 'long' })}`);
+    const title = ex ? `${ex.day} — ${ex.papers.map(p => p.code).join(' + ')}` : `Plan for ${navDate.toLocaleDateString('en-IN', { weekday: 'long' })}`;
     
     const planTitleEl = document.getElementById('plan-title');
     if (planTitleEl) planTitleEl.textContent = title;
     
     const planDateEl = document.getElementById('plan-date');
-    if (planDateEl) planDateEl.textContent = pd === '__post__' ? 'Post-exam mode' : navDate.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' });
+    if (planDateEl) planDateEl.textContent = navDate.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' });
     
     const planLblEl = document.getElementById('plan-lbl');
     if (planLblEl) planLblEl.textContent = isToday ? "Today's Plan" : 'Plan for ' + navDate.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' });
 
-    const presetRows = PRESET_PLANS[presetKey] || [];
     const customRows = await getCustomPlanRows(uid, pd);
     const rows = document.getElementById('plan-rows');
     if (!rows) return;
     rows.innerHTML = '';
 
-    if (presetRows.length === 0 && customRows.length === 0) {
-        rows.innerHTML = `<div class="plan-empty"><strong>📋</strong>No preset plan for this day.<br>Add your own tasks below.</div>`;
+    if (customRows.length === 0) {
+        rows.innerHTML = `<div class="plan-empty"><strong>📋</strong>No study plan for this day.<br>Sync with AI above or add tasks below.</div>`;
     }
-
-    presetRows.forEach(p => {
-        const d = document.createElement('div');
-        d.className = `plan-row${p.warn ? ' warn' : ''}`;
-        d.innerHTML = `<span class="ptime">${p.t}</span><span class="pdesc">${p.d}<span class="ptag ${PC[p.tag] || 'ptag-rev'}">${PL[p.tag] || p.tag}</span></span><span></span><span></span>`;
-        rows.appendChild(d);
-    });
 
     customRows.forEach((p, idx) => {
         const d = document.createElement('div');
@@ -172,4 +178,232 @@ export async function addPlanRow(uid) {
     tagIn.value = 'custom';
     await renderPlanForDate(uid);
     showToast('Plan added ✓');
+}
+
+export function setupAITimetable(uid) {
+    const btn = document.getElementById('ai-refine-btn');
+    const timetableInput = document.getElementById('ai-timetable-input');
+    const syllabusInput = document.getElementById('ai-syllabus-input');
+    const fileInput = document.getElementById('ai-timetable-upload');
+
+    if (!btn) return;
+
+    if (fileInput) {
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file && timetableInput) {
+                timetableInput.placeholder = `📎 File attached: ${file.name}\n\nOptionally add extra notes here...`;
+                showToast(`Attached: ${file.name}`);
+            }
+        });
+    }
+
+    btn.onclick = async () => {
+        const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+        const hasFile = fileInput && fileInput.files.length > 0;
+        const ttText = timetableInput?.value.trim() || '';
+        const sylText = syllabusInput?.value.trim() || '';
+
+        if (!hasFile && !ttText && !sylText) {
+            showToast('Please provide a timetable or syllabus!');
+            return;
+        }
+        if (!apiKey) {
+            showToast('No VITE_GEMINI_API_KEY set in .env!');
+            return;
+        }
+
+        btn.textContent = '⏳ Analyzing with Gemini AI...';
+        btn.disabled = true;
+
+        try {
+            let requestBody;
+            const combinedContext = `USER_INSTRUCTIONS/TIMETABLE:\n${ttText}\n\nSYLLABUS_PORTIONS:\n${sylText}`;
+
+            if (hasFile) {
+                const file = fileInput.files[0];
+                const base64Data = await fileToBase64(file);
+                const mimeType = file.type || 'image/jpeg';
+                requestBody = buildVisionRequest(base64Data, mimeType, combinedContext);
+            } else {
+                requestBody = buildTextRequest(combinedContext);
+            }
+
+            const fetchWithRetry = async (retries = 2) => {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 45000);
+                try {
+                    const response = await fetch(
+                        `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key=${apiKey}`,
+                        {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(requestBody),
+                            signal: controller.signal
+                        }
+                    );
+                    clearTimeout(timeoutId);
+                    if (response.status === 429 && retries > 0) {
+                        showToast(`Quota hit. Retrying in 10s...`);
+                        await new Promise(r => setTimeout(r, 10000));
+                        return fetchWithRetry(retries - 1);
+                    }
+                    return response;
+                } catch (e) {
+                    clearTimeout(timeoutId);
+                    if (e.name === 'AbortError' && retries > 0) return fetchWithRetry(retries - 1);
+                    throw e;
+                }
+            };
+
+            const response = await fetchWithRetry();
+
+            if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(errData.error?.message || `API Error ${response.status}`);
+            }
+
+            const data = await response.json();
+            const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+            const parsed = extractJsonFromText(rawText);
+
+            if (!parsed) {
+                showToast('AI could not parse data. Ensure image is clear.');
+                return;
+            }
+
+            if (Array.isArray(parsed.exams) && parsed.exams.length > 0) {
+                EXAMS = parsed.exams.map(ex => {
+                    const d = new Date(ex.date + 'T00:00:00');
+                    return {
+                        date: ex.date,
+                        day: d.toLocaleDateString('en-IN', { weekday: 'long' }),
+                        num: d.getDate().toString().padStart(2, '0'),
+                        month: d.toLocaleString('default', { month: 'short' }),
+                        papers: (ex.papers || []).map(p => ({
+                            code: p.code || 'EXAM',
+                            name: p.name || 'Subject',
+                            slot: p.slot || 'S1',
+                            time: p.time || '10:00–12:00'
+                        }))
+                    };
+                }).sort((a, b) => a.date.localeCompare(b.date));
+                await dbSave(uid, 'exams:list', EXAMS);
+            }
+
+            if (Array.isArray(parsed.plans)) {
+                for (const p of parsed.plans) {
+                    if (p.date && Array.isArray(p.tasks)) {
+                        const rows = p.tasks.map(t => ({
+                            t: t.time || '—',
+                            d: t.desc || t.task || 'Study session',
+                            tag: t.tag || 'rev'
+                        }));
+                        await saveCustomPlanRows(uid, p.date, rows);
+                    }
+                }
+            } else if (sylText && parsed.exams && parsed.exams.length === 0) {
+                showToast('Timetable dates not found, but syllabus plan generated!');
+            }
+
+            await renderExam(uid);
+            showToast(`✅ Dashboard updated!`);
+
+            if (timetableInput) timetableInput.value = '';
+            if (syllabusInput) syllabusInput.value = '';
+            if (fileInput) fileInput.value = '';
+
+        } catch (err) {
+            console.error('AI Sync Error:', err);
+            showToast(`Error: ${err.message}`);
+        } finally {
+            btn.textContent = '✨ Refine Exam Dashboard';
+            btn.disabled = false;
+        }
+    };
+}
+
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+function buildVisionRequest(base64Data, mimeType, extraText) {
+    const prompt = buildExtractionPrompt(extraText);
+    return {
+        contents: [{
+            parts: [
+                { text: prompt },
+                { inline_data: { mime_type: mimeType, data: base64Data } }
+            ]
+        }],
+        generationConfig: { temperature: 0.1, maxOutputTokens: 3000 }
+    };
+}
+
+function buildTextRequest(text) {
+    const prompt = buildExtractionPrompt(text);
+    return {
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { temperature: 0.1, maxOutputTokens: 3000 }
+    };
+}
+
+function buildExtractionPrompt(extraContext) {
+    const todayStr = today();
+    const currentYear = new Date().getFullYear();
+    return `You are BOBBY.OS, an elite academic scheduler.
+Your goal is to extract exam dates AND generate a detailed study plan.
+
+IMPORTANT: FOLLOW USER INSTRUCTIONS FIRST.
+User Instructions / Timetable Info:
+${extraContext}
+
+Return ONLY valid JSON:
+{
+  "exams": [
+    {
+      "date": "YYYY-MM-DD",
+      "papers": [
+        { "code": "SUBJ_CODE", "name": "Subject Name", "slot": "S1/S2", "time": "HH:MM–HH:MM" }
+      ]
+    }
+  ],
+  "plans": [
+    {
+      "date": "YYYY-MM-DD",
+      "tasks": [
+        { "time": "08:00 AM", "desc": "Step-by-step revision task", "tag": "rev" }
+      ]
+    }
+  ]
+}
+
+SPECIFIC RULES:
+1. If the user says "ONLY INCLUDE CSE", filter the timetable to ONLY include CSE subjects.
+2. If syllabus is provided but no dates found, generate a 3-day plan starting from TODAY (${todayStr}).
+3. "tag" must be: "rev", "exam", "cp", "rest", "plan", or "custom".
+4. For "OS LAB", tasks should be like "Practice shell programming", "Review filter commands".
+5. Use ${currentYear} for the year.`;
+}
+
+function extractJsonFromText(text) {
+    try {
+        return JSON.parse(text);
+    } catch {
+        const match = text.match(/```(?:json)?\s*([\s\S]*?)```/);
+        if (match) {
+            try { return JSON.parse(match[1].trim()); } catch { }
+        }
+        const start = text.indexOf('{');
+        const end = text.lastIndexOf('}');
+        if (start !== -1 && end !== -1) {
+            try { return JSON.parse(text.slice(start, end + 1)); } catch { }
+        }
+        return null;
+    }
 }

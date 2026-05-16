@@ -11,7 +11,12 @@ export function simpleHash(s) {
     return h.toString(36);
 }
 
-export function today() { return new Date().toISOString().slice(0, 10); }
+export function localISO(d) {
+    const tzOffset = d.getTimezoneOffset() * 60000;
+    return (new Date(d - tzOffset)).toISOString().slice(0, 10);
+}
+
+export function today() { return localISO(new Date()); }
 
 export function showToast(m) {
     const t = document.getElementById('toast');
@@ -21,7 +26,7 @@ export function showToast(m) {
     setTimeout(() => t.classList.remove('on'), 2400);
 }
 
-export function iso(d) { return d.toISOString().slice(0, 10); }
+export function iso(d) { return localISO(d); }
 
 export function wkKey(off) { return iso(getMon(off)); }
 

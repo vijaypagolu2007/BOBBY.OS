@@ -7,7 +7,7 @@ import { dbLoad, dbSave, S } from './db.js';
 export const DAY_N = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 export const TYPES = [{ v: 'habit', l: 'Habit' }, { v: 'college', l: 'College' }, { v: 'sleep', l: 'Sleep' }, { v: 'break', l: 'Break' }, { v: 'free', l: 'Free' }];
 
-export const EXAM_D = new Set(['2026-05-05', '2026-05-06', '2026-05-07', '2026-05-08']);
+export const EXAM_D = new Set();
 
 export const META = {
     cp: { icon: '⌨️', color: '#6c63ff', bg: 'rgba(108,99,255,0.13)' },
@@ -62,8 +62,14 @@ export async function getSlots(uid, d) {
 export async function buildHabits(uid) {
     const seen = new Set(), habits = [];
     const ORDER = ['cp', 'dsa', 'fit', 'vocab', 'subrev', 'plan', 'project', 'oss', 'course'];
+    
+    // Pre-load all 7 days slots to avoid O(N^2) awaits
+    const allSlots = await Promise.all(
+        Array.from({ length: 7 }, (_, d) => getSlots(uid, d))
+    );
+
     for (let d = 0; d < 7; d++) {
-        const slots = await getSlots(uid, d);
+        const slots = allSlots[d];
         slots.filter(s => s.type === 'habit' && s.id).forEach(s => {
             if (!seen.has(s.id)) {
                 seen.add(s.id);
@@ -71,10 +77,10 @@ export async function buildHabits(uid) {
             }
         });
     }
-    const full = await Promise.all(habits.map(async h => {
+    const full = habits.map(h => {
         let inWD = false, inWE = false;
         for (let dd = 0; dd < 7; dd++) { 
-            const sl = await getSlots(uid, dd); 
+            const sl = allSlots[dd];
             if (sl.some(ss => ss.id === h.id)) { 
                 if (dd < 5) inWD = true; else inWE = true; 
             } 
@@ -85,7 +91,7 @@ export async function buildHabits(uid) {
             id: h.id, icon: m.icon, name: h._label, time: h._time, freq, color: m.color, bg: m.bg,
             tag: freq, tagLabel: freq === 'wd' ? 'mon–fri' : freq === 'we' ? 'weekends' : 'every day'
         };
-    }));
+    });
     const sorted = ORDER.map(id => full.find(h => h.id === id)).filter(Boolean);
     const rest = full.filter(h => !ORDER.includes(h.id));
     const all = [...sorted, ...rest];

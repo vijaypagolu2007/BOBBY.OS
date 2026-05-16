@@ -29,23 +29,33 @@ export function clearCache() {
 }
 
 // User-specific Firestore helper
-export function uDoc(uid) { return doc(db, "users", uid); }
+export function uDoc(uid) { 
+    if (!db || Object.keys(db).length === 0) return null;
+    return doc(db, "users", uid); 
+}
 
 export async function dbSave(uid, k, v) {
     const key = uKey(uid, k);
     S[k] = v;
-    await DB.set(key, v); // Instant local save
+    await DB.set(key, v); // Instant local save (awaited for safety)
     
     if (uid) {
-        showSyncIndicator('saving');
-        try {
-            const userRef = uDoc(uid);
-            await setDoc(userRef, { [k]: v }, { merge: true });
-            showSyncIndicator('saved');
-        } catch (e) {
-            console.error("Cloud save failed:", e);
-            showSyncIndicator('error');
-        }
+        // Fire-and-forget cloud sync to prevent UI blocking
+        (async () => {
+            showSyncIndicator('saving');
+            try {
+                const userRef = uDoc(uid);
+                if (userRef) {
+                    await setDoc(userRef, { [k]: v }, { merge: true });
+                    showSyncIndicator('saved');
+                } else {
+                    showSyncIndicator('offline');
+                }
+            } catch (e) {
+                console.error("Cloud save failed:", e);
+                showSyncIndicator('error');
+            }
+        })();
     }
 }
 
@@ -65,13 +75,16 @@ export async function dbLoad(uid, k, def = null) {
     // 2. Try Cloud if UID exists and local was missing/stale
     if (uid) {
         try {
-            const snap = await getDoc(uDoc(uid));
-            if (snap.exists()) {
-                const data = snap.data();
-                if (data[k] !== undefined) {
-                    S[k] = data[k];
-                    await DB.set(key, data[k]);
-                    return data[k];
+            const userRef = uDoc(uid);
+            if (userRef) {
+                const snap = await getDoc(userRef);
+                if (snap.exists()) {
+                    const data = snap.data();
+                    if (data[k] !== undefined) {
+                        S[k] = data[k];
+                        await DB.set(key, data[k]);
+                        return data[k];
+                    }
                 }
             }
         } catch (e) {
@@ -79,13 +92,15 @@ export async function dbLoad(uid, k, def = null) {
         }
     }
 
-    return S[k] !== undefined ? S[k] : def;
+    return (S[k] !== undefined && S[k] !== null) ? S[k] : def;
 }
 
 // Setup real-time listener for user data
 export function listenToUserData(uid, onUpdate) {
     if (!uid) return;
-    return onSnapshot(uDoc(uid), (doc) => {
+    const userRef = uDoc(uid);
+    if (!userRef) return;
+    return onSnapshot(userRef, (doc) => {
         if (doc.exists()) {
             const data = doc.data();
             Object.assign(S, data);
@@ -107,6 +122,7 @@ export function showSyncIndicator(state) {
     el.className = `sync-indicator ${state}`;
     if (state === 'saving') el.textContent = 'saving...';
     else if (state === 'error') el.textContent = '⚠ sync error';
+    else if (state === 'offline') el.textContent = 'local only';
     else el.textContent = '✓ synced';
     
     clearTimeout(syncTimer);
