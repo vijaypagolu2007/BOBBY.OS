@@ -79,19 +79,25 @@ export async function buildHabits(uid) {
         slots.filter(s => s.id).forEach(s => {
             if (!seen.has(s.id)) {
                 seen.add(s.id);
-                habits.push({ id: s.id, _time: s.time, _label: s.label, _day: d });
+                habits.push({ id: s.id, _time: s.time, _label: s.label, _day: d, _type: s.type });
             }
         });
     }
     const full = habits.map(h => {
         let inWD = false, inWE = false;
+        let hasHabitType = h._type === 'habit';
+
         for (let dd = 0; dd < 7; dd++) { 
             const sl = allSlots[dd];
             if (sl.some(ss => ss.id === h.id)) { 
                 if (dd < 5) inWD = true; else inWE = true; 
+                if (sl.some(ss => ss.id === h.id && ss.type === 'habit')) hasHabitType = true;
             } 
         }
-        const freq = inWD && inWE ? 'all' : inWD ? 'wd' : 'we';
+
+        // If it's a 'habit' type, force it to show up EVERY DAY in the tracker
+        const freq = (hasHabitType || (inWD && inWE)) ? 'all' : inWD ? 'wd' : 'we';
+        
         const m = getMeta(h.id);
         return {
             id: h.id, icon: m.icon, name: h._label, time: h._time, freq, color: m.color, bg: m.bg,
