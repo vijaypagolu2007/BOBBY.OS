@@ -71,6 +71,7 @@
         <div class="tab t-power" id="tab-power"><div class="tab-dot" style="background:var(--accent)"></div>Power Hub</div>
         <div class="tab t-sched" id="tab-sched"><div class="tab-dot" style="background:var(--green)"></div>Schedule</div>
         <div class="tab t-exam" id="tab-exam"><div class="tab-dot" style="background:var(--red)"></div>Exams <span class="exam-badge" id="exam-badge">0</span></div>
+        <div class="tab t-study" id="tab-study"><div class="tab-dot" style="background:var(--blue)"></div>Study</div>
         <div class="tab t-notes" id="tab-notes"><div class="tab-dot" style="background:var(--yellow)"></div>Diary</div>
     </div>
     <div class="tab-line"></div>
@@ -88,6 +89,24 @@
 
             <div class="slbl">Contribution Heatmap</div>
             <div id="habit-heatmap" class="heatmap-card"></div>
+
+            <div class="slbl">Progress Charts</div>
+            <div class="power-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 24px;">
+                <div class="power-card">
+                    <div class="p-card-hdr">
+                        <h3>Habit Consistency</h3>
+                        <span class="p-badge">TREND</span>
+                    </div>
+                    <canvas id="habit-trend-chart" height="150"></canvas>
+                </div>
+                <div class="power-card">
+                    <div class="p-card-hdr">
+                        <h3>CP Rating</h3>
+                        <span class="p-badge" style="background:var(--accent-lo); color:var(--accent)">CODEFORCES</span>
+                    </div>
+                    <canvas id="cp-trend-chart" height="150"></canvas>
+                </div>
+            </div>
 
             <div class="slbl">Weekly Progress</div>
             <div class="week-nav">
@@ -301,6 +320,30 @@
                 <div class="epb-top"><span>Overall Progress</span><span id="epb-label">0 / 7 done</span></div>
                 <div class="epb-bg"><div class="epb-fill" id="epb-fill" style="width:0%"></div></div>
             </div>
+            
+            <div class="slbl" style="margin-top:24px;">CT2 Score Tracker</div>
+            <div class="power-card" style="margin-bottom:24px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <h3 style="margin:0; font-size:14px; color:var(--text);">Semester Grades</h3>
+                    <button id="add-ct2-btn" class="p-btn primary" style="padding:4px 10px;">+ Add Score</button>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="text-align:left; padding:8px;">Subject</th>
+                                <th style="text-align:center; padding:8px;">CT1</th>
+                                <th style="text-align:center; padding:8px;">CT2</th>
+                                <th style="text-align:center; padding:8px;">SEE</th>
+                                <th style="text-align:center; padding:8px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ct2-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="slbl">Exam Countdown</div>
             <div class="days-grid" id="days-grid"></div>
 
             <div class="plan-section-hdr">
@@ -359,6 +402,91 @@
                     <div class="tip"><span class="ti">⚡</span><div><strong>Active Recall:</strong> Don't just read. Close the book and explain the concept out loud.</div></div>
                     <div class="tip"><span class="ti">📝</span><div><strong>PYQs First:</strong> Solve previous year questions. Exams often follow patterns.</div></div>
                     <div class="tip"><span class="ti">😴</span><div><strong>Sleep Cycle:</strong> Wake early. Your brain needs 6-8 hours to consolidate memory.</div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STUDY TOOLS PANEL -->
+        <div id="panel-study" class="panel">
+            <div class="exam-hdr">
+                <div><h2>Study & <em>CP Tools</em></h2><p>Vaults, logs, and checklists</p></div>
+            </div>
+            
+            <div class="power-grid">
+                <!-- Formula Vault -->
+                <div class="power-card">
+                    <div class="p-card-hdr">
+                        <h3>Formula Vault</h3>
+                        <span class="p-badge" style="background:var(--yellow-lo); color:var(--yellow)">QUICK_REV</span>
+                    </div>
+                    <select id="formula-subject-sel" style="width:100%; background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:6px; color:var(--text); margin-bottom:12px; outline:none;">
+                        <option value="">Select Subject...</option>
+                    </select>
+                    <div id="formula-list" style="max-height:200px; overflow-y:auto; margin-bottom:12px; display:flex; flex-direction:column; gap:8px;"></div>
+                    <div style="display:flex; gap:6px;">
+                        <input type="text" id="formula-title" placeholder="Formula Name" style="flex:1; background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:6px; color:var(--text); font-size:11px;">
+                        <input type="text" id="formula-val" placeholder="Value/Equation" style="flex:1; background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:6px; color:var(--text); font-size:11px;">
+                        <button id="add-formula-btn" class="p-btn primary" style="padding:6px 10px;">+</button>
+                    </div>
+                </div>
+
+                <!-- Revision Checklist -->
+                <div class="power-card">
+                    <div class="p-card-hdr">
+                        <h3>Revision Checklist</h3>
+                        <span class="p-badge" style="background:var(--green-lo); color:var(--green)">TRACKER</span>
+                    </div>
+                    <select id="rev-subject-sel" style="width:100%; background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:6px; color:var(--text); margin-bottom:12px; outline:none;">
+                        <option value="">Select Subject...</option>
+                    </select>
+                    <div id="rev-list" style="max-height:200px; overflow-y:auto; margin-bottom:12px; display:flex; flex-direction:column; gap:8px;"></div>
+                    <div style="display:flex; gap:6px;">
+                        <input type="text" id="rev-topic" placeholder="Topic name" style="flex:1; background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:6px; color:var(--text); font-size:11px;">
+                        <button id="add-rev-btn" class="p-btn primary" style="padding:6px 10px;">+</button>
+                    </div>
+                </div>
+
+                <!-- Wrong Answer Log -->
+                <div class="power-card" style="grid-column: 1 / -1;">
+                    <div class="p-card-hdr">
+                        <h3>Wrong Answer Log</h3>
+                        <span class="p-badge" style="background:var(--red-lo); color:var(--red)">CP_MISTAKES</span>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="text-align:left; padding:8px;">Problem</th>
+                                    <th style="text-align:left; padding:8px;">Mistake/Learning</th>
+                                    <th style="text-align:center; padding:8px;">Date</th>
+                                    <th style="text-align:center; padding:8px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="wa-tbody"></tbody>
+                        </table>
+                    </div>
+                    <div style="display:flex; gap:8px; margin-top:12px;">
+                        <input type="text" id="wa-prob" placeholder="Problem Name/Link" style="flex:1; background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:8px; color:var(--text); font-size:12px;">
+                        <input type="text" id="wa-desc" placeholder="What went wrong?" style="flex:2; background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:8px; color:var(--text); font-size:12px;">
+                        <button id="add-wa-btn" class="p-btn primary" style="padding:8px 16px;">Log Mistake</button>
+                    </div>
+                </div>
+
+                <!-- Subject Notes -->
+                <div class="power-card" style="grid-column: 1 / -1;">
+                    <div class="p-card-hdr">
+                        <h3>Subject Notes</h3>
+                        <span class="p-badge">MARKDOWN</span>
+                    </div>
+                    <div style="display:flex; gap:12px; align-items:flex-start;">
+                        <div style="width:200px; display:flex; flex-direction:column; gap:8px;">
+                            <select id="note-subject-sel" style="width:100%; background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:8px; color:var(--text); outline:none;">
+                                <option value="">Select Subject...</option>
+                            </select>
+                            <button id="save-note-btn" class="p-btn primary">Save Note</button>
+                        </div>
+                        <textarea id="note-editor" style="flex:1; height:200px; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:12px; color:var(--text); font-family:var(--mono); font-size:12px; outline:none; resize:vertical;" placeholder="Markdown supported notes..."></textarea>
+                    </div>
                 </div>
             </div>
         </div>
@@ -436,6 +564,7 @@
 <div id="toast" class="toast">Action completed ✓</div>
 
 <!-- MAIN SCRIPT LOAD -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script type="module" src="./js/app.js"></script>
 
 </body>

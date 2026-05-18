@@ -1,7 +1,7 @@
 import { buildHabits, EXAM_D } from './data.js';
 import { dbLoad, dbSave } from './db.js';
 import { ck, iso, today, wkDates, wkKey, showToast } from './utils.js';
-import { renderHeatmap } from './charts.js';
+import { renderHeatmap, renderProgressCharts } from './charts.js';
 
 export let weekOff = 0;
 
@@ -53,6 +53,7 @@ function grade(p) {
 
 export async function renderHabits(uid) {
     await renderHeatmap(uid);
+    await renderProgressCharts(uid);
     const H = await buildHabits(uid);
     const habitData = await dbLoad(uid, 'habits', {});
     const wk = wkKey(weekOff);

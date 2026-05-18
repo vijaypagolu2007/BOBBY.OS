@@ -9,6 +9,7 @@ import { wkKey, showToast } from './utils.js';
 import { DAY_N, setSlots, defSlots, getSlots } from './data.js';
 import { initPowerHub } from './power.js';
 import { initDiary } from './diary.js';
+import { initStudy } from './study.js';
 
 async function init() {
     updateTheme();
@@ -44,8 +45,9 @@ async function init() {
 async function bootApp(user) {
     document.getElementById('auth-screen').classList.remove('show');
     document.getElementById('app').style.display = 'block';
-    document.getElementById('u-name').textContent = user.name;
-    document.getElementById('u-avatar').textContent = user.name[0].toUpperCase();
+    const name = user.name || user.displayName || (user.email ? user.email.split('@')[0] : 'User');
+    document.getElementById('u-name').textContent = name;
+    document.getElementById('u-avatar').textContent = name[0].toUpperCase();
     document.getElementById('top-date').textContent = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' });
 
     // Real-time listener for data sync
@@ -57,6 +59,7 @@ async function bootApp(user) {
         if (tab === 'habit') renderHabits(user.uid);
         if (tab === 'exam') renderExam(user.uid);
         if (tab === 'power') initPowerHub(user.uid);
+        if (tab === 'study') initStudy(user.uid);
     });
 
     const tab = await dbLoad(user.uid, 'ui:tab', 'habit');
@@ -68,7 +71,7 @@ async function bootApp(user) {
 
 function switchTab(t) {
     const uid = currentUser?.uid;
-    ['habit', 'power', 'sched', 'exam', 'notes'].forEach(id => {
+    ['habit', 'power', 'sched', 'exam', 'study', 'notes'].forEach(id => {
         const panel = document.getElementById(`panel-${id}`);
         const tab = document.getElementById(`tab-${id}`);
         if (panel) panel.classList.toggle('active', id === t);
@@ -82,6 +85,7 @@ function switchTab(t) {
     if (t === 'habit' && uid) renderHabits(uid);
     if (t === 'exam' && uid) renderExam(uid);
     if (t === 'power' && uid) initPowerHub(uid);
+    if (t === 'study' && uid) initStudy(uid);
     if (t === 'notes' && uid) initDiary(uid);
 }
 
@@ -135,6 +139,7 @@ function setupEventListeners() {
     document.getElementById('tab-power').addEventListener('click', () => switchTab('power'));
     document.getElementById('tab-sched').addEventListener('click', () => switchTab('sched'));
     document.getElementById('tab-exam').addEventListener('click', () => switchTab('exam'));
+    document.getElementById('tab-study').addEventListener('click', () => switchTab('study'));
     document.getElementById('tab-notes').addEventListener('click', () => switchTab('notes'));
 
     // Habit Panel

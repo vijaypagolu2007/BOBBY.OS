@@ -80,6 +80,7 @@ export async function renderExam(uid) {
     });
 
     await renderPlanForDate(uid);
+    setupCT2Tracker(uid);
 }
 
 export function getExamCountdown() {
@@ -406,4 +407,85 @@ function extractJsonFromText(text) {
         }
         return null;
     }
+}
+
+async function setupCT2Tracker(uid) {
+    const tbody = document.getElementById('ct2-tbody');
+    const addBtn = document.getElementById('add-ct2-btn');
+    if (!tbody || !addBtn) return;
+
+    // We only attach the event listener once, avoiding duplicates if setupCT2Tracker is called multiple times.
+    if (!addBtn.dataset.init) {
+        addBtn.dataset.init = '1';
+        addBtn.onclick = async () => {
+            const scores = await dbLoad(uid, 'exam:ct_scores', []);
+            scores.push({ sub: 'New Subject', ct1: 0, ct2: 0, see: 0 });
+            await dbSave(uid, 'exam:ct_scores', scores);
+            renderCT2Tracker(uid);
+        };
+    }
+    
+    renderCT2Tracker(uid);
+}
+
+async function renderCT2Tracker(uid) {
+    const tbody = document.getElementById('ct2-tbody');
+    if (!tbody) return;
+    
+    const scores = await dbLoad(uid, 'exam:ct_scores', []);
+    tbody.innerHTML = '';
+    
+    if (scores.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:12px; color:var(--dim); font-size:11px;">No grades added yet.</td></tr>';
+        return;
+    }
+
+    scores.forEach((s, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td style="padding:8px;">
+                <input type="text" class="ct-input" value="${s.sub}" data-idx="${idx}" data-field="sub" style="width:100px; background:var(--bg); border:1px solid var(--border); color:var(--text); padding:4px; font-size:11px; border-radius:4px;">
+            </td>
+            <td style="padding:8px; text-align:center;">
+                <input type="number" class="ct-input" value="${s.ct1}" data-idx="${idx}" data-field="ct1" style="width:50px; text-align:center; background:var(--bg); border:1px solid var(--border); color:var(--text); padding:4px; font-size:11px; border-radius:4px;">
+            </td>
+            <td style="padding:8px; text-align:center;">
+                <input type="number" class="ct-input" value="${s.ct2}" data-idx="${idx}" data-field="ct2" style="width:50px; text-align:center; background:var(--bg); border:1px solid var(--border); color:var(--text); padding:4px; font-size:11px; border-radius:4px;">
+            </td>
+            <td style="padding:8px; text-align:center;">
+                <input type="number" class="ct-input" value="${s.see}" data-idx="${idx}" data-field="see" style="width:50px; text-align:center; background:var(--bg); border:1px solid var(--border); color:var(--text); padding:4px; font-size:11px; border-radius:4px;">
+            </td>
+            <td style="padding:8px; text-align:center;">
+                <button class="ct-del" data-idx="${idx}" style="background:none; border:none; color:var(--red); cursor:pointer;">✕</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    // Add listeners
+    tbody.querySelectorAll('.ct-input').forEach(inp => {
+        inp.addEventListener('change', async (e) => {
+            const el = e.target;
+            const idx = parseInt(el.dataset.idx);
+            const field = el.dataset.field;
+            let val = el.value;
+            if (field !== 'sub') val = parseFloat(val) || 0;
+            
+            const currentScores = await dbLoad(uid, 'exam:ct_scores', []);
+            if (currentScores[idx]) {
+                currentScores[idx][field] = val;
+                await dbSave(uid, 'exam:ct_scores', currentScores);
+            }
+        });
+    });
+
+    tbody.querySelectorAll('.ct-del').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            const idx = parseInt(e.target.dataset.idx);
+            const currentScores = await dbLoad(uid, 'exam:ct_scores', []);
+            currentScores.splice(idx, 1);
+            await dbSave(uid, 'exam:ct_scores', currentScores);
+            renderCT2Tracker(uid);
+        });
+    });
 }

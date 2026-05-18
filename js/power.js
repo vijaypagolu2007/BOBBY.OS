@@ -363,6 +363,8 @@ function setupCPTracker(uid) {
                 if (rData && rData.status === 'OK' && rData.result.length > 0) {
                     const last = rData.result[rData.result.length - 1];
                     delta = last.newRating - last.oldRating;
+                    // Save rating history for Progress Charts
+                    await dbSave(uid, 'power:cpData', rData.result);
                 }
             } catch (re) { console.warn('Rating history fetch failed', re); }
 
