@@ -2099,6 +2099,12 @@ td.pc {
     transition: transform 0.3s ease, border-color 0.3s ease;
 }
 
+.chart-container {
+    position: relative;
+    height: 180px;
+    width: 100%;
+}
+
 .power-card:hover {
     border-color: var(--accent);
     transform: translateY(-4px);
