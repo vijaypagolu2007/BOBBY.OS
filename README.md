@@ -48,16 +48,20 @@ cd BOBBYOS
 # Install dependencies
 npm install
 
-# Start the command center
+# Start in Dev Mode
 npm run dev
+
+# Or build and launch in Full Offline Desktop (PWA) Mode
+npm run build
+npm run preview
 ```
 
 ## 🗺️ Roadmap
 - [x] **Phase 1: Restoration** - Modularize legacy HTML and establish architecture.
 - [x] **Phase 2: Power Hub** - Implement Pomodoro, Countdown, and Sleep tracking.
 - [x] **Phase 3: CP Command Center** - Real-time API integrations (Codeforces).
-- [ ] **Phase 4: Visual Analytics** - Heatmaps and progress charting engine.
-- [ ] **Phase 5: PWA Deployment** - Full offline support and mobile optimization.
+- [x] **Phase 4: Visual Analytics** - Heatmaps and progress charting engine.
+- [x] **Phase 5: PWA Deployment** - Full offline support and mobile optimization.
 
 ---
 
