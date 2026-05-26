@@ -79,7 +79,40 @@
     <div class="wrap">
         <!-- HABIT PANEL -->
         <div id="panel-habit" class="panel active">
-            <div class="slbl">Overall Performance</div>
+            <div class="slbl">Weekly Progress</div>
+            <div class="week-nav">
+                <button class="nav-btn" id="prev">‹</button>
+                <div class="week-info" id="wk-range">Loading...</div>
+                <button class="nav-btn" id="next">›</button>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="padding-left:14px">Habit / Activity</th>
+                            <th class="dc" id="h0">Mon</th><th class="dc" id="h1">Tue</th><th class="dc" id="h2">Wed</th>
+                            <th class="dc" id="h3">Thu</th><th class="dc" id="h4">Fri</th><th class="dc" id="h5">Sat</th>
+                            <th class="dc" id="h6">Sun</th><th class="dc">Strk</th><th class="dc">Perf</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody"></tbody>
+                </table>
+            </div>
+
+            <div class="legend">
+                <h3>Performance Grading</h3>
+                <div class="lg">
+                    <div class="lg-item"><div class="lg-grade" style="color:#6c63ff">S</div><div class="lg-range">95–100%</div><div class="lg-name">Elite</div></div>
+                    <div class="lg-item"><div class="lg-grade" style="color:#20d68a">A</div><div class="lg-range">85–94%</div><div class="lg-name">Pro</div></div>
+                    <div class="lg-item"><div class="lg-grade" style="color:#84cc16">B</div><div class="lg-range">70–84%</div><div class="lg-name">Good</div></div>
+                    <div class="lg-item"><div class="lg-grade" style="color:#ffbe3d">C</div><div class="lg-range">50–69%</div><div class="lg-name">Avg</div></div>
+                    <div class="lg-item"><div class="lg-grade" style="color:#ff5572">D</div><div class="lg-range">0–49%</div><div class="lg-name">Poor</div></div>
+                    <div class="lg-item"><div class="lg-grade" style="color:var(--dim)">·</div><div class="lg-range">N/A</div><div class="lg-name">Rest</div></div>
+                </div>
+            </div>
+
+            <div class="slbl" style="margin-top: 32px;">Overall Performance</div>
             <div class="stats-row">
                 <div class="stat-card"><div class="sv ca" id="s-grade">S</div><div class="sl">Current Grade</div></div>
                 <div class="stat-card"><div class="sv cg" id="s-done">0/0</div><div class="sl">Completed</div></div>
@@ -109,41 +142,6 @@
                     <div class="chart-container">
                         <canvas id="cp-trend-chart" height="150"></canvas>
                     </div>
-                </div>
-            </div>
-
-            <div class="slbl">Weekly Progress</div>
-            <div class="week-nav">
-                <button class="nav-btn" id="prev">‹</button>
-                <div class="week-info" id="wk-range">Loading...</div>
-                <button class="nav-btn" id="next">›</button>
-            </div>
-
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th style="padding-left:14px">Habit / Activity</th>
-                            <th class="dc" id="h0">Mon</th><th class="dc" id="h1">Tue</th><th class="dc" id="h2">Wed</th>
-                            <th class="dc" id="h3">Thu</th><th class="dc" id="h4">Fri</th><th class="dc" id="h5">Sat</th>
-                            <th class="dc" id="h6">Sun</th><th class="dc">Strk</th><th class="dc">Perf</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tbody"></tbody>
-                </table>
-            </div>
-
-
-
-            <div class="legend">
-                <h3>Performance Grading</h3>
-                <div class="lg">
-                    <div class="lg-item"><div class="lg-grade" style="color:#6c63ff">S</div><div class="lg-range">95–100%</div><div class="lg-name">Elite</div></div>
-                    <div class="lg-item"><div class="lg-grade" style="color:#20d68a">A</div><div class="lg-range">85–94%</div><div class="lg-name">Pro</div></div>
-                    <div class="lg-item"><div class="lg-grade" style="color:#84cc16">B</div><div class="lg-range">70–84%</div><div class="lg-name">Good</div></div>
-                    <div class="lg-item"><div class="lg-grade" style="color:#ffbe3d">C</div><div class="lg-range">50–69%</div><div class="lg-name">Avg</div></div>
-                    <div class="lg-item"><div class="lg-grade" style="color:#ff5572">D</div><div class="lg-range">0–49%</div><div class="lg-name">Poor</div></div>
-                    <div class="lg-item"><div class="lg-grade" style="color:var(--dim)">·</div><div class="lg-range">N/A</div><div class="lg-name">Rest</div></div>
                 </div>
             </div>
         </div>
@@ -279,6 +277,54 @@
                             "Analyzing your CT2 schedule... Priority: <strong>EM-4</strong>. Suggesting a 2-hour deep focus session on Integrals tonight."
                         </div>
                         <button class="p-btn primary" style="margin-top:14px" id="ai-refresh">Optimize Schedule</button>
+                    </div>
+                </div>
+
+                <!-- System Customizer -->
+                <div class="power-card p-customizer" style="grid-column: 1 / -1;">
+                    <div class="p-card-hdr">
+                        <h3>System Customizer</h3>
+                        <span class="p-badge" style="background:var(--accent-lo); color:var(--accent)">PREMIUM</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 14px;">
+                        <!-- Left: Theme & Density -->
+                        <div>
+                            <h4 style="font-size: 11px; text-transform: uppercase; color: var(--muted); letter-spacing: 0.08em; margin-bottom: 10px; font-weight: 500;">Select Premium Theme</h4>
+                            <div class="theme-buttons" style="display: flex; gap: 10px; margin-bottom: 20px;">
+                                <button class="theme-btn active" data-theme="purple" title="Midnight Purple" style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--border-hi); background: #7c72ff; cursor: pointer; transition: all 0.2s; position: relative; outline: none;"></button>
+                                <button class="theme-btn" data-theme="red" title="Crimson Red" style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid transparent; background: #ff4d6d; cursor: pointer; transition: all 0.2s; position: relative; outline: none;"></button>
+                                <button class="theme-btn" data-theme="green" title="Emerald Green" style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid transparent; background: #20d68a; cursor: pointer; transition: all 0.2s; position: relative; outline: none;"></button>
+                                <button class="theme-btn" data-theme="mono" title="Matrix Monochrome" style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid transparent; background: #e0e0f0; cursor: pointer; transition: all 0.2s; position: relative; outline: none;"></button>
+                            </div>
+
+                            <h4 style="font-size: 11px; text-transform: uppercase; color: var(--muted); letter-spacing: 0.08em; margin-bottom: 10px; font-weight: 500;">UI Scaling Density</h4>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="density-btn active" id="btn-density-normal" data-density="normal" style="flex: 1; background: var(--surface); border: 1px solid var(--border-hi); border-radius: 8px; padding: 8px 12px; color: var(--text); font-family: var(--mono); font-size: 11px; cursor: pointer; transition: all 0.2s;">Standard Layout</button>
+                                <button class="density-btn" id="btn-density-compact" data-density="compact" style="flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: var(--muted); font-family: var(--mono); font-size: 11px; cursor: pointer; transition: all 0.2s;">Compact Mode</button>
+                            </div>
+                        </div>
+
+                        <!-- Right: Intelligent Notifications -->
+                        <div>
+                            <h4 style="font-size: 11px; text-transform: uppercase; color: var(--muted); letter-spacing: 0.08em; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; font-weight: 500;">
+                                Intelligent Notifications
+                                <span class="p-badge" id="noti-status" style="background:var(--red-lo); color:var(--red);">DISABLED</span>
+                            </h4>
+                            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px;">
+                                <div style="display: flex; align-items: center; justify-content: space-between;">
+                                    <span style="font-size: 11px; color: var(--muted);">3:30 AM Habit Reminders</span>
+                                    <input type="checkbox" id="chk-330-alert" checked style="accent-color: var(--accent); cursor: pointer;">
+                                </div>
+                                <div style="display: flex; align-items: center; justify-content: space-between;">
+                                    <span style="font-size: 11px; color: var(--muted);">Morning Exam Schedule Alerts</span>
+                                    <input type="checkbox" id="chk-exam-alert" checked style="accent-color: var(--accent); cursor: pointer;">
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 8px; margin-top: 14px;">
+                                <button class="p-btn primary" id="btn-enable-noti" style="flex: 2; justify-content: center; font-size: 10px; padding: 8px 12px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; height: 32px;">Enable Push Alerts</button>
+                                <button class="p-btn" id="btn-test-noti" style="flex: 1; justify-content: center; font-size: 10px; padding: 8px 12px; background: var(--glass); border: 1px solid var(--border-hi); height: 32px;">Test Alarms</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
