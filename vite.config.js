@@ -1,8 +1,11 @@
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
-export default defineConfig({
-  plugins: [
+export default defineConfig(({ mode }) => {
+  const isDev = mode === 'development';
+  
+  return {
+    plugins: [
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
@@ -33,6 +36,7 @@ export default defineConfig({
         ]
       },
       workbox: {
+        globPatterns: isDev ? [] : ['**/*.{js,css,html,ico,png,svg}'],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -96,4 +100,5 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: true
   }
+  };
 });
