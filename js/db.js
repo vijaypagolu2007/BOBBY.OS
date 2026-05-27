@@ -23,9 +23,58 @@ export function uKey(uid, k) {
 
 export let S = {}; // In-memory cache
 
+let preloadedPromise = null;
+
+export async function preloadAllUserData(uid) {
+    if (!uid) return;
+    if (preloadedPromise) return preloadedPromise;
+
+    preloadedPromise = (async () => {
+        const userRef = uDoc(uid);
+        if (!userRef) return;
+
+        showSyncIndicator('saving');
+
+        // Safety timeout to prevent boot hangs when offline or on poor network
+        const timeoutPromise = new Promise((resolve) => {
+            setTimeout(() => {
+                console.warn("BOBBY.OS: Preload timed out. Proceeding with local fallback.");
+                showSyncIndicator('offline');
+                resolve(null);
+            }, 2500);
+        });
+
+        const fetchPromise = (async () => {
+            try {
+                const snap = await getDoc(userRef);
+                return snap;
+            } catch (e) {
+                console.error("BOBBY.OS: Cloud preload fetch error:", e);
+                return null;
+            }
+        })();
+
+        const snap = await Promise.race([fetchPromise, timeoutPromise]);
+
+        if (snap && snap.exists()) {
+            const data = snap.data();
+            Object.assign(S, data);
+
+            // Sync all fetched keys to LocalStorage in bulk
+            for (const k in data) {
+                await DB.set(uKey(uid, k), data[k]);
+            }
+            showSyncIndicator('saved');
+        }
+    })();
+
+    return preloadedPromise;
+}
+
 /** Clear cache on logout */
 export function clearCache() {
     S = {};
+    preloadedPromise = null;
 }
 
 // User-specific Firestore helper
@@ -68,12 +117,12 @@ export async function dbLoad(uid, k, def = null) {
     const local = await DB.get(key);
     if (local !== null) {
         S[k] = local;
-        // Don't return yet, we might want to check cloud if we are online
-        // But for speed, let's return and let the listener update if needed
+        return local;
     }
 
-    // 2. Try Cloud if UID exists and local was missing/stale
-    if (uid) {
+    // 2. Try Cloud if UID exists, local was missing/stale, and we haven't started preloading yet.
+    // If preloading has started, we rely completely on S and LocalStorage to avoid blocking UI with sequential getDoc calls.
+    if (uid && !preloadedPromise) {
         try {
             const userRef = uDoc(uid);
             if (userRef) {

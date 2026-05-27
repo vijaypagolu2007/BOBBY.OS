@@ -1,6 +1,6 @@
 import { initAuth, checkSession, loginWithGoogle, doLogin, doRegister, doLogout, currentUser } from './auth.js';
 import { auth } from './firebase.js';
-import { dbLoad, dbSave, uKey, listenToUserData, DB, S } from './db.js';
+import { dbLoad, dbSave, uKey, listenToUserData, DB, S, preloadAllUserData } from './db.js';
 import { renderHabits, weekOff, setWeekOff } from './habits.js';
 import { renderSched, curDay, setCurDay } from './schedule.js';
 import { renderExam, planDayOffset, setPlanDayOffset, addPlanRow, renderPlanForDate, setupAITimetable } from './exams.js';
@@ -11,8 +11,81 @@ import { initPowerHub } from './power.js';
 import { initDiary } from './diary.js';
 import { initStudy } from './study.js';
 
+// Phase 3: PWA & Notifications imports
+import { registerSW } from 'virtual:pwa-register';
+import {
+    updateNotificationBadge,
+    requestNotificationPermission,
+    checkAndTriggerHabitAlert,
+    checkAndTriggerExamAlert,
+    triggerTestNotification
+} from './notifications.js';
+
+// Initialize PWA Service Worker
+if ('serviceWorker' in navigator) {
+    registerSW({
+        onOfflineReady() {
+            showToast('BOBBY.OS is ready to work offline! ⚡');
+        },
+        onNeedRefresh() {
+            if (confirm('New system update available. Reload page?')) {
+                location.reload();
+            }
+        }
+    });
+}
+
+// Stored Settings Initialization
+function loadStoredSettings() {
+    // 1. Theme
+    const storedTheme = localStorage.getItem('ui:theme') || 'purple';
+    document.body.setAttribute('data-theme', storedTheme);
+    
+    // Update theme customizer button active state
+    document.querySelectorAll('.theme-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.theme === storedTheme);
+    });
+
+    // 2. Density UI scaling
+    const storedDensity = localStorage.getItem('ui:density') || 'normal';
+    if (storedDensity === 'compact') {
+        document.body.classList.add('compact-mode');
+    } else {
+        document.body.classList.remove('compact-mode');
+    }
+    
+    // Update density button active states
+    const normalBtn = document.getElementById('btn-density-normal');
+    const compactBtn = document.getElementById('btn-density-compact');
+    if (normalBtn && compactBtn) {
+        normalBtn.classList.toggle('active', storedDensity === 'normal');
+        compactBtn.classList.toggle('active', storedDensity === 'compact');
+    }
+
+    // 3. Notification toggle checkboxes
+    const chk330 = document.getElementById('chk-330-alert');
+    const chkExam = document.getElementById('chk-exam-alert');
+    if (chk330) chk330.checked = localStorage.getItem('alert:330') !== 'false';
+    if (chkExam) chkExam.checked = localStorage.getItem('alert:exam') !== 'false';
+}
+
 async function init() {
-    updateTheme();
+    loadStoredSettings();
+    updateNotificationBadge();
+
+    // Initial check for browser online/offline status
+    const syncInd = document.getElementById('sync-ind');
+    if (syncInd) {
+        syncInd.classList.remove('hidden');
+        if (navigator.onLine) {
+            syncInd.textContent = '✓ saved';
+            syncInd.className = 'sync-indicator saved';
+        } else {
+            syncInd.textContent = 'local only';
+            syncInd.className = 'sync-indicator offline';
+        }
+    }
+
     const loading = document.getElementById('loading-screen');
     const authScreen = document.getElementById('auth-screen');
 
@@ -45,21 +118,80 @@ async function init() {
 async function bootApp(user) {
     document.getElementById('auth-screen').classList.remove('show');
     document.getElementById('app').style.display = 'block';
+
+    // Preload all user data from Firestore in a single query with safety timeout
+    await preloadAllUserData(user.uid);
+
     const name = user.name || user.displayName || (user.email ? user.email.split('@')[0] : 'User');
     document.getElementById('u-name').textContent = name;
     document.getElementById('u-avatar').textContent = name[0].toUpperCase();
     document.getElementById('top-date').textContent = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' });
 
+    // Sync customizer preferences from cloud on boot
+    const cloudTheme = await dbLoad(user.uid, 'ui:theme', 'purple');
+    if (cloudTheme && cloudTheme !== localStorage.getItem('ui:theme')) {
+        localStorage.setItem('ui:theme', cloudTheme);
+        document.body.setAttribute('data-theme', cloudTheme);
+        document.querySelectorAll('.theme-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.theme === cloudTheme);
+        });
+    }
+
+    const cloudDensity = await dbLoad(user.uid, 'ui:density', 'normal');
+    if (cloudDensity && cloudDensity !== localStorage.getItem('ui:density')) {
+        localStorage.setItem('ui:density', cloudDensity);
+        if (cloudDensity === 'compact') {
+            document.body.classList.add('compact-mode');
+        } else {
+            document.body.classList.remove('compact-mode');
+        }
+        const normalBtn = document.getElementById('btn-density-normal');
+        const compactBtn = document.getElementById('btn-density-compact');
+        if (normalBtn && compactBtn) {
+            normalBtn.classList.toggle('active', cloudDensity === 'normal');
+            compactBtn.classList.toggle('active', cloudDensity === 'compact');
+        }
+    }
+
     // Real-time listener for data sync
     listenToUserData(user.uid, (data) => {
-        const tab = data['ui:tab'] || 'habit';
-        // Only re-render if we are in the same tab or it's a first load
-        // This prevents flickering if needed, but for now we'll just refresh
-        if (tab === 'sched') renderSched(user.uid);
-        if (tab === 'habit') renderHabits(user.uid);
-        if (tab === 'exam') renderExam(user.uid);
-        if (tab === 'power') initPowerHub(user.uid);
-        if (tab === 'study') initStudy(user.uid);
+        // Look up the actually active DOM tab to ensure we sync what the user is currently viewing
+        const activeTab = ['habit', 'power', 'sched', 'exam', 'study', 'notes'].find(id => {
+            const el = document.getElementById(`tab-${id}`);
+            return el && el.classList.contains('active');
+        }) || 'habit';
+
+        if (activeTab === 'sched') renderSched(user.uid);
+        if (activeTab === 'habit') renderHabits(user.uid);
+        if (activeTab === 'exam') renderExam(user.uid);
+        if (activeTab === 'power') initPowerHub(user.uid);
+        if (activeTab === 'study') initStudy(user.uid);
+        if (activeTab === 'notes') initDiary(user.uid);
+
+        // Also sync theme & density live!
+        if (data['ui:theme'] && data['ui:theme'] !== localStorage.getItem('ui:theme')) {
+            const theme = data['ui:theme'];
+            localStorage.setItem('ui:theme', theme);
+            document.body.setAttribute('data-theme', theme);
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.theme === theme);
+            });
+        }
+        if (data['ui:density'] && data['ui:density'] !== localStorage.getItem('ui:density')) {
+            const density = data['ui:density'];
+            localStorage.setItem('ui:density', density);
+            if (density === 'compact') {
+                document.body.classList.add('compact-mode');
+            } else {
+                document.body.classList.remove('compact-mode');
+            }
+            const normalBtn = document.getElementById('btn-density-normal');
+            const compactBtn = document.getElementById('btn-density-compact');
+            if (normalBtn && compactBtn) {
+                normalBtn.classList.toggle('active', density === 'normal');
+                compactBtn.classList.toggle('active', density === 'compact');
+            }
+        }
     });
 
     const tab = await dbLoad(user.uid, 'ui:tab', 'habit');
@@ -67,6 +199,18 @@ async function bootApp(user) {
     
     // Initialize one-time UI modules
     setupAITimetable(user.uid);
+
+    // Initial check for exam/habit reminders on page boot
+    setTimeout(() => {
+        checkAndTriggerHabitAlert(user.uid);
+        checkAndTriggerExamAlert(user.uid);
+    }, 3000);
+
+    // Run active background reminders interval check every 60s
+    setInterval(() => {
+        checkAndTriggerHabitAlert(user.uid);
+        checkAndTriggerExamAlert(user.uid);
+    }, 60000);
 }
 
 function switchTab(t) {
@@ -209,6 +353,74 @@ function setupEventListeners() {
     document.getElementById('np-desc').addEventListener('keydown', e => { 
         if (e.key === 'Enter' && currentUser) addPlanRow(currentUser.uid); 
     });
+
+    // Premium Customizer Theme Buttons
+    document.querySelectorAll('.theme-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const theme = btn.dataset.theme;
+            document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.body.setAttribute('data-theme', theme);
+            localStorage.setItem('ui:theme', theme);
+            showToast(`Theme changed: ${btn.title} ✓`);
+            if (currentUser) dbSave(currentUser.uid, 'ui:theme', theme).catch(() => {});
+        });
+    });
+
+    // Premium Customizer UI Density
+    const normalBtn = document.getElementById('btn-density-normal');
+    const compactBtn = document.getElementById('btn-density-compact');
+    if (normalBtn && compactBtn) {
+        normalBtn.addEventListener('click', () => {
+            normalBtn.classList.add('active');
+            compactBtn.classList.remove('active');
+            document.body.classList.remove('compact-mode');
+            localStorage.setItem('ui:density', 'normal');
+            if (currentUser) dbSave(currentUser.uid, 'ui:density', 'normal').catch(() => {});
+            showToast('Density: Standard Layout ✓');
+        });
+        compactBtn.addEventListener('click', () => {
+            normalBtn.classList.remove('active');
+            compactBtn.classList.add('active');
+            document.body.classList.add('compact-mode');
+            localStorage.setItem('ui:density', 'compact');
+            if (currentUser) dbSave(currentUser.uid, 'ui:density', 'compact').catch(() => {});
+            showToast('Density: High-density Compact Mode ✓');
+        });
+    }
+
+    // Intelligent Notifications Checkboxes & Controls
+    const chk330 = document.getElementById('chk-330-alert');
+    const chkExam = document.getElementById('chk-exam-alert');
+    if (chk330) {
+        chk330.addEventListener('change', () => {
+            localStorage.setItem('alert:330', chk330.checked);
+            showToast(`3:30 AM alerts ${chk330.checked ? 'active 🔔' : 'disabled'}`);
+        });
+    }
+    if (chkExam) {
+        chkExam.addEventListener('change', () => {
+            localStorage.setItem('alert:exam', chkExam.checked);
+            showToast(`Exam morning alerts ${chkExam.checked ? 'active 🔔' : 'disabled'}`);
+        });
+    }
+
+    const enableNotiBtn = document.getElementById('btn-enable-noti');
+    const testNotiBtn = document.getElementById('btn-test-noti');
+    if (enableNotiBtn) {
+        enableNotiBtn.addEventListener('click', () => {
+            requestNotificationPermission();
+        });
+    }
+    if (testNotiBtn) {
+        testNotiBtn.addEventListener('click', () => {
+            if (currentUser) {
+                triggerTestNotification(currentUser.uid);
+            } else {
+                showToast('Please log in first!');
+            }
+        });
+    }
 }
 
 function showAuthTab(t) {

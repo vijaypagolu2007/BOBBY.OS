@@ -1,6 +1,8 @@
 import { auth, googleProvider } from './firebase.js';
-import { signInWithPopup, signOut, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { signInWithPopup, signOut, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, signInWithCredential } from "firebase/auth";
 import { DB } from './db.js';
+import { Capacitor } from '@capacitor/core';
+import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 
 export let currentUser = null;
 
@@ -54,8 +56,58 @@ export async function loginWithGoogle() {
     if (isMock) {
         return await doMockLogin('Mock User', 'mock@example.com');
     }
-    const result = await signInWithPopup(auth, googleProvider);
-    return result.user;
+    
+    // Check if running on a native platform (Android or iOS)
+    if (Capacitor.isNativePlatform()) {
+        try {
+            console.log("BOBBY.OS: Triggering Native Google Sign-In...");
+            const nativeResult = await FirebaseAuthentication.signInWithGoogle();
+            
+            const idToken = nativeResult.credential?.idToken;
+            if (!idToken) {
+                throw new Error("No credential/idToken returned from native Google login.");
+            }
+            
+            // Sign in to the Firebase Web/JS SDK using the native credential
+            const credential = GoogleAuthProvider.credential(idToken);
+            const result = await signInWithCredential(auth, credential);
+            return result.user;
+        } catch (e) {
+            console.error("BOBBY.OS: Native Google Sign-In failed:", e);
+            throw new Error(e.message || "Native Google Sign-In failed.");
+        }
+    }
+    
+    // Fallback to standard web flow if on localhost / standard Web browser
+    try {
+        const result = await signInWithPopup(auth, googleProvider);
+        return result.user;
+    } catch (e) {
+        console.error("Google Auth Error:", e);
+        const errorMsg = (e.message || "").toLowerCase();
+        
+        // Storage partitioning or sessionStorage access failures
+        if (errorMsg.includes("missing initial state") || errorMsg.includes("sessionstorage") || e.code === "auth/web-storage-unsupported") {
+            throw new Error(
+                "Unable to sign in: Browser storage or third-party cookies are partitioned/blocked. " +
+                "Please enable 'Cross-Site Tracking' or 'Third-Party Cookies' in your browser settings, or use Email login."
+            );
+        }
+        
+        // Popup blocked by browser settings
+        if (e.code === "auth/popup-blocked") {
+            throw new Error(
+                "Google Sign-In popup was blocked by your browser. Please allow popups for this site and try again."
+            );
+        }
+        
+        // Popup closed before completing flow
+        if (e.code === "auth/popup-closed-by-user") {
+            throw new Error("Sign-in popup was closed before completion. Please try again.");
+        }
+        
+        throw new Error(FIREBASE_AUTH_ERRORS[e.code] || e.message);
+    }
 }
 
 export async function doLogin(email, pass) {

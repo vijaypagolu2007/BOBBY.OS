@@ -1,5 +1,6 @@
 import { dbLoad, dbSave } from './db.js';
 import { iso, today, showToast } from './utils.js';
+import { EXAM_D } from './data.js';
 
 export let EXAMS = [];
 
@@ -30,6 +31,10 @@ export async function renderExam(uid) {
         const saved = await dbLoad(uid, 'exams:list', []);
         if (saved.length > 0) EXAMS = saved;
     }
+    
+    // Clear and dynamically populate global EXAM_D Set for habit cell styling & reminders
+    EXAM_D.clear();
+    EXAMS.forEach(e => EXAM_D.add(e.date));
 
     const t = today();
     const now = new Date();

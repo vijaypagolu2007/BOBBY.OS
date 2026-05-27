@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "344114419964",
+    "project_id": "bobbyos-e7ba5",
+    "storage_bucket": "bobbyos-e7ba5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:344114419964:android:a6dae1d6287b027cd41f79",
+        "android_client_info": {
+          "package_name": "com.bobbyos.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "344114419964-b4oiag6cf8o87demt22ii8d69dk2c2ue.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bobbyos.app",
+            "certificate_hash": "4cc1f14e2634b7a8329d9b84285691f554d19b37"
+          }
+        },
+        {
+          "client_id": "344114419964-7mjjo0ut6tuc2qhes70vefq0plo1vhlj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAe1d-wLL52T22lzslu2Ikg73MWsC4gAIA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "344114419964-7mjjo0ut6tuc2qhes70vefq0plo1vhlj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

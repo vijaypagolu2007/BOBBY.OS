@@ -54,7 +54,7 @@ export async function initDiary(uid) {
 
         await dbSave(uid, 'diary:history', history);
         showToast('Diary entry saved 📔');
-        renderDiaryHistory(history);
+        renderDiaryHistory(uid, history);
     };
 
     // Load today's entry if exists

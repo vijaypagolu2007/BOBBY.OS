@@ -1,0 +1,11 @@
+{
+  "appId": "com.bobbyos.app",
+  "appName": "BOBBY.OS",
+  "webDir": "dist",
+  "plugins": {
+    "FirebaseAuthentication": {
+      "skipNativeAuth": false,
+      "providers": ["google.com"]
+    }
+  }
+}
