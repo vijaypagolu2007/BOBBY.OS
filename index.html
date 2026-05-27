@@ -54,16 +54,20 @@
 <!-- MAIN APP -->
 <div id="app" style="display:none">
     <div class="topbar">
-        <div class="brand"><h1>BOBBY<em>.OS</em></h1><span class="sub">V1.0 PRO</span></div>
-        <div class="topbar-right">
+        <div class="brand">
+            <h1>BOBBY<em>.OS</em></h1>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="sub">V1.0 PRO</span>
+                <span id="u-uid" style="font-size: 8px; color: var(--dim); font-family: var(--mono); opacity: 0.7; letter-spacing: 0.05em; display: inline-block; margin-top: 1px;"></span>
+            </div>
+        </div>
+        <div class="topbar-right" style="display: flex; align-items: center; gap: 8px;">
             <div id="top-date">Monday, 5 May</div>
             <div id="sync-ind" class="sync-indicator hidden">✓ saved</div>
-            <div class="auth-user-tag" id="auth-user-tag-btn" title="Click for Account Diagnostics" style="display: flex; flex-direction: column; align-items: flex-end; justify-content: center; cursor: pointer;">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <div class="auth-avatar" id="u-avatar">B</div>
-                    <div class="auth-name" id="u-name">Bobby</div>
-                </div>
-                <span id="u-uid" style="font-size: 8px; color: var(--dim); font-family: var(--mono); margin-top: 2px; opacity: 0.7;"></span>
+            <div class="auth-user-tag" id="auth-user-tag-btn" title="Click for Account Diagnostics" style="display: flex; align-items: center; gap: 8px; cursor: pointer; background: var(--accent-lo); border: 1px solid var(--border-hi); border-radius: 99px; padding: 4px 10px; min-height: 28px; box-sizing: border-box;">
+                <div class="auth-avatar" id="u-avatar" style="margin: 0; display: flex; align-items: center; justify-content: center;">B</div>
+                <div class="auth-name" id="u-name" style="font-size: 10px; font-weight: 600; color: var(--text); letter-spacing: 0.04em;">Bobby</div>
+                <span style="font-size: 10px; line-height: 1; filter: drop-shadow(0 0 4px var(--accent-md));">🛡️</span>
             </div>
             <button class="logout-btn" id="logout">Logout</button>
         </div>
