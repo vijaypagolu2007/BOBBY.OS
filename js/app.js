@@ -1,6 +1,6 @@
 import { initAuth, checkSession, loginWithGoogle, doLogin, doRegister, doLogout, currentUser } from './auth.js';
 import { auth } from './firebase.js';
-import { dbLoad, dbSave, uKey, listenToUserData, DB, S, preloadAllUserData } from './db.js';
+import { dbLoad, dbSave, uKey, listenToUserData, DB, S, preloadAllUserData, clearCache } from './db.js';
 import { renderHabits, weekOff, setWeekOff } from './habits.js';
 import { renderSched, curDay, setCurDay } from './schedule.js';
 import { renderExam, planDayOffset, setPlanDayOffset, addPlanRow, renderPlanForDate, setupAITimetable } from './exams.js';
@@ -127,9 +127,114 @@ async function bootApp(user) {
     document.getElementById('u-avatar').textContent = name[0].toUpperCase();
     
     const uidEl = document.getElementById('u-uid');
+    const isLive = !!auth.onAuthStateChanged;
     if (uidEl) {
-        const isLive = !!auth.onAuthStateChanged;
         uidEl.textContent = `UID: ${user.uid.slice(0, 8)}... (${isLive ? 'LIVE' : 'MOCK'})`;
+    }
+
+    // Configure Account Diagnostic Modal fields on boot
+    const diagUid = document.getElementById('diag-uid');
+    const diagEmail = document.getElementById('diag-email');
+    const diagProvider = document.getElementById('diag-provider');
+    const diagDbMode = document.getElementById('diag-db-mode');
+    const diagSync = document.getElementById('diag-sync');
+    
+    if (diagUid) diagUid.textContent = user.uid;
+    if (diagEmail) diagEmail.textContent = user.email || 'N/A (Local Mock)';
+    if (diagProvider) {
+        let provider = 'Email/Password';
+        const firebaseUser = auth.currentUser;
+        if (firebaseUser && firebaseUser.providerData && firebaseUser.providerData.length > 0) {
+            const provId = firebaseUser.providerData[0].providerId;
+            if (provId === 'google.com') provider = 'Google Sign-In 🌐';
+            else if (provId === 'password') provider = 'Email/Password 📧';
+            else provider = provId;
+        } else if (!isLive) {
+            provider = 'Mock Local Session';
+        }
+        diagProvider.textContent = provider;
+    }
+    if (diagDbMode) {
+        diagDbMode.textContent = isLive ? 'Cloud Firestore (LIVE)' : 'Local Storage Only (MOCK)';
+        diagDbMode.style.color = isLive ? 'var(--green)' : 'var(--red)';
+    }
+    if (diagSync) {
+        diagSync.textContent = navigator.onLine ? 'Connected & Listening 🟢' : 'Offline Mode 🔴';
+        diagSync.style.color = navigator.onLine ? 'var(--green)' : 'var(--red)';
+    }
+
+    // Diagnostic Modal Event Listeners
+    const userTagBtn = document.getElementById('auth-user-tag-btn');
+    const diagModal = document.getElementById('diag-modal');
+    const diagClose = document.getElementById('diag-close');
+    const copyUidBtn = document.getElementById('diag-copy-uid');
+    const forceSyncBtn = document.getElementById('diag-force-sync');
+
+    if (userTagBtn && diagModal) {
+        userTagBtn.addEventListener('click', () => {
+            const currentLive = !!auth.onAuthStateChanged;
+            if (diagSync) {
+                diagSync.textContent = navigator.onLine ? 'Connected & Listening 🟢' : 'Offline Mode 🔴';
+                diagSync.style.color = navigator.onLine ? 'var(--green)' : 'var(--red)';
+            }
+            if (diagDbMode) {
+                diagDbMode.textContent = currentLive ? 'Cloud Firestore (LIVE)' : 'Local Storage Only (MOCK)';
+                diagDbMode.style.color = currentLive ? 'var(--green)' : 'var(--red)';
+            }
+            diagModal.style.display = 'flex';
+        });
+    }
+
+    if (diagClose && diagModal) {
+        diagClose.addEventListener('click', () => {
+            diagModal.style.display = 'none';
+        });
+    }
+
+    if (diagModal) {
+        diagModal.addEventListener('click', (e) => {
+            if (e.target === diagModal) {
+                diagModal.style.display = 'none';
+            }
+        });
+    }
+
+    if (copyUidBtn) {
+        copyUidBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(user.uid);
+            showToast('Full UID Copied to Clipboard! 📋');
+        });
+    }
+
+    if (forceSyncBtn) {
+        forceSyncBtn.addEventListener('click', async () => {
+            forceSyncBtn.textContent = 'Syncing... 🔄';
+            forceSyncBtn.disabled = true;
+            try {
+                clearCache();
+                await preloadAllUserData(user.uid);
+                
+                const activeTab = ['habit', 'power', 'sched', 'exam', 'study', 'notes'].find(id => {
+                    const el = document.getElementById(`tab-${id}`);
+                    return el && el.classList.contains('active');
+                }) || 'habit';
+                
+                if (activeTab === 'sched') renderSched(user.uid);
+                if (activeTab === 'habit') renderHabits(user.uid);
+                if (activeTab === 'exam') renderExam(user.uid);
+                if (activeTab === 'power') initPowerHub(user.uid);
+                if (activeTab === 'study') initStudy(user.uid);
+                if (activeTab === 'notes') initDiary(user.uid);
+                
+                showToast('Database Force-Synced successfully! ⚡');
+            } catch (err) {
+                console.error("Force sync failed:", err);
+                showToast('Force Sync failed ❌');
+            } finally {
+                forceSyncBtn.textContent = 'Force Sync 🔄';
+                forceSyncBtn.disabled = false;
+            }
+        });
     }
     
     document.getElementById('top-date').textContent = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' });
