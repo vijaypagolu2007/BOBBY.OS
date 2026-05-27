@@ -172,7 +172,7 @@ export function showSyncIndicator(state) {
     const el = document.getElementById('sync-ind');
     if (!el) return;
     el.className = `sync-indicator ${state}`;
-    if (state === 'saving') el.textContent = 'saving...';
+    if (state === 'saving') el.textContent = 'syncing...';
     else if (state === 'error') el.textContent = '⚠ sync error';
     else if (state === 'offline') el.textContent = 'local only';
     else el.textContent = '✓ synced';
