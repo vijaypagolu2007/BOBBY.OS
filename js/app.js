@@ -125,6 +125,13 @@ async function bootApp(user) {
     const name = user.name || user.displayName || (user.email ? user.email.split('@')[0] : 'User');
     document.getElementById('u-name').textContent = name;
     document.getElementById('u-avatar').textContent = name[0].toUpperCase();
+    
+    const uidEl = document.getElementById('u-uid');
+    if (uidEl) {
+        const isLive = !!auth.onAuthStateChanged;
+        uidEl.textContent = `UID: ${user.uid.slice(0, 8)}... (${isLive ? 'LIVE' : 'MOCK'})`;
+    }
+    
     document.getElementById('top-date').textContent = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' });
 
     // Sync customizer preferences from cloud on boot
