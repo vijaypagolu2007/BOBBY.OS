@@ -27,6 +27,18 @@ BOBBY.OS V1.0 represents the pinnacle of minimalist functional design:
 - **Smart URL Extraction**: Paste your profile link, and the OS extracts your handle automatically.
 - **CORS-Free Architecture**: High-speed API bridge ensuring 100% connectivity reliability.
 
+### 🔔 Intelligent Notifications & Sync (New!)
+- **Browser Push Notifications**: Smart local alerts for 3:30 AM habit checks and morning exam-day papers.
+- **Cloud Sync Telemetry**: Visual status indicator (Offline / Syncing / Synced) mirroring the three-tiered Firebase database state.
+
+### 🎨 Premium Customization (New!)
+- **Dynamic Theme Engine**: Toggle between Obsidian Void (Default), Crimson Matrix, Emerald Green, and Monochrome Obsidian modes.
+- **Interface Density Scaling**: Toggle "Power User Compact Mode" for high-density information layout.
+
+### 📱 PWA & Native Android
+- **100% Offline Resilience**: Powered by Vite PWA service-worker cache and offline-first database fallback.
+- **Capacitor Android Shell**: Integrated mobile shell configuration ready for native Android builds.
+
 ## 🛠️ Technical Architecture
 ### **Tiered Persistence Engine**
 BOBBY.OS uses a sophisticated three-tier caching strategy to ensure zero latency:
@@ -62,8 +74,9 @@ npm run preview
 - [x] **Phase 3: CP Command Center** - Real-time API integrations (Codeforces).
 - [x] **Phase 4: Visual Analytics** - Heatmaps and progress charting engine.
 - [x] **Phase 5: PWA Deployment** - Full offline support and mobile optimization.
+- [x] **Phase 6: Intelligence & Personalization** - Push notifications, custom themes, UI scaling, and native mobile target.
 
 ---
 
 *Developed with precision for the next generation of power users.*
-*© 2024-2026 VOID ARCHITECT INDUSTRIES*
+*© 2026 BOBBY.OS*
