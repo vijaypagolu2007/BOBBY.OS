@@ -95,15 +95,25 @@ export async function dbSave(uid, k, v) {
         // Fire-and-forget cloud sync to prevent UI blocking
         (async () => {
             showSyncIndicator('saving');
+            
+            // Graceful timeout: If the cloud write takes more than 3 seconds (offline/slow network),
+            // temporarily show 'local only' so the UI doesn't get stuck on 'syncing...'
+            const offlineTimer = setTimeout(() => {
+                showSyncIndicator('offline');
+            }, 3000);
+
             try {
                 const userRef = uDoc(uid);
                 if (userRef) {
                     await setDoc(userRef, { [k]: v }, { merge: true });
+                    clearTimeout(offlineTimer);
                     showSyncIndicator('saved');
                 } else {
+                    clearTimeout(offlineTimer);
                     showSyncIndicator('offline');
                 }
             } catch (e) {
+                clearTimeout(offlineTimer);
                 console.error("Cloud save failed:", e);
                 showSyncIndicator('error');
             }
