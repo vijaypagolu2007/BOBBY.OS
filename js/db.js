@@ -65,6 +65,9 @@ export async function preloadAllUserData(uid) {
                 await DB.set(uKey(uid, k), data[k]);
             }
             showSyncIndicator('saved');
+        } else {
+            // Preload timed out or failed; reset the promise to allow resilient fallback fetches
+            preloadedPromise = null;
         }
     })();
 
