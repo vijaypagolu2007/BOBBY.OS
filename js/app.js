@@ -119,9 +119,6 @@ async function bootApp(user) {
     document.getElementById('auth-screen').classList.remove('show');
     document.getElementById('app').style.display = 'block';
 
-    // Preload all user data from Firestore in a single query with safety timeout
-    await preloadAllUserData(user.uid);
-
     const name = user.name || user.displayName || (user.email ? user.email.split('@')[0] : 'User');
     document.getElementById('u-name').textContent = name;
     document.getElementById('u-avatar').textContent = name[0].toUpperCase();
@@ -131,6 +128,9 @@ async function bootApp(user) {
     if (uidEl) {
         uidEl.textContent = `UID: ${user.uid.slice(0, 8)}... (${isLive ? 'LIVE' : 'MOCK'})`;
     }
+
+    // Preload all user data in the background to prevent boot hangs or blocking event listeners
+    preloadAllUserData(user.uid).catch(err => console.error("BOBBY.OS: Preload background error:", err));
 
     // Configure Account Diagnostic Modal fields on boot
     const diagUid = document.getElementById('diag-uid');
@@ -165,23 +165,36 @@ async function bootApp(user) {
 
     // Diagnostic Modal Event Listeners
     const userTagBtn = document.getElementById('auth-user-tag-btn');
+    const uAvatarBtn = document.getElementById('u-avatar');
     const diagModal = document.getElementById('diag-modal');
     const diagClose = document.getElementById('diag-close');
     const copyUidBtn = document.getElementById('diag-copy-uid');
     const forceSyncBtn = document.getElementById('diag-force-sync');
 
-    if (userTagBtn && diagModal) {
-        userTagBtn.addEventListener('click', () => {
-            const currentLive = !!auth.onAuthStateChanged;
-            if (diagSync) {
-                diagSync.textContent = navigator.onLine ? 'Connected & Listening 🟢' : 'Offline Mode 🔴';
-                diagSync.style.color = navigator.onLine ? 'var(--green)' : 'var(--red)';
-            }
-            if (diagDbMode) {
-                diagDbMode.textContent = currentLive ? 'Cloud Firestore (LIVE)' : 'Local Storage Only (MOCK)';
-                diagDbMode.style.color = currentLive ? 'var(--green)' : 'var(--red)';
-            }
-            diagModal.style.display = 'flex';
+    const openDiagnostics = () => {
+        const currentLive = !!auth.onAuthStateChanged;
+        if (diagSync) {
+            diagSync.textContent = navigator.onLine ? 'Connected & Listening 🟢' : 'Offline Mode 🔴';
+            diagSync.style.color = navigator.onLine ? 'var(--green)' : 'var(--red)';
+        }
+        if (diagDbMode) {
+            diagDbMode.textContent = currentLive ? 'Cloud Firestore (LIVE)' : 'Local Storage Only (MOCK)';
+            diagDbMode.style.color = currentLive ? 'var(--green)' : 'var(--red)';
+        }
+        if (diagModal) diagModal.style.display = 'flex';
+    };
+
+    if (userTagBtn) {
+        userTagBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openDiagnostics();
+        });
+    }
+
+    if (uAvatarBtn) {
+        uAvatarBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openDiagnostics();
         });
     }
 

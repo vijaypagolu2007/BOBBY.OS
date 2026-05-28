@@ -68,6 +68,7 @@ export async function preloadAllUserData(uid) {
         } else {
             // Preload timed out or failed; reset the promise to allow resilient fallback fetches
             preloadedPromise = null;
+            showSyncIndicator('offline');
         }
     })();
 

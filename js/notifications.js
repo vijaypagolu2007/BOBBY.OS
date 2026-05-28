@@ -96,7 +96,7 @@ export function triggerLocalNotification(title, options = {}) {
 
 // 3:30 AM habit completeness check
 export async function checkAndTriggerHabitAlert(uid, force = false) {
-    if (Notification.permission !== 'granted') return;
+    if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
 
     // Check if 3:30 AM alerts toggle is checked
     const chk330 = document.getElementById('chk-330-alert');
@@ -151,7 +151,7 @@ export async function checkAndTriggerHabitAlert(uid, force = false) {
 
 // Morning exam alerts check
 export async function checkAndTriggerExamAlert(uid, force = false) {
-    if (Notification.permission !== 'granted') return;
+    if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
 
     const chkExam = document.getElementById('chk-exam-alert');
     if (chkExam && !chkExam.checked && !force) return;
@@ -186,7 +186,7 @@ export async function checkAndTriggerExamAlert(uid, force = false) {
 
 // Immediate mock triggers for both habit and exam alerts
 export async function triggerTestNotification(uid) {
-    if (Notification.permission !== 'granted') {
+    if (typeof Notification === 'undefined' || Notification.permission !== 'granted') {
         showToast('Please enable push alerts first!');
         return;
     }
