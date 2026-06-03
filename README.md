@@ -1,82 +1,170 @@
-# 🌌 BOBBY.OS V1.0 | The Performance Edition
+# 🌌 BOBBY.OS | The Elite Developer & Student Productivity Ecosystem
 
 [![Version](https://img.shields.io/badge/version-1.0.0-blueviolet?style=for-the-badge)](https://github.com/vijaypagolu2007/BOBBY.OS)
 [![Build](https://img.shields.io/badge/engine-vite-ffce44?style=for-the-badge&logo=vite)](https://vitejs.dev/)
 [![Database](https://img.shields.io/badge/cloud-firebase-ff9100?style=for-the-badge&logo=firebase)](https://firebase.google.com/)
+[![Platform](https://img.shields.io/badge/platform-pwa%20%7C%20android-20d68a?style=for-the-badge)](https://capacitorjs.com/)
 
-> **"Elite Productivity through Aesthetic Precision."**
-> BOBBY.OS V1.0 is a premium productivity ecosystem designed for developers and competitive programmers. It transforms your daily workflow into a futuristic, data-driven experience.
+> **"Elite Productivity through Aesthetic Precision."**  
+> BOBBY.OS is a premium personal dashboard and productivity shell designed specifically for developers and competitive programmers. It transforms your daily habits, study routines, and competitive stats into a unified, high-performance visual dashboard.
 
 ---
 
-## 🎨 Design Philosophy: The Void Architect
-BOBBY.OS V1.0 represents the pinnacle of minimalist functional design:
-- **Glassmorphic Depth**: Multi-layered surfaces with high-index backdrop filters for a premium feel.
-- **Electric Precision**: Accentuated with `#7c72ff` and `#20d68a` to highlight critical status data.
-- **Advanced Typography**: Optimized with **Bricolage Grotesque** and **JetBrains Mono**.
+## 🚀 Key Feature Hubs
 
-## 🚀 Power Features
-### ⏱️ Productivity Hub
-- **Zen Pomodoro**: Integrated focus timer with visual bloom and custom task linking.
-- **Live Exam Countdown**: Real-time intensity tracking and cognitive load analysis for upcoming exams.
-- **Daily Diary**: A structured logging system for daily wins, challenges, and priorities.
-- **Night Shift**: Smart recovery tracking with visual efficiency waves.
+### ⏱️ Focus & Daily Logging
+*   **Zen Pomodoro:** Integrated timer with customizable durations (25, 45, 60, 90 mins). Connect focus sessions directly to your habits.
+*   **Sleep Tracker (Night Shift):** Log actual sleep, compare against targets, and visualize recovery efficiency trends.
+*   **Daily Diary:** Structured logging for daily wins, challenges faced, lessons learned, and tomorrow's top priorities, complete with mood and energy indicators.
+*   **The Big 3 (Smart Targets):** Set and cross off critical daily objectives to maintain consistent focus.
 
-### 📊 CP Command Center (New!)
-- **Codeforces Sync**: Real-time rating, rank, and delta tracking with official color coding.
-- **Smart URL Extraction**: Paste your profile link, and the OS extracts your handle automatically.
-- **CORS-Free Architecture**: High-speed API bridge ensuring 100% connectivity reliability.
+### 📊 Competitive Programming & Academics
+*   **Codeforces Command Center:** Real-time stats integration (rating, rank, max rating) with automated handle extraction and delta tracking.
+*   **Exam Countdown:** Visual countdown and cognitive load analysis for upcoming exams.
+*   **CT2 Score Tracker:** Record, monitor, and visualize semester grades across all subjects.
 
-### 🔔 Intelligent Notifications & Sync (New!)
-- **Browser Push Notifications**: Smart local alerts for 3:30 AM habit checks and morning exam-day papers.
-- **Cloud Sync Telemetry**: Visual status indicator (Offline / Syncing / Synced) mirroring the three-tiered Firebase database state.
+### 📚 Study & Revision Vaults
+*   **Formula Vault:** Subject-wise quick-reference boards for formulas and equations.
+*   **Revision Checklist:** Interactive topic-wise syllabus tracker per subject.
+*   **Wrong Answer Log:** A dedicated mistake log to record incorrect submissions, debug steps, and lessons learned.
+*   **Subject Notes:** In-app markdown editor for organizing structured course material.
 
-### 🎨 Premium Customization (New!)
-- **Dynamic Theme Engine**: Toggle between Obsidian Void (Default), Crimson Matrix, Emerald Green, and Monochrome Obsidian modes.
-- **Interface Density Scaling**: Toggle "Power User Compact Mode" for high-density information layout.
+### 🎨 Personalization & Customization
+*   **Dynamic Theme Engine:** Instantly swap between **Obsidian Void** (Midnight Purple), **Crimson Matrix** (Red), **Emerald Green** (Green), and **Matrix Monochrome** (Monochrome).
+*   **UI Density Scaling:** Toggle between *Standard Layout* and *Compact Mode* for high-density information displays.
+*   **Intelligent Alerts:** Browser push notifications for morning exam papers and 3:30 AM completeness checks.
 
-### 📱 PWA & Native Android
-- **100% Offline Resilience**: Powered by Vite PWA service-worker cache and offline-first database fallback.
-- **Capacitor Android Shell**: Integrated mobile shell configuration ready for native Android builds.
+---
 
 ## 🛠️ Technical Architecture
-### **Tiered Persistence Engine**
-BOBBY.OS uses a sophisticated three-tier caching strategy to ensure zero latency:
-1.  **Memory Store**: Global state object for O(1) data retrieval.
-2.  **LocalStorage**: Partitioned by UID for secure offline persistence.
-3.  **Firebase Firestore**: Real-time cloud synchronization across all your devices.
 
-### **Security & Isolation**
-Data is strictly partitioned using **UID Namespace Isolation**. Your study data, habits, and CP stats are cryptographically separated from other users.
-
-## 📦 Installation & Setup
-```bash
-# Clone the vault
-git clone https://github.com/vijaypagolu2007/BOBBY.OS.git
-
-# Enter the void
-cd BOBBYOS
-
-# Install dependencies
-npm install
-
-# Start in Dev Mode
-npm run dev
-
-# Or build and launch in Full Offline Desktop (PWA) Mode
-npm run build
-npm run preview
-```
-
-## 🗺️ Roadmap
-- [x] **Phase 1: Restoration** - Modularize legacy HTML and establish architecture.
-- [x] **Phase 2: Power Hub** - Implement Pomodoro, Countdown, and Sleep tracking.
-- [x] **Phase 3: CP Command Center** - Real-time API integrations (Codeforces).
-- [x] **Phase 4: Visual Analytics** - Heatmaps and progress charting engine.
-- [x] **Phase 5: PWA Deployment** - Full offline support and mobile optimization.
-- [x] **Phase 6: Intelligence & Personalization** - Push notifications, custom themes, UI scaling, and native mobile target.
+BOBBY.OS implements a **three-tier offline-first storage model** to achieve zero latency:
+1.  **Memory Store (S):** Global reactive state cache for instant O(1) reads.
+2.  **LocalStorage Cache:** Device-level persistence indexed by user UID to allow 100% functional offline use.
+3.  **Firebase Firestore:** Real-time bi-directional cloud synchronization across devices (laptop and mobile) when internet is available.
 
 ---
 
-*Developed with precision for the next generation of power users.*
-*© 2026 BOBBY.OS*
+## ⚙️ Installation & Setup
+
+### Prerequisites
+Make sure you have the following installed on your machine:
+*   [Node.js](https://nodejs.org/) (v18+)
+*   [npm](https://www.npmjs.com/) (v9+)
+*   [Android Studio](https://developer.android.com/studio) (only if compiling the native Android app)
+
+### 1. Web App Setup
+Clone the repository and install the dependencies:
+```bash
+# Clone the project repository
+git clone https://github.com/vijaypagolu2007/BOBBY.OS.git
+
+# Enter the project directory
+cd BOBBYOS
+
+# Install npm dependencies
+npm install
+```
+
+### 2. Environment Variables Configuration
+Configure the Firebase integration by setting up your local environment file:
+1.  Create a `.env` file in the root of the project (copying `.env.example`):
+    ```bash
+    cp .env.example .env
+    ```
+2.  Open `.env` and fill in your Firebase Web App configuration:
+    ```ini
+    VITE_FIREBASE_API_KEY=your_api_key
+    VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
+    VITE_FIREBASE_PROJECT_ID=your_project_id
+    VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+    VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+    VITE_FIREBASE_APP_ID=your_app_id
+    ```
+
+### 3. Run Locally (Web)
+Start the local Vite development server:
+```bash
+# Start Vite development server
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
+
+---
+
+## 📱 Mobile Android Setup (Capacitor)
+
+Capacitor bridges the web application into a native Android app wrapper.
+
+### 1. Build and Sync Assets
+Compile the static web bundle and sync it to the Android shell:
+```bash
+# Compile Vite production build
+npm run build
+
+# Sync web assets and capacitor configs to Android resources
+npx cap sync android
+```
+
+### 2. Configure Live Reload (Optional for Development)
+To sync laptop code updates to your phone in real-time over your local Wi-Fi:
+1.  Find your laptop's local IPv4 Address (e.g. `192.168.1.5`).
+2.  Open `capacitor.config.json` and add the `server` block:
+    ```json
+    {
+      "appId": "com.bobbyos.app",
+      "appName": "BOBBY.OS",
+      "webDir": "dist",
+      "server": {
+        "url": "http://192.168.1.5:3000",
+        "cleartext": true,
+        "androidScheme": "http"
+      }
+    }
+    ```
+3.  Expose the local server to your Wi-Fi network:
+    ```bash
+    npm run dev -- --host
+    ```
+
+### 3. Deploy to Connected Phone
+1.  Connect your phone to your computer via USB and verify USB debugging is authorized.
+2.  Install the app from your laptop:
+    ```bash
+    npx cap run android
+    ```
+
+---
+
+## 🔒 Firebase Security Rules (Firestore)
+
+To enable data separation between users, set up the following security rules in your **Firebase Console ➔ Firestore ➔ Rules**:
+
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}
+```
+
+---
+
+## 🚀 Production Deployment (PWA)
+
+To compile the application as a standalone Progressive Web App (PWA):
+```bash
+# Compile PWA build
+npm run build
+
+# Preview production build locally
+npm run preview
+```
+Once hosted, users can tap **"Add to Home Screen"** on their mobile browsers for complete app installation with full offline capabilities.
+
+---
+*Developed with precision for the next generation of power users.*  
+*© 2026 BOBBY.OS Team*
