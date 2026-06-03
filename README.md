@@ -167,4 +167,4 @@ Once hosted, users can tap **"Add to Home Screen"** on their mobile browsers for
 
 ---
 *Developed with precision for the next generation of power users.*  
-*© 2026 BOBBY.OS Team*
+*© 2026 BOBBY.OS *

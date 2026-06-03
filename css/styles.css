@@ -534,11 +534,15 @@ body.exam-mode::after {
     color: var(--red);
 }
 
-.tab-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
+.tab-icon {
+    font-size: 16px;
     flex-shrink: 0;
+    font-variation-settings: 'FILL' 0;
+    transition: transform 0.15s, font-variation-settings 0.15s;
+}
+
+.tab.active .tab-icon {
+    font-variation-settings: 'FILL' 1 !important;
 }
 
 .exam-badge {
@@ -2548,6 +2552,58 @@ td.pc {
     margin-bottom: 16px;
 }
 
+.diary-layout {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+}
+.diary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+.diary-mood-wrap {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.diary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+.diary-footer {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin-top: 12px;
+}
+.charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+.customizer-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+.nlp-bar-container {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    align-items: center;
+}
+.wa-inputs-row {
+    display: flex;
+    gap: 8px;
+}
+.notes-editor-layout {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
 .panel-card {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -2928,20 +2984,18 @@ body.compact-mode .p-cd-val {
     }
     
     .tab::before {
-        font-size: 18px;
-        margin-bottom: 2px;
-        transition: transform 0.2s ease;
-    }
-    .tab:active::before {
-        transform: scale(0.85);
+        display: none !important;
     }
     
-    .t-habit::before { content: '🎯'; }
-    .t-power::before { content: '⚡'; }
-    .t-sched::before { content: '📅'; }
-    .t-exam::before { content: '📝'; }
-    .t-study::before { content: '⏱️'; }
-    .t-notes::before { content: '📔'; }
+    .tab .tab-icon {
+        display: inline-block !important;
+        font-size: 24px !important;
+        margin-bottom: 2px !important;
+        transition: transform 0.2s ease, font-variation-settings 0.2s ease;
+    }
+    .tab:active .tab-icon {
+        transform: scale(0.85);
+    }
 
     .tab.active {
         color: #fff !important;
@@ -2954,6 +3008,13 @@ body.compact-mode .p-cd-val {
     .tab.active.t-study { color: var(--blue) !important; }
     .tab.active.t-notes { color: var(--yellow) !important; }
     .tab.active.t-power { color: var(--accent) !important; }
+
+    .tab.active.t-habit .tab-icon { color: var(--accent) !important; }
+    .tab.active.t-sched .tab-icon { color: var(--green) !important; }
+    .tab.active.t-exam .tab-icon { color: var(--red) !important; }
+    .tab.active.t-study .tab-icon { color: var(--blue) !important; }
+    .tab.active.t-notes .tab-icon { color: var(--yellow) !important; }
+    .tab.active.t-power .tab-icon { color: var(--accent) !important; }
 
     /* 📊 Habits Panel - Cards Transformation */
     .table-wrap {
@@ -3218,6 +3279,92 @@ body.compact-mode .p-cd-val {
     .auth-box {
         padding: 24px 20px !important;
         margin: 14px !important;
+    }
+
+    /* --- Mobile Responsive Layout Tweaks --- */
+    /* Diary Panel */
+    .diary-layout {
+        flex-direction: column !important;
+        gap: 16px !important;
+        align-items: stretch !important;
+    }
+    .diary-layout > div:last-child {
+        width: 100% !important;
+        margin-top: 12px;
+    }
+    .diary-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+    }
+    .diary-mood-wrap {
+        width: 100%;
+        justify-content: space-between;
+    }
+    .diary-grid {
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+    }
+    .diary-footer {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 16px !important;
+    }
+    .diary-footer button#diary-save {
+        margin-top: 0 !important;
+        width: 100% !important;
+    }
+
+    /* Habits Page */
+    .charts-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Power Hub Page */
+    .customizer-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Schedule Page */
+    .nlp-bar-container {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 8px !important;
+    }
+    .nlp-bar-container input, .nlp-bar-container button {
+        width: 100% !important;
+    }
+
+    /* Exams Page */
+    .plan-row {
+        grid-template-columns: 80px 1fr auto auto !important;
+    }
+    .add-plan-bar {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 8px !important;
+    }
+    .add-plan-bar input, .add-plan-bar select, .add-plan-bar button {
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Study Tools Page */
+    .wa-inputs-row {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 8px !important;
+    }
+    .wa-inputs-row input, .wa-inputs-row button {
+        width: 100% !important;
+    }
+    .notes-editor-layout {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px !important;
+    }
+    .notes-editor-layout > div {
+        width: 100% !important;
     }
 }
 

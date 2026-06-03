@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
 </head>
 <body>
 <!-- MAIN APP CONTAINER -->
@@ -74,12 +75,12 @@
     </div>
 
     <div class="tabs">
-        <div class="tab active t-habit" id="tab-habit"><div class="tab-dot" style="background:var(--accent)"></div>Habits</div>
-        <div class="tab t-power" id="tab-power"><div class="tab-dot" style="background:var(--accent)"></div>Power Hub</div>
-        <div class="tab t-sched" id="tab-sched"><div class="tab-dot" style="background:var(--green)"></div>Schedule</div>
-        <div class="tab t-exam" id="tab-exam"><div class="tab-dot" style="background:var(--red)"></div>Exams <span class="exam-badge" id="exam-badge">0</span></div>
-        <div class="tab t-study" id="tab-study"><div class="tab-dot" style="background:var(--blue)"></div>Study</div>
-        <div class="tab t-notes" id="tab-notes"><div class="tab-dot" style="background:var(--yellow)"></div>Diary</div>
+        <div class="tab active t-habit" id="tab-habit"><span class="material-symbols-rounded tab-icon">track_changes</span>Habits</div>
+        <div class="tab t-power" id="tab-power"><span class="material-symbols-rounded tab-icon">bolt</span>Power Hub</div>
+        <div class="tab t-sched" id="tab-sched"><span class="material-symbols-rounded tab-icon">calendar_month</span>Schedule</div>
+        <div class="tab t-exam" id="tab-exam"><span class="material-symbols-rounded tab-icon">assignment</span>Exams <span class="exam-badge" id="exam-badge">0</span></div>
+        <div class="tab t-study" id="tab-study"><span class="material-symbols-rounded tab-icon">timer</span>Study</div>
+        <div class="tab t-notes" id="tab-notes"><span class="material-symbols-rounded tab-icon">menu_book</span>Diary</div>
     </div>
     <div class="tab-line"></div>
 
@@ -131,7 +132,7 @@
             <div id="habit-heatmap" class="heatmap-card"></div>
 
             <div class="slbl">Progress Charts</div>
-            <div class="power-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 24px;">
+            <div class="power-grid charts-grid" style="margin-bottom: 24px;">
                 <div class="power-card">
                     <div class="p-card-hdr">
                         <h3>Habit Consistency</h3>
@@ -293,7 +294,7 @@
                         <h3>System Customizer</h3>
                         <span class="p-badge" style="background:var(--accent-lo); color:var(--accent)">PREMIUM</span>
                     </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 14px;">
+                    <div class="customizer-grid" style="gap: 24px; margin-top: 14px;">
                         <!-- Left: Theme & Density -->
                         <div>
                             <h4 style="font-size: 11px; text-transform: uppercase; color: var(--muted); letter-spacing: 0.08em; margin-bottom: 10px; font-weight: 500;">Select Premium Theme</h4>
@@ -522,7 +523,7 @@
                             <tbody id="wa-tbody"></tbody>
                         </table>
                     </div>
-                    <div style="display:flex; gap:8px; margin-top:12px;">
+                    <div class="wa-inputs-row" style="margin-top:12px;">
                         <input type="text" id="wa-prob" placeholder="Problem Name/Link" style="flex:1; background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:8px; color:var(--text); font-size:12px;">
                         <input type="text" id="wa-desc" placeholder="What went wrong?" style="flex:2; background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:8px; color:var(--text); font-size:12px;">
                         <button id="add-wa-btn" class="p-btn primary" style="padding:8px 16px;">Log Mistake</button>
@@ -535,7 +536,7 @@
                         <h3>Subject Notes</h3>
                         <span class="p-badge">MARKDOWN</span>
                     </div>
-                    <div style="display:flex; gap:12px; align-items:flex-start;">
+                    <div class="notes-editor-layout">
                         <div style="width:200px; display:flex; flex-direction:column; gap:8px;">
                             <select id="note-subject-sel" style="width:100%; background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:8px; color:var(--text); outline:none;">
                                 <option value="">Select Subject...</option>
@@ -551,17 +552,17 @@
         <!-- NOTES / DAILY DIARY PANEL -->
         <div id="panel-notes" class="panel">
             <div class="slbl">Daily Diary</div>
-            <div style="display:flex; gap:24px; align-items:flex-start;">
+            <div class="diary-layout">
 
                 <!-- Left: Write Today's Entry -->
                 <div style="flex:1; min-width:0;">
                     <div class="panel-card" style="padding:20px; margin-bottom:16px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                        <div class="diary-header">
                             <div>
                                 <div style="font-size:16px; font-weight:700; color:var(--text)" id="diary-date">Today</div>
                                 <div style="font-size:11px; color:var(--dim); margin-top:2px;">Write your daily reflection</div>
                             </div>
-                            <div style="display:flex; gap:8px; align-items:center;">
+                            <div class="diary-mood-wrap">
                                 <span style="font-size:11px; color:var(--dim);">Mood</span>
                                 <div id="diary-mood" style="display:flex; gap:4px;">
                                     <button class="mood-btn" data-mood="1" title="Terrible">😫</button>
@@ -573,7 +574,7 @@
                             </div>
                         </div>
 
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+                        <div class="diary-grid">
                             <div>
                                 <label style="font-size:10px; color:var(--green); text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:6px;">✅ Today's Wins</label>
                                 <textarea id="diary-wins" rows="3" placeholder="What did you accomplish today?" style="width:100%; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:10px; color:var(--text); font-size:12px; outline:none; resize:vertical; font-family:var(--mono); box-sizing:border-box;"></textarea>
@@ -592,7 +593,7 @@
                             </div>
                         </div>
 
-                        <div style="display:flex; gap:8px; align-items:center;">
+                        <div class="diary-footer">
                             <div style="flex:1;">
                                 <label style="font-size:10px; color:var(--dim); text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:6px;">Energy Level</label>
                                 <input type="range" id="diary-energy" min="1" max="10" value="7" style="width:100%; accent-color:var(--accent);">

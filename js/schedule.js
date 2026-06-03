@@ -89,7 +89,7 @@ function renderNLPBar(uid, slots) {
 
     wrap = document.createElement('div');
     wrap.id = 'nlp-add-bar';
-    wrap.style.cssText = 'display:flex; gap:8px; margin-top:12px; align-items:center;';
+    wrap.className = 'nlp-bar-container';
     wrap.innerHTML = `
         <input id="nlp-input" type="text"
             placeholder="e.g. Gym at 6:00 to 7:00 morning or Read book 9-10 PM"
