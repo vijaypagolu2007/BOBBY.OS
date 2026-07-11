@@ -9,7 +9,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./css/styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
 </head>
 <body>
 <!-- MAIN APP CONTAINER -->
@@ -78,8 +77,6 @@
         <div class="tab active t-habit" id="tab-habit"><span class="material-symbols-rounded tab-icon">track_changes</span>Habits</div>
         <div class="tab t-power" id="tab-power"><span class="material-symbols-rounded tab-icon">bolt</span>Power Hub</div>
         <div class="tab t-sched" id="tab-sched"><span class="material-symbols-rounded tab-icon">calendar_month</span>Schedule</div>
-        <div class="tab t-exam" id="tab-exam"><span class="material-symbols-rounded tab-icon">assignment</span>Exams <span class="exam-badge" id="exam-badge">0</span></div>
-        <div class="tab t-study" id="tab-study"><span class="material-symbols-rounded tab-icon">timer</span>Study</div>
         <div class="tab t-notes" id="tab-notes"><span class="material-symbols-rounded tab-icon">menu_book</span>Diary</div>
     </div>
     <div class="tab-line"></div>
@@ -366,187 +363,6 @@
             </div>
             <div class="slbl">Preview: Generated Habits</div>
             <div class="sync-card-wrap" id="sync-wrap"></div>
-        </div>
-
-        <!-- EXAM PANEL -->
-        <div id="panel-exam" class="panel">
-            <div class="exam-hdr">
-                <div><h2>Exams & <em>Deadlines</em></h2><p>Your custom study timeline</p></div>
-                <div class="cd-chip"><div class="cd-val" id="cd-days">0</div><div class="cd-lbl" id="cd-lbl">days to go</div></div>
-            </div>
-            <div class="epb-wrap">
-                <div class="epb-top"><span>Overall Progress</span><span id="epb-label">0 / 7 done</span></div>
-                <div class="epb-bg"><div class="epb-fill" id="epb-fill" style="width:0%"></div></div>
-            </div>
-            
-            <div class="slbl" style="margin-top:24px;">CT2 Score Tracker</div>
-            <div class="power-card" style="margin-bottom:24px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                    <h3 style="margin:0; font-size:14px; color:var(--text);">Semester Grades</h3>
-                    <button id="add-ct2-btn" class="p-btn primary" style="padding:4px 10px;">+ Add Score</button>
-                </div>
-                <div class="table-wrap">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th style="text-align:left; padding:8px;">Subject</th>
-                                <th style="text-align:center; padding:8px;">CT1</th>
-                                <th style="text-align:center; padding:8px;">CT2</th>
-                                <th style="text-align:center; padding:8px;">SEE</th>
-                                <th style="text-align:center; padding:8px;">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="ct2-tbody"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="slbl">Exam Countdown</div>
-            <div class="days-grid" id="days-grid"></div>
-
-            <div class="plan-section-hdr">
-                <div class="slbl" id="plan-lbl">Daily Study Plan</div>
-                <div class="plan-nav">
-                    <button class="plan-nav-btn" id="plan-prev">‹</button>
-                    <div class="plan-nav-date" id="plan-nav-date">Today</div>
-                    <button class="plan-nav-btn" id="plan-next">›</button>
-                </div>
-            </div>
-
-            <div class="plan-card">
-                <div class="plan-hdr">
-                    <h3 id="plan-title">Plan Loading...</h3>
-                    <div class="plan-hdr-right"><span id="plan-date">...</span></div>
-                </div>
-                <div class="plan-rows" id="plan-rows"></div>
-                <div class="add-plan-bar">
-                    <input type="text" class="add-plan-time" id="np-time" placeholder="Time (e.g. 4 PM)">
-                    <input type="text" class="add-plan-desc" id="np-desc" placeholder="What's the task?">
-                    <select class="add-plan-tag" id="np-tag">
-                        <option value="custom">Custom</option><option value="rev">Revision</option>
-                        <option value="exam">Exam</option><option value="cp">CP</option>
-                        <option value="rest">Rest</option><option value="plan">Plan</option>
-                    </select>
-                    <button class="add-plan-btn" id="np-add">Add Task</button>
-                </div>
-            </div>
-
-            <div class="slbl">Upcoming Papers Reference</div>
-            <div class="subs-grid">
-                <div style="font-size:12px; color:var(--dim); padding:10px;">Paste a timetable below to populate your subjects...</div>
-            </div>
-
-            <!-- AI Timetable Refiner -->
-            <div class="slbl" style="margin-top: 32px;">AI Timetable Sync <span class="p-badge" style="background:var(--accent-lo); color:var(--accent); margin-left:8px;">GEMINI_VISION</span></div>
-            <div class="power-card p-ai" style="margin-bottom: 24px; max-width: 800px;">
-                <p style="font-size:12px; color:var(--dim); margin-bottom:12px;">Paste your raw timetable text, or upload an image/PDF of your syllabus. Gemini will automatically parse the dates and subjects to configure your Exam Dashboard.</p>
-                <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:12px;">
-                    <textarea id="ai-timetable-input" style="height:100px; background:var(--surface); border:1px solid var(--border-hi); border-radius:8px; padding:12px; color:var(--text); font-family:var(--mono); font-size:11px; outline:none; resize:vertical;" placeholder="Paste Timetable text (e.g. 10th May: Database Systems (CS401) 9:00 AM...)"></textarea>
-                    <textarea id="ai-syllabus-input" style="height:100px; background:var(--surface); border:1px solid var(--border-hi); border-radius:8px; padding:12px; color:var(--text); font-family:var(--mono); font-size:11px; outline:none; resize:vertical;" placeholder="Paste Syllabus / Portions (e.g. CS401: Units 1-3, Integrals, SQL queries...)"></textarea>
-                    
-                    <div style="display:flex; gap:12px;">
-                        <label for="ai-timetable-upload" class="p-btn" style="flex:1; background:var(--glass); border:1px solid var(--border-hi); color:var(--text); cursor:pointer; text-align:center; padding: 12px; border-radius: 8px; font-size:12px; display: flex; align-items: center; justify-content: center; gap:8px;">
-                            <span style="font-size:16px;">📂</span> Upload Image/PDF
-                        </label>
-                        <input type="file" id="ai-timetable-upload" accept="image/*,.pdf" style="display:none;">
-                    </div>
-                </div>
-                <button class="p-btn primary" id="ai-refine-btn" style="width:100%; justify-content:center;">✨ Refine Exam Dashboard</button>
-            </div>
-
-            <div class="tips">
-                <h3>Exam Success Protocol</h3>
-                <div class="tips-list">
-                    <div class="tip"><span class="ti">⚡</span><div><strong>Active Recall:</strong> Don't just read. Close the book and explain the concept out loud.</div></div>
-                    <div class="tip"><span class="ti">📝</span><div><strong>PYQs First:</strong> Solve previous year questions. Exams often follow patterns.</div></div>
-                    <div class="tip"><span class="ti">😴</span><div><strong>Sleep Cycle:</strong> Wake early. Your brain needs 6-8 hours to consolidate memory.</div></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- STUDY TOOLS PANEL -->
-        <div id="panel-study" class="panel">
-            <div class="exam-hdr">
-                <div><h2>Study & <em>CP Tools</em></h2><p>Vaults, logs, and checklists</p></div>
-            </div>
-            
-            <div class="power-grid">
-                <!-- Formula Vault -->
-                <div class="power-card">
-                    <div class="p-card-hdr">
-                        <h3>Formula Vault</h3>
-                        <span class="p-badge" style="background:var(--yellow-lo); color:var(--yellow)">QUICK_REV</span>
-                    </div>
-                    <select id="formula-subject-sel" style="width:100%; background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:6px; color:var(--text); margin-bottom:12px; outline:none;">
-                        <option value="">Select Subject...</option>
-                    </select>
-                    <div id="formula-list" style="max-height:200px; overflow-y:auto; margin-bottom:12px; display:flex; flex-direction:column; gap:8px;"></div>
-                    <div style="display:flex; gap:6px;">
-                        <input type="text" id="formula-title" placeholder="Formula Name" style="flex:1; background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:6px; color:var(--text); font-size:11px;">
-                        <input type="text" id="formula-val" placeholder="Value/Equation" style="flex:1; background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:6px; color:var(--text); font-size:11px;">
-                        <button id="add-formula-btn" class="p-btn primary" style="padding:6px 10px;">+</button>
-                    </div>
-                </div>
-
-                <!-- Revision Checklist -->
-                <div class="power-card">
-                    <div class="p-card-hdr">
-                        <h3>Revision Checklist</h3>
-                        <span class="p-badge" style="background:var(--green-lo); color:var(--green)">TRACKER</span>
-                    </div>
-                    <select id="rev-subject-sel" style="width:100%; background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:6px; color:var(--text); margin-bottom:12px; outline:none;">
-                        <option value="">Select Subject...</option>
-                    </select>
-                    <div id="rev-list" style="max-height:200px; overflow-y:auto; margin-bottom:12px; display:flex; flex-direction:column; gap:8px;"></div>
-                    <div style="display:flex; gap:6px;">
-                        <input type="text" id="rev-topic" placeholder="Topic name" style="flex:1; background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:6px; color:var(--text); font-size:11px;">
-                        <button id="add-rev-btn" class="p-btn primary" style="padding:6px 10px;">+</button>
-                    </div>
-                </div>
-
-                <!-- Wrong Answer Log -->
-                <div class="power-card" style="grid-column: 1 / -1;">
-                    <div class="p-card-hdr">
-                        <h3>Wrong Answer Log</h3>
-                        <span class="p-badge" style="background:var(--red-lo); color:var(--red)">CP_MISTAKES</span>
-                    </div>
-                    <div class="table-wrap">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th style="text-align:left; padding:8px;">Problem</th>
-                                    <th style="text-align:left; padding:8px;">Mistake/Learning</th>
-                                    <th style="text-align:center; padding:8px;">Date</th>
-                                    <th style="text-align:center; padding:8px;">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="wa-tbody"></tbody>
-                        </table>
-                    </div>
-                    <div class="wa-inputs-row" style="margin-top:12px;">
-                        <input type="text" id="wa-prob" placeholder="Problem Name/Link" style="flex:1; background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:8px; color:var(--text); font-size:12px;">
-                        <input type="text" id="wa-desc" placeholder="What went wrong?" style="flex:2; background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:8px; color:var(--text); font-size:12px;">
-                        <button id="add-wa-btn" class="p-btn primary" style="padding:8px 16px;">Log Mistake</button>
-                    </div>
-                </div>
-
-                <!-- Subject Notes -->
-                <div class="power-card" style="grid-column: 1 / -1;">
-                    <div class="p-card-hdr">
-                        <h3>Subject Notes</h3>
-                        <span class="p-badge">MARKDOWN</span>
-                    </div>
-                    <div class="notes-editor-layout">
-                        <div style="width:200px; display:flex; flex-direction:column; gap:8px;">
-                            <select id="note-subject-sel" style="width:100%; background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:8px; color:var(--text); outline:none;">
-                                <option value="">Select Subject...</option>
-                            </select>
-                            <button id="save-note-btn" class="p-btn primary">Save Note</button>
-                        </div>
-                        <textarea id="note-editor" style="flex:1; height:200px; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:12px; color:var(--text); font-family:var(--mono); font-size:12px; outline:none; resize:vertical;" placeholder="Markdown supported notes..."></textarea>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <!-- NOTES / DAILY DIARY PANEL -->

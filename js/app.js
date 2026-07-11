@@ -3,13 +3,11 @@ import { auth } from './firebase.js';
 import { dbLoad, dbSave, uKey, listenToUserData, DB, S, preloadAllUserData, clearCache } from './db.js';
 import { renderHabits, weekOff, setWeekOff } from './habits.js';
 import { renderSched, curDay, setCurDay } from './schedule.js';
-import { renderExam, planDayOffset, setPlanDayOffset, addPlanRow, renderPlanForDate, setupAITimetable } from './exams.js';
 import { renderNotes } from './notes.js';
 import { wkKey, showToast } from './utils.js';
 import { DAY_N, setSlots, defSlots, getSlots } from './data.js';
 import { initPowerHub } from './power.js';
 import { initDiary } from './diary.js';
-import { initStudy } from './study.js';
 
 // Phase 3: PWA & Notifications imports
 import { registerSW } from 'virtual:pwa-register';
@@ -17,7 +15,6 @@ import {
     updateNotificationBadge,
     requestNotificationPermission,
     checkAndTriggerHabitAlert,
-    checkAndTriggerExamAlert,
     triggerTestNotification
 } from './notifications.js';
 
@@ -227,7 +224,7 @@ async function bootApp(user) {
                 clearCache();
                 await preloadAllUserData(user.uid);
                 
-                const activeTab = ['habit', 'power', 'sched', 'exam', 'study', 'notes'].find(id => {
+                const activeTab = ['habit', 'power', 'sched', 'notes'].find(id => {
                     const el = document.getElementById(`tab-${id}`);
                     return el && el.classList.contains('active');
                 }) || 'habit';
@@ -281,7 +278,7 @@ async function bootApp(user) {
     // Real-time listener for data sync
     listenToUserData(user.uid, (data) => {
         // Look up the actually active DOM tab to ensure we sync what the user is currently viewing
-        const activeTab = ['habit', 'power', 'sched', 'exam', 'study', 'notes'].find(id => {
+        const activeTab = ['habit', 'power', 'sched', 'notes'].find(id => {
             const el = document.getElementById(`tab-${id}`);
             return el && el.classList.contains('active');
         }) || 'habit';
@@ -322,39 +319,34 @@ async function bootApp(user) {
     const tab = await dbLoad(user.uid, 'ui:tab', 'habit');
     switchTab(tab);
     
-    // Initialize one-time UI modules
-    setupAITimetable(user.uid);
+
 
     // Initial check for exam/habit reminders on page boot
     setTimeout(() => {
         checkAndTriggerHabitAlert(user.uid);
-        checkAndTriggerExamAlert(user.uid);
     }, 3000);
 
     // Run active background reminders interval check every 60s
     setInterval(() => {
         checkAndTriggerHabitAlert(user.uid);
-        checkAndTriggerExamAlert(user.uid);
     }, 60000);
 }
 
 function switchTab(t) {
     const uid = currentUser?.uid;
-    ['habit', 'power', 'sched', 'exam', 'study', 'notes'].forEach(id => {
+    ['habit', 'power', 'sched', 'notes'].forEach(id => {
         const panel = document.getElementById(`panel-${id}`);
         const tab = document.getElementById(`tab-${id}`);
         if (panel) panel.classList.toggle('active', id === t);
         if (tab) tab.classList.toggle('active', id === t);
     });
-    document.body.className = t === 'sched' ? 'sched-mode' : t === 'exam' ? 'exam-mode' : '';
+    document.body.className = t === 'sched' ? 'sched-mode' : '';
     // BUG-5 Fix: Fire-and-forget — never block tab switching on a DB save
     if (uid) dbSave(uid, 'ui:tab', t).catch(() => {});
     
     if (t === 'sched' && uid) renderSched(uid);
     if (t === 'habit' && uid) renderHabits(uid);
-    if (t === 'exam' && uid) renderExam(uid);
     if (t === 'power' && uid) initPowerHub(uid);
-    if (t === 'study' && uid) initStudy(uid);
     if (t === 'notes' && uid) initDiary(uid);
 }
 
@@ -407,8 +399,6 @@ function setupEventListeners() {
     document.getElementById('tab-habit').addEventListener('click', () => switchTab('habit'));
     document.getElementById('tab-power').addEventListener('click', () => switchTab('power'));
     document.getElementById('tab-sched').addEventListener('click', () => switchTab('sched'));
-    document.getElementById('tab-exam').addEventListener('click', () => switchTab('exam'));
-    document.getElementById('tab-study').addEventListener('click', () => switchTab('study'));
     document.getElementById('tab-notes').addEventListener('click', () => switchTab('notes'));
 
     // Habit Panel
@@ -461,22 +451,6 @@ function setupEventListeners() {
         await renderSched(currentUser.uid);
         await renderHabits(currentUser.uid);
         showToast('Reset to defaults ✓');
-    });
-
-    // Exam Panel
-    document.getElementById('plan-prev').addEventListener('click', () => { 
-        setPlanDayOffset(planDayOffset - 1); 
-        if (currentUser) renderPlanForDate(currentUser.uid); 
-    });
-    document.getElementById('plan-next').addEventListener('click', () => { 
-        setPlanDayOffset(planDayOffset + 1); 
-        if (currentUser) renderPlanForDate(currentUser.uid); 
-    });
-    document.getElementById('np-add').addEventListener('click', () => {
-        if (currentUser) addPlanRow(currentUser.uid);
-    });
-    document.getElementById('np-desc').addEventListener('keydown', e => { 
-        if (e.key === 'Enter' && currentUser) addPlanRow(currentUser.uid); 
     });
 
     // Premium Customizer Theme Buttons
