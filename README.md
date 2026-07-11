@@ -18,21 +18,13 @@
 *   **Daily Diary:** Structured logging for daily wins, challenges faced, lessons learned, and tomorrow's top priorities, complete with mood and energy indicators.
 *   **The Big 3 (Smart Targets):** Set and cross off critical daily objectives to maintain consistent focus.
 
-### 📊 Competitive Programming & Academics
+### 📊 Competitive Programming
 *   **Codeforces Command Center:** Real-time stats integration (rating, rank, max rating) with automated handle extraction and delta tracking.
-*   **Exam Countdown:** Visual countdown and cognitive load analysis for upcoming exams.
-*   **CT2 Score Tracker:** Record, monitor, and visualize semester grades across all subjects.
-
-### 📚 Study & Revision Vaults
-*   **Formula Vault:** Subject-wise quick-reference boards for formulas and equations.
-*   **Revision Checklist:** Interactive topic-wise syllabus tracker per subject.
-*   **Wrong Answer Log:** A dedicated mistake log to record incorrect submissions, debug steps, and lessons learned.
-*   **Subject Notes:** In-app markdown editor for organizing structured course material.
 
 ### 🎨 Personalization & Customization
 *   **Dynamic Theme Engine:** Instantly swap between **Obsidian Void** (Midnight Purple), **Crimson Matrix** (Red), **Emerald Green** (Green), and **Matrix Monochrome** (Monochrome).
 *   **UI Density Scaling:** Toggle between *Standard Layout* and *Compact Mode* for high-density information displays.
-*   **Intelligent Alerts:** Browser push notifications for morning exam papers and 3:30 AM completeness checks.
+*   **Intelligent Alerts:** Browser push notifications for 3:30 AM completeness checks.
 
 ---
 
