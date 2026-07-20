@@ -6,12 +6,10 @@ import { dbLoad, dbSave, S } from './db.js';
 
 export const DAY_N = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 export const TYPES = [
-    { v: 'habit', l: 'Everyday' }, 
+    { v: 'everyday', l: 'Everyday' }, 
     { v: 'college', l: 'College' }, 
     { v: 'weekend', l: 'Weekends' },
-    { v: 'sleep', l: 'Sleep' }, 
-    { v: 'break', l: 'Break' }, 
-    { v: 'free', l: 'Free' }
+    { v: 'holiday', l: 'Holiday' }
 ];
 
 export const EXAM_D = new Set();
@@ -29,27 +27,27 @@ export const META = {
 };
 
 const WD = [
-    { time: '3:30–6:00 AM', label: 'Competitive Programming', type: 'habit', id: 'cp' },
-    { time: '6:00–6:40 AM', label: 'Fitness + Run', type: 'habit', id: 'fit' },
-    { time: '6:40–7:00 AM', label: 'College Prep', type: 'break', id: '' },
+    { time: '3:30–6:00 AM', label: 'Competitive Programming', type: 'everyday', id: 'cp' },
+    { time: '6:00–6:40 AM', label: 'Fitness + Run', type: 'everyday', id: 'fit' },
+    { time: '6:40–7:00 AM', label: 'College Prep', type: 'everyday', id: '' },
     { time: '7:00–7:30 AM', label: 'Commute to College', type: 'college', id: 'commute' },
-    { time: '7:30–9:00 AM', label: 'Read Book + Vocab', type: 'habit', id: 'vocab' },
+    { time: '7:30–9:00 AM', label: 'Read Book + Vocab', type: 'everyday', id: 'vocab' },
     { time: '9:00 AM–4:00 PM', label: 'College', type: 'college', id: 'college' },
-    { time: '4:00–7:30 PM', label: 'Subjective Revision', type: 'habit', id: 'subrev' },
-    { time: '7:30–8:30 PM', label: 'Lunch', type: 'break', id: '' },
-    { time: '8:30–9:30 PM', label: 'Planning + Targets', type: 'habit', id: 'plan' },
-    { time: '9:30 PM–3:30 AM', label: 'Sleep', type: 'sleep', id: '' },
+    { time: '4:00–7:30 PM', label: 'Subjective Revision', type: 'everyday', id: 'subrev' },
+    { time: '7:30–8:30 PM', label: 'Lunch', type: 'everyday', id: '' },
+    { time: '8:30–9:30 PM', label: 'Planning + Targets', type: 'everyday', id: 'plan' },
+    { time: '9:30 PM–3:30 AM', label: 'Sleep', type: 'everyday', id: '' },
 ];
 const WE = [
-    { time: '3:30–6:00 AM', label: 'Competitive Programming', type: 'habit', id: 'cp' },
-    { time: '6:00–6:40 AM', label: 'Fitness + Run', type: 'habit', id: 'fit' },
-    { time: '6:40–9:00 AM', label: 'Free / Rest', type: 'free', id: '' },
+    { time: '3:30–6:00 AM', label: 'Competitive Programming', type: 'everyday', id: 'cp' },
+    { time: '6:00–6:40 AM', label: 'Fitness + Run', type: 'everyday', id: 'fit' },
+    { time: '6:40–9:00 AM', label: 'Free / Rest', type: 'weekend', id: '' },
     { time: '9:00 AM–1:00 PM', label: 'Dev', type: 'weekend', id: 'project' },
-    { time: '1:00–2:00 PM', label: 'Lunch + Break', type: 'break', id: '' },
+    { time: '1:00–2:00 PM', label: 'Lunch + Break', type: 'weekend', id: '' },
     { time: '2:00–5:00 PM', label: 'GitHub Profile Build', type: 'weekend', id: 'oss' },
     { time: '5:00–7:30 PM', label: 'Codeforces & Leetcode', type: 'weekend', id: 'course' },
-    { time: '8:30–9:30 PM', label: 'Planning + Targets', type: 'habit', id: 'plan' },
-    { time: '9:30 PM–3:30 AM', label: 'Sleep', type: 'sleep', id: '' },
+    { time: '8:30–9:30 PM', label: 'Planning + Targets', type: 'everyday', id: 'plan' },
+    { time: '9:30 PM–3:30 AM', label: 'Sleep', type: 'everyday', id: '' },
 ];
 
 export function getMeta(id) { return META[id] || { icon: '📌', color: '#6c63ff', bg: 'rgba(108,99,255,0.12)' }; }
@@ -75,7 +73,7 @@ export async function buildHabits(uid) {
         Array.from({ length: 7 }, (_, d) => getSlots(uid, d))
     );
 
-    const TRACK_TYPES = ['habit', 'college', 'weekend'];
+    const TRACK_TYPES = ['everyday', 'college', 'weekend'];
 
     for (let d = 0; d < 7; d++) {
         const slots = allSlots[d];
@@ -92,16 +90,7 @@ export async function buildHabits(uid) {
         let freq = 'all';
         if (h._type === 'college') freq = 'wd';
         else if (h._type === 'weekend') freq = 'we';
-        else {
-            // Check if it's actually in WD and WE for 'habit' type
-            let inWD = false, inWE = false;
-            for (let dd = 0; dd < 7; dd++) { 
-                if (allSlots[dd].some(ss => ss.id === h.id)) { 
-                    if (dd < 5) inWD = true; else inWE = true; 
-                } 
-            }
-            freq = inWD && inWE ? 'all' : inWD ? 'wd' : 'we';
-        }
+        else freq = 'all'; // everyday / holiday both show on all days
 
         const m = getMeta(h.id);
         return {

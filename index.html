@@ -58,33 +58,44 @@
             <h1>BOBBY<em>.OS</em></h1>
             <div style="display: flex; align-items: center; gap: 8px;">
                 <span class="sub">V1.0 PRO</span>
-                <span id="u-uid" style="font-size: 8px; color: var(--dim); font-family: var(--mono); opacity: 0.7; letter-spacing: 0.05em; display: inline-block; margin-top: 1px;"></span>
+                <span id="u-uid" style="display: none !important;"></span>
             </div>
         </div>
         <div class="topbar-right" style="display: flex; align-items: center; gap: 8px;">
-            <div id="top-date">Monday, 5 May</div>
-            <div id="sync-ind" class="sync-indicator hidden">✓ saved</div>
+            <div id="top-date" style="display: none !important;">Monday, 5 May</div>
+            <div id="sync-ind" class="sync-indicator hidden" style="display: none !important;">✓ saved</div>
+            
             <button class="auth-user-tag" id="auth-user-tag-btn" title="Click for Account Diagnostics" style="display: flex; align-items: center; gap: 8px; cursor: pointer; background: var(--accent-lo); border: 1px solid var(--border-hi); border-radius: 99px; padding: 4px 10px; min-height: 28px; box-sizing: border-box; outline: none; font-family: inherit; color: inherit; font-size: inherit; text-align: left; -webkit-tap-highlight-color: transparent;">
                 <div class="auth-avatar" id="u-avatar" style="margin: 0; display: flex; align-items: center; justify-content: center;">B</div>
-                <div class="auth-name" id="u-name" style="font-size: 10px; font-weight: 600; color: var(--text); letter-spacing: 0.04em;">Bobby</div>
+                <div class="auth-name" id="u-name" style="font-size: 10px; font-weight: 600; color: var(--text); letter-spacing: 0.04em; display: none;">Bobby</div>
                 <span style="font-size: 10px; line-height: 1; filter: drop-shadow(0 0 4px var(--accent-md));">🛡️</span>
             </button>
-            <button class="logout-btn" id="logout">Logout</button>
         </div>
     </div>
 
     <div class="tabs">
-        <div class="tab active t-habit" id="tab-habit"><span class="material-symbols-rounded tab-icon">track_changes</span>Habits</div>
-        <div class="tab t-power" id="tab-power"><span class="material-symbols-rounded tab-icon">bolt</span>Power Hub</div>
-        <div class="tab t-sched" id="tab-sched"><span class="material-symbols-rounded tab-icon">calendar_month</span>Schedule</div>
-        <div class="tab t-notes" id="tab-notes"><span class="material-symbols-rounded tab-icon">menu_book</span>Diary</div>
+        <div class="tab active t-habit" id="tab-habit"><span class="tab-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></span>Habits</div>
+        <div class="tab t-power" id="tab-power"><span class="tab-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg></span>Power Hub</div>
+        <div class="tab t-sched" id="tab-sched"><span class="tab-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></span>Schedule</div>
+        <div class="tab t-notes" id="tab-notes"><span class="tab-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg></span>Diary</div>
     </div>
     <div class="tab-line"></div>
 
     <div class="wrap">
         <!-- HABIT PANEL -->
         <div id="panel-habit" class="panel active">
-            <div class="slbl">Weekly Progress</div>
+            <div class="slbl">Overall Performance</div>
+            <div class="stats-row">
+                <div class="stat-card"><div class="sv ca" id="s-grade">S</div><div class="sl">Current Grade</div></div>
+                <div class="stat-card"><div class="sv cg" id="s-done">0/0</div><div class="sl">Completed</div></div>
+                <div class="stat-card"><div class="sv cy" id="s-streak">0</div><div class="sl">Best Streak</div></div>
+                <div class="stat-card"><div class="sv cw" id="s-pct">0%</div><div class="sl">Consistency</div></div>
+            </div>
+
+            <div class="slbl">Contribution Heatmap</div>
+            <div id="habit-heatmap" class="heatmap-card"></div>
+
+            <div class="slbl" style="margin-top: 32px;">Weekly Progress</div>
             <div class="week-nav">
                 <button class="nav-btn" id="prev">‹</button>
                 <div class="week-info" id="wk-range">Loading...</div>
@@ -105,40 +116,8 @@
                 </table>
             </div>
 
-            <div class="legend">
-                <h3>Performance Grading</h3>
-                <div class="lg">
-                    <div class="lg-item"><div class="lg-grade" style="color:#6c63ff">S</div><div class="lg-range">95–100%</div><div class="lg-name">Elite</div></div>
-                    <div class="lg-item"><div class="lg-grade" style="color:#20d68a">A</div><div class="lg-range">85–94%</div><div class="lg-name">Pro</div></div>
-                    <div class="lg-item"><div class="lg-grade" style="color:#84cc16">B</div><div class="lg-range">70–84%</div><div class="lg-name">Good</div></div>
-                    <div class="lg-item"><div class="lg-grade" style="color:#ffbe3d">C</div><div class="lg-range">50–69%</div><div class="lg-name">Avg</div></div>
-                    <div class="lg-item"><div class="lg-grade" style="color:#ff5572">D</div><div class="lg-range">0–49%</div><div class="lg-name">Poor</div></div>
-                    <div class="lg-item"><div class="lg-grade" style="color:var(--dim)">·</div><div class="lg-range">N/A</div><div class="lg-name">Rest</div></div>
-                </div>
-            </div>
-
-            <div class="slbl" style="margin-top: 32px;">Overall Performance</div>
-            <div class="stats-row">
-                <div class="stat-card"><div class="sv ca" id="s-grade">S</div><div class="sl">Current Grade</div></div>
-                <div class="stat-card"><div class="sv cg" id="s-done">0/0</div><div class="sl">Completed</div></div>
-                <div class="stat-card"><div class="sv cy" id="s-streak">0</div><div class="sl">Best Streak</div></div>
-                <div class="stat-card"><div class="sv cw" id="s-pct">0%</div><div class="sl">Consistency</div></div>
-            </div>
-
-            <div class="slbl">Contribution Heatmap</div>
-            <div id="habit-heatmap" class="heatmap-card"></div>
-
             <div class="slbl">Progress Charts</div>
             <div class="power-grid charts-grid" style="margin-bottom: 24px;">
-                <div class="power-card">
-                    <div class="p-card-hdr">
-                        <h3>Habit Consistency</h3>
-                        <span class="p-badge">TREND</span>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="habit-trend-chart" height="150"></canvas>
-                    </div>
-                </div>
                 <div class="power-card">
                     <div class="p-card-hdr">
                         <h3>CP Rating</h3>
@@ -337,32 +316,54 @@
 
         <!-- SCHEDULE PANEL -->
         <div id="panel-sched" class="panel">
-            <div class="sched-intro">
+            <!-- Day Selector -->
+            <div class="sched-day-strip">
+                <button class="sched-day-btn active" data-day="0">
+                    <span class="sdb-label">Mon</span>
+                </button>
+                <button class="sched-day-btn" data-day="1">
+                    <span class="sdb-label">Tue</span>
+                </button>
+                <button class="sched-day-btn" data-day="2">
+                    <span class="sdb-label">Wed</span>
+                </button>
+                <button class="sched-day-btn" data-day="3">
+                    <span class="sdb-label">Thu</span>
+                </button>
+                <button class="sched-day-btn" data-day="4">
+                    <span class="sdb-label">Fri</span>
+                </button>
+                <button class="sched-day-btn sdb-we" data-day="5">
+                    <span class="sdb-label">Sat</span>
+                </button>
+                <button class="sched-day-btn sdb-we" data-day="6">
+                    <span class="sdb-label">Sun</span>
+                </button>
+            </div>
+
+            <!-- Header -->
+            <div class="sched-hdr">
                 <div>
-                    <p>Customize your <strong>Master Schedule</strong>. Changes sync across all devices.</p>
-                    <p style="font-size:9px; opacity:0.6; margin-top:4px">Type 'habit' ensures it appears in the habit tracking table.</p>
+                    <h2 id="ed-title" class="sched-hdr-title">Monday</h2>
+                    <span id="ed-sub" class="sched-hdr-sub">Weekday schedule</span>
                 </div>
-                <button class="reset-btn" id="reset-sched">Reset Day to Defaults</button>
-            </div>
-            <div class="day-tabs">
-                <button class="day-tab active" data-day="0">Mon</button><button class="day-tab" data-day="1">Tue</button>
-                <button class="day-tab" data-day="2">Wed</button><button class="day-tab" data-day="3">Thu</button>
-                <button class="day-tab" data-day="4">Fri</button><button class="day-tab we" data-day="5">Sat</button>
-                <button class="day-tab we" data-day="6">Sun</button>
-            </div>
-            <div class="sched-editor">
-                <div class="sched-editor-hdr">
-                    <div><h3 id="ed-title">Monday</h3><span id="ed-sub">Weekday schedule</span></div>
-                    <button class="add-slot-btn" id="add-slot">+ Add Activity</button>
-                </div>
-                <div class="slots-list" id="slots-list"></div>
-                <div class="sched-save-row">
-                    <p>Automatic <strong>Cloud Sync</strong> enabled.</p>
-                    <button class="save-btn" id="sched-save" style="margin:0">Refresh Habit Table</button>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <button class="sched-action-btn" id="reset-sched">↺ Reset</button>
+                    <button class="sched-action-btn primary" id="add-slot">+ Add</button>
                 </div>
             </div>
-            <div class="slbl">Preview: Generated Habits</div>
-            <div class="sync-card-wrap" id="sync-wrap"></div>
+
+            <!-- Slots List (rebuilt by JS) -->
+            <div id="slots-list" class="sched-slots-list"></div>
+
+            <!-- Smart Add Bar -->
+            <div class="sched-smart-add">
+                <input id="nlp-input" type="text" placeholder="e.g.  Gym 6-7 AM  or  Read book 9-10 PM" class="sched-nlp-input">
+                <button id="nlp-add-btn" class="sched-action-btn primary">✨ Smart Add</button>
+            </div>
+
+            <!-- Hidden elements kept for JS compatibility -->
+            <div id="sync-wrap" style="display:none;"></div>
         </div>
 
         <!-- NOTES / DAILY DIARY PANEL -->
@@ -468,7 +469,7 @@
         </div>
 
         <div style="display:flex; gap:10px;">
-            <button id="diag-copy-uid" class="p-btn" style="flex:1; justify-content:center; font-size:11px; height:36px; cursor:pointer;">Copy Full UID</button>
+            <button id="diag-logout-btn" class="p-btn" style="flex:1; justify-content:center; font-size:11px; height:36px; cursor:pointer; background:rgba(255, 77, 109, 0.1); border: 1px solid rgba(255, 77, 109, 0.2); color: var(--red);">Logout</button>
             <button id="diag-force-sync" class="p-btn primary" style="flex:1; justify-content:center; font-size:11px; height:36px; cursor:pointer;">Force Sync 🔄</button>
         </div>
         

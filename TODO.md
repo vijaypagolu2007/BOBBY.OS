@@ -29,29 +29,22 @@
 - [x] **Contribution Heatmap**: GitHub-style grid for daily habit consistency.
 - [x] **CP Rating Tracker**: Codeforces & LeetCode stats via API integration.
 - [x] **Progress Charts**: Weekly/monthly trends for habits and CP problems.
-- [x] **CT2 Score Tracker**: Record and visualize scores across semesters.
-
-### 📝 Study & CP Tools
-- [x] **Formula Vault**: Subject-wise formula sheets with a quick-review mode.
-- [x] **Revision Checklist**: Topic-wise syllabus tracking per subject.
-- [x] **Wrong Answer Log**: Dedicated space to track CP mistakes and learnings.
-- [x] **Subject Notes**: Attach quick markdown notes to any exam/subject.
-
+- [ ] **Score Tracker**: Record and visualize scores across semesters.
 
 ---
 
 ## ✅ PHASE 3: Social & Professional Delivery (Complete)
 *Goal: Intelligence, Reminders, and Customization*
 
-- [x] **Intelligent Notifications**:
-    - [x] **Browser Push**: 3:30 AM habit triggers and exam-day alerts.
-    - [x] **Sync Indicator**: Visual feedback for cloud data state.
-- [x] **Premium Customization**:
-    - [x] **Theme Switcher**: Red, Green, and Monochrome premium modes.
-    - [x] **UI Scaling**: Compact mode toggle for "Power User" density.
-- [x] **PWA Mastery**:
-    - [x] 100% Offline coverage with optimized background sync.
-    - [x] App Store/Play Store ready assets.
+- [ ] **Intelligent Notifications**:
+    - [ ] **Browser Push**: 3:30 AM habit triggers and exam-day alerts.
+    - [ ] **Sync Indicator**: Visual feedback for cloud data state.
+- [ ] **Premium Customization**:
+    - [ ] **Theme Switcher**: Red, Green, and Monochrome premium modes.
+    - [ ] **UI Scaling**: Compact mode toggle for "Power User" density.
+- [ ] **PWA Mastery**:
+    - [ ] 100% Offline coverage with optimized background sync.
+    - [ ] App Store/Play Store ready assets.
 
 ---
 

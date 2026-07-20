@@ -120,11 +120,25 @@ To sync laptop code updates to your phone in real-time over your local Wi-Fi:
     ```
 
 ### 3. Deploy to Connected Phone
-1.  Connect your phone to your computer via USB and verify USB debugging is authorized.
-2.  Install the app from your laptop:
-    ```bash
-    npx cap run android
-    ```
+1. Connect your phone to your computer via USB and verify USB debugging is authorized.
+2. Install the app from your laptop:
+   ```bash
+   npx cap run android
+   ```
+3. **Troubleshooting Target Issues / Direct Deployment:**
+   If the Capacitor CLI fails to detect your device, or throws target mismatches (e.g. `Invalid target ID`), you can deploy manually using Gradle and ADB:
+   ```bash
+   # 1. Compile the debug APK
+   cd android
+   ./gradlew assembleDebug
+   cd ..
+   
+   # 2. Deploy directly via ADB (Update target ID with your own device ID from 'adb devices')
+   adb install -r android/app/build/outputs/apk/debug/app-debug.apk
+   
+   # 3. Launch the app on the phone
+   adb shell monkey -p com.bobbyos.app -c android.intent.category.LAUNCHER 1
+   ```
 
 ---
 

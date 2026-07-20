@@ -165,7 +165,7 @@ async function bootApp(user) {
     const uAvatarBtn = document.getElementById('u-avatar');
     const diagModal = document.getElementById('diag-modal');
     const diagClose = document.getElementById('diag-close');
-    const copyUidBtn = document.getElementById('diag-copy-uid');
+    const diagLogoutBtn = document.getElementById('diag-logout-btn');
     const forceSyncBtn = document.getElementById('diag-force-sync');
 
     const openDiagnostics = () => {
@@ -209,10 +209,10 @@ async function bootApp(user) {
         });
     }
 
-    if (copyUidBtn) {
-        copyUidBtn.addEventListener('click', () => {
-            navigator.clipboard.writeText(user.uid);
-            showToast('Full UID Copied to Clipboard! 📋');
+    if (diagLogoutBtn) {
+        diagLogoutBtn.addEventListener('click', async () => {
+            await doLogout();
+            location.reload();
         });
     }
 
@@ -386,10 +386,7 @@ function setupEventListeners() {
         } catch (e) { err.textContent = e.message; }
     });
 
-    document.getElementById('logout').addEventListener('click', async () => {
-        await doLogout();
-        location.reload();
-    });
+
 
     // Enter key for auth
     document.getElementById('l-pass').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('l-btn').click(); });
@@ -416,10 +413,10 @@ function setupEventListeners() {
     
     // save-r listener removed since section is gone.
 
-    // Schedule Panel
-    document.querySelectorAll('.day-tab').forEach(tab => {
-        tab.addEventListener('click', () => { 
-            setCurDay(parseInt(tab.dataset.day)); 
+    // Schedule Panel — day selector buttons
+    document.querySelectorAll('.sched-day-btn').forEach(btn => {
+        btn.addEventListener('click', () => { 
+            setCurDay(parseInt(btn.dataset.day)); 
             if (currentUser) renderSched(currentUser.uid); 
         });
     });
@@ -427,20 +424,55 @@ function setupEventListeners() {
     document.getElementById('add-slot').addEventListener('click', async () => {
         if (!currentUser) return;
         const slots = await getSlots(currentUser.uid, curDay);
-        // Generate a unique ID so it syncs to habits page
         const id = 'act-' + Math.random().toString(36).substr(2, 5);
         slots.push({ time: '', label: 'New Activity', type: 'habit', id });
         await setSlots(currentUser.uid, curDay, slots); 
         renderSched(currentUser.uid);
-        renderHabits(currentUser.uid); // Trigger habit sync immediately
+        renderHabits(currentUser.uid);
     });
-    
-    document.getElementById('sched-save').addEventListener('click', () => { 
-        if (currentUser) {
-            renderHabits(currentUser.uid); 
-            showToast('Habit table refreshed ✓');
-        }
-    });
+
+    // Smart NLP Add
+    const nlpInput = document.getElementById('nlp-input');
+    const nlpBtn = document.getElementById('nlp-add-btn');
+    // NLP logic lives in schedule.js via renderSched — wire up here for module access
+    if (nlpBtn && nlpInput) {
+        const doNlpAdd = async () => {
+            const text = nlpInput.value.trim();
+            if (!text || !currentUser) return;
+            // Simple parse inline (mirrors schedule.js parseNLP)
+            const rangePatterns = [
+                /(\d{1,2}(?::\d{2})?)\s*(?:to|-|–)\s*(\d{1,2}(?::\d{2})?)\s*(am|pm|morning|evening|night|noon)?/i,
+            ];
+            let time = '', label = text;
+            for (const pat of rangePatterns) {
+                const m = text.match(pat);
+                if (m) {
+                    const [full, start, end, period = ''] = m;
+                    const lc = period.toLowerCase();
+                    const sfx = ['evening','night','pm'].includes(lc) ? 'PM' :
+                        text.toLowerCase().includes('evening') || text.toLowerCase().includes('pm') ? 'PM' : 'AM';
+                    const fmt = t => t.includes(':') ? t : t + ':00';
+                    time = `${fmt(start)}–${fmt(end)} ${sfx}`;
+                    label = text.replace(full, '').replace(/\bat\b/i, '').replace(/\s+/g, ' ').trim();
+                    break;
+                }
+            }
+            const lc2 = label.toLowerCase();
+            let type = 'everyday';
+            if (/college|class|lecture|lab/.test(lc2)) type = 'college';
+            else if (/weekend|sat|sun/.test(lc2)) type = 'weekend';
+            else if (/holiday|off|rest day/.test(lc2)) type = 'holiday';
+            const id2 = label.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 8) || 'custom';
+            const slots = await getSlots(currentUser.uid, curDay);
+            slots.push({ time, label: label || 'New Activity', type, id: id2 });
+            await setSlots(currentUser.uid, curDay, slots);
+            nlpInput.value = '';
+            await renderSched(currentUser.uid);
+            await renderHabits(currentUser.uid);
+        };
+        nlpBtn.addEventListener('click', doNlpAdd);
+        nlpInput.addEventListener('keydown', e => { if (e.key === 'Enter') doNlpAdd(); });
+    }
     
     document.getElementById('reset-sched').addEventListener('click', async () => {
         if (!currentUser) return;
