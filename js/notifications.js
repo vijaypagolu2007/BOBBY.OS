@@ -1,7 +1,6 @@
 import { buildHabits, EXAM_D } from './data.js';
 import { dbLoad } from './db.js';
 import { ck, iso, today, wkDates, wkKey, showToast } from './utils.js';
-import { EXAMS } from './exams.js';
 
 // ══════════════════════════════════════════════════════
 //  INTELLIGENT NOTIFICATIONS MODULE
@@ -149,42 +148,9 @@ export async function checkAndTriggerHabitAlert(uid, force = false) {
     }
 }
 
-// Morning exam alerts check
-export async function checkAndTriggerExamAlert(uid, force = false) {
-    if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
 
-    const chkExam = document.getElementById('chk-exam-alert');
-    if (chkExam && !chkExam.checked && !force) return;
 
-    const now = new Date();
-    // Morning check (e.g. 7:00 AM) or forced
-    if (!force) {
-        const isMorningCheck = now.getHours() === 7 && now.getMinutes() === 0;
-        if (!isMorningCheck) return;
-    }
-
-    try {
-        const tStr = today();
-        const examToday = EXAMS.find(e => e.date === tStr);
-
-        if (examToday && examToday.papers.length > 0) {
-            const list = examToday.papers.map(p => `${p.code} (${p.time})`).join(', ');
-            triggerLocalNotification('📝 BOBBY.OS // Exam Today!', {
-                body: `Prepare your mind! You have ${examToday.papers.length} paper(s) today: ${list}. High Cognitive Load detected.`,
-                tag: 'bobby-exam-alert'
-            });
-        } else if (force) {
-            triggerLocalNotification('📝 BOBBY.OS // No Exams Today', {
-                body: 'You have no exams today. Perfect time for deep code session or syllabus revision.',
-                tag: 'bobby-exam-alert'
-            });
-        }
-    } catch (e) {
-        console.error('Error checking exams for notification:', e);
-    }
-}
-
-// Immediate mock triggers for both habit and exam alerts
+// Immediate mock trigger for habit alerts
 export async function triggerTestNotification(uid) {
     if (typeof Notification === 'undefined' || Notification.permission !== 'granted') {
         showToast('Please enable push alerts first!');
@@ -193,17 +159,12 @@ export async function triggerTestNotification(uid) {
 
     showToast('Firing Test Alarms... ⚡');
     
-    // Trigger standard notifications instantly
     triggerLocalNotification('🧪 BOBBY.OS // Test Alarm Active', {
-        body: 'System notification pipes verified. Testing 3:30 AM Habits & Exams alerts...',
+        body: 'System notification pipes verified. Testing 3:30 AM Habit alerts...',
         tag: 'bobby-test'
     });
 
     setTimeout(() => {
         checkAndTriggerHabitAlert(uid, true);
     }, 1200);
-
-    setTimeout(() => {
-        checkAndTriggerExamAlert(uid, true);
-    }, 2400);
 }

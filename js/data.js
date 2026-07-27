@@ -22,32 +22,27 @@ export const META = {
     plan: { icon: '🎯', color: '#22d3ee', bg: 'rgba(34,211,238,0.09)' },
     project: { icon: '🛠️', color: '#38bdf8', bg: 'rgba(56,189,248,0.10)' },
     oss: { icon: '🚀', color: '#ffbe3d', bg: 'rgba(255,190,61,0.10)' },
-    course: { icon: '🎯', color: '#a78bfa', bg: 'rgba(167,139,250,0.10)' },
+    course: { icon: '📌', color: '#a78bfa', bg: 'rgba(167,139,250,0.10)' },
     dsa: { icon: '📐', color: '#818cf8', bg: 'rgba(129,140,248,0.11)' },
+    cp_we: { icon: '🎯', color: '#6c63ff', bg: 'rgba(108,99,255,0.13)' },
 };
 
 const WD = [
-    { time: '3:30–6:00 AM', label: 'Competitive Programming', type: 'everyday', id: 'cp' },
-    { time: '6:00–6:40 AM', label: 'Fitness + Run', type: 'everyday', id: 'fit' },
-    { time: '6:40–7:00 AM', label: 'College Prep', type: 'everyday', id: '' },
-    { time: '7:00–7:30 AM', label: 'Commute to College', type: 'college', id: 'commute' },
-    { time: '7:30–9:00 AM', label: 'Read Book + Vocab', type: 'everyday', id: 'vocab' },
-    { time: '9:00 AM–4:00 PM', label: 'College', type: 'college', id: 'college' },
-    { time: '4:00–7:30 PM', label: 'Subjective Revision', type: 'everyday', id: 'subrev' },
-    { time: '7:30–8:30 PM', label: 'Lunch', type: 'everyday', id: '' },
-    { time: '8:30–9:30 PM', label: 'Planning + Targets', type: 'everyday', id: 'plan' },
-    { time: '9:30 PM–3:30 AM', label: 'Sleep', type: 'everyday', id: '' },
+    { time: '3:30–6:00 AM', label: 'CP', type: 'everyday', id: 'cp' },
+    { time: '6:00–6:40 AM', label: 'GYM', type: 'everyday', id: 'fit' },
+    { time: '7:30–9:00 AM', label: 'READ BOOK', type: 'everyday', id: 'vocab' },
+    { time: '9:00 AM–4:00 PM', label: 'COLLEGE', type: 'college', id: 'course' },
+    { time: '4:00–7:30 PM', label: 'SUBJECT REVISION', type: 'everyday', id: 'subrev' },
+    { time: '8:30–9:30 PM', label: 'PLANNING', type: 'everyday', id: 'plan' },
 ];
 const WE = [
-    { time: '3:30–6:00 AM', label: 'Competitive Programming', type: 'everyday', id: 'cp' },
-    { time: '6:00–6:40 AM', label: 'Fitness + Run', type: 'everyday', id: 'fit' },
-    { time: '6:40–9:00 AM', label: 'Free / Rest', type: 'weekend', id: '' },
-    { time: '9:00 AM–1:00 PM', label: 'Dev', type: 'weekend', id: 'project' },
-    { time: '1:00–2:00 PM', label: 'Lunch + Break', type: 'weekend', id: '' },
-    { time: '2:00–5:00 PM', label: 'GitHub Profile Build', type: 'weekend', id: 'oss' },
-    { time: '5:00–7:30 PM', label: 'Codeforces & Leetcode', type: 'weekend', id: 'course' },
-    { time: '8:30–9:30 PM', label: 'Planning + Targets', type: 'everyday', id: 'plan' },
-    { time: '9:30 PM–3:30 AM', label: 'Sleep', type: 'everyday', id: '' },
+    { time: '3:30–6:00 AM', label: 'CP', type: 'everyday', id: 'cp' },
+    { time: '6:00–6:40 AM', label: 'GYM', type: 'everyday', id: 'fit' },
+    { time: '7:30–9:00 AM', label: 'READ BOOK', type: 'everyday', id: 'vocab' },
+    { time: '9:00 AM–1:00 PM', label: 'DEV', type: 'weekend', id: 'project' },
+    { time: '4:00–7:30 PM', label: 'SUBJECT REVISION', type: 'everyday', id: 'subrev' },
+    { time: '5:00–7:30 PM', label: 'CP', type: 'weekend', id: 'cp_we' },
+    { time: '8:30–9:30 PM', label: 'PLANNING', type: 'everyday', id: 'plan' },
 ];
 
 export function getMeta(id) { return META[id] || { icon: '📌', color: '#6c63ff', bg: 'rgba(108,99,255,0.12)' }; }
@@ -66,7 +61,7 @@ export async function getSlots(uid, d) {
 
 export async function buildHabits(uid) {
     const seen = new Set(), habits = [];
-    const ORDER = ['cp', 'dsa', 'fit', 'vocab', 'subrev', 'plan', 'project', 'oss', 'course'];
+    const ORDER = ['cp', 'fit', 'vocab', 'subrev', 'plan', 'course', 'project', 'cp_we'];
     
     // Pre-load all 7 days slots
     const allSlots = await Promise.all(
