@@ -1,6 +1,5 @@
 import { dbLoad, dbSave, uKey } from './db.js';
 import { showToast } from './utils.js';
-import { getExamCountdown } from './exams.js';
 import { markHabitDoneToday } from './habits.js';
 import { buildHabits } from './data.js';
 
@@ -10,7 +9,6 @@ let isRunning = false;
 
 export function initPowerHub(uid) {
     setupPomodoro(uid);
-    setupCountdown();
     setupTargets(uid);
     setupNightShift(uid);
     setupCPTracker(uid);
@@ -101,63 +99,6 @@ async function setupPomodoro(uid) {
     }
 }
 
-function setupCountdown() {
-    // Import EXAMS dynamically to get real data
-    import('./exams.js').then(({ EXAMS }) => {
-        updateCountdown(EXAMS);
-        setInterval(() => updateCountdown(EXAMS), 60000);
-    }).catch(() => {});
-}
-
-function updateCountdown(EXAMS) {
-    const daysEl = document.getElementById('p-days');
-    const hoursEl = document.getElementById('p-hours');
-    const minsEl = document.getElementById('p-mins');
-    const fillEl = document.querySelector('.p-intensity-fill');
-    const noteEl = document.querySelector('.p-card-note');
-    
-    if (!daysEl) return;
-
-    const now = new Date();
-    const todayStr = now.toISOString().split('T')[0];
-
-    // Find next upcoming exam
-    const upcoming = EXAMS.filter(e => e.date >= todayStr).sort((a, b) => a.date.localeCompare(b.date))[0];
-
-    if (!upcoming) {
-        daysEl.textContent = EXAMS.length > 0 ? '✓' : '--';
-        if (noteEl) noteEl.textContent = EXAMS.length > 0 ? 'All exams done!' : 'No exams scheduled';
-        if (fillEl) fillEl.style.width = EXAMS.length > 0 ? '100%' : '0%';
-        return;
-    }
-
-    const examTime = new Date(upcoming.date + 'T09:00:00');
-    const diff = examTime - now;
-    
-    const days = Math.max(0, Math.floor(diff / 864e5));
-    const hours = Math.max(0, Math.floor((diff % 864e5) / 36e5));
-    const mins = Math.max(0, Math.floor((diff % 36e5) / 6e4));
-
-    daysEl.textContent = days;
-    if (hoursEl) hoursEl.textContent = String(hours).padStart(2, '0');
-    if (minsEl) minsEl.textContent = String(mins).padStart(2, '0');
-
-    // Progress Calculation
-    const total = EXAMS.reduce((acc, ex) => acc + ex.papers.length, 0);
-    let done = 0;
-    EXAMS.forEach(ex => ex.papers.forEach(p => {
-        const h = p.slot === 'S1' ? 12 : 16;
-        if (now > new Date(ex.date + 'T' + h + ':00:00')) done++;
-    }));
-
-    const intensity = total === 0 ? 0 : Math.round((done / total) * 100);
-    if (fillEl) fillEl.style.width = `${intensity}%`;
-    
-    if (noteEl) {
-        const load = intensity > 70 ? 'Extreme' : intensity > 40 ? 'High' : 'Moderate';
-        noteEl.innerHTML = `Cognitive Load: <strong style="color:var(--text)">${load}</strong> (${done}/${total} papers)`;
-    }
-}
 
 async function setupTargets(uid) {
     const list = document.querySelector('.p-target-list');

@@ -8,9 +8,9 @@ export async function getStudyAdvice(uid) {
         const hour = new Date().getHours();
         let suggestion = "";
         if (hour < 12) {
-            suggestion = "Morning peak! Priority: **EM-4**. Suggesting a 90-min deep focus session on past year papers.";
+            suggestion = "Morning peak! Priority: **cp**. Suggesting a 90-min deep focus session.";
         } else if (hour < 18) {
-            suggestion = "Afternoon dip. Switch to active recall or lighter tasks like **ALC Revision**.";
+            suggestion = "Afternoon dip. Switch to active recall or lighter tasks like **Subject Revision**.";
         } else {
             suggestion = "Evening wrap-up. Review today's mistakes and plan tomorrow's 3 critical targets.";
         }

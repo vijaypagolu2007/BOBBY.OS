@@ -29,7 +29,7 @@
 - [x] **Contribution Heatmap**: GitHub-style grid for daily habit consistency.
 - [x] **CP Rating Tracker**: Codeforces & LeetCode stats via API integration.
 - [x] **Progress Charts**: Weekly/monthly trends for habits and CP problems.
-- [ ] **Score Tracker**: Record and visualize scores across semesters.
+- [x] **Score Tracker**: Record and visualize scores across semesters.
 
 ---
 

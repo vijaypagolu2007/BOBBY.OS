@@ -1,20 +1,15 @@
 import { dbLoad, dbSave } from './db.js';
 import { showToast } from './utils.js';
-import { EXAMS } from './exams.js';
 
 let currentUid = null;
 
-export function initStudy(uid) {
+export async function initStudy(uid) {
     currentUid = uid;
     
-    // Extract unique subjects from EXAMS
-    const subjects = new Set();
-    EXAMS.forEach(ex => {
-        ex.papers.forEach(p => subjects.add(p.name));
-    });
-    const subjectList = Array.from(subjects).sort();
+    // Load stored subjects from DB (user-managed list)
+    const storedSubjects = await dbLoad(uid, 'study:subjects', []);
+    const subjectList = [...storedSubjects].sort();
 
-    // Populate selectors
     const populateSelect = (id) => {
         const sel = document.getElementById(id);
         if (!sel) return;
@@ -30,6 +25,25 @@ export function initStudy(uid) {
     populateSelect('formula-subject-sel');
     populateSelect('rev-subject-sel');
     populateSelect('note-subject-sel');
+
+    // Wire up "Add Subject" button if present
+    const addSubBtn = document.getElementById('add-subject-btn');
+    const subInput = document.getElementById('new-subject-input');
+    if (addSubBtn && subInput) {
+        addSubBtn.onclick = async () => {
+            const name = subInput.value.trim();
+            if (!name) return;
+            if (storedSubjects.includes(name)) {
+                showToast('Subject already exists');
+                return;
+            }
+            storedSubjects.push(name);
+            await dbSave(uid, 'study:subjects', storedSubjects);
+            subInput.value = '';
+            initStudy(uid); // re-init to refresh selectors
+            showToast(`Added "${name}" ✓`);
+        };
+    }
 
     // 1. Formula Vault
     setupFormulaVault(uid);

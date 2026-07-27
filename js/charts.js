@@ -150,3 +150,70 @@ export async function renderProgressCharts(uid) {
         });
     }
 }
+
+let scoreChartInstance = null;
+
+export async function renderScoreChart(uid) {
+    if (!window.Chart) return;
+    const scoreCtx = document.getElementById('score-trend-chart');
+    if (!scoreCtx) return;
+
+    const semData = await dbLoad(uid, 'exam:sem_scores', {});
+    const semNames = Object.keys(semData).sort((a, b) => {
+        // Simple numeric sorting if semester names end in numbers
+        const numA = parseInt(a.replace(/\D/g, '')) || 0;
+        const numB = parseInt(b.replace(/\D/g, '')) || 0;
+        return numA - numB || a.localeCompare(b);
+    });
+    
+    let labels = [];
+    let data = [];
+
+    if (semNames.length > 0) {
+        semNames.forEach(semName => {
+            labels.push(semName);
+            const subjects = semData[semName] || [];
+            if (subjects.length > 0) {
+                const totalGpa = subjects.reduce((acc, s) => acc + (parseFloat(s.grade) || 0), 0);
+                const avgGpa = totalGpa / subjects.length;
+                data.push(parseFloat(avgGpa.toFixed(2)));
+            } else {
+                data.push(0);
+            }
+        });
+    } else {
+        labels = ['No Data'];
+        data = [0];
+    }
+
+    if (scoreChartInstance) scoreChartInstance.destroy();
+    
+    scoreChartInstance = new Chart(scoreCtx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'GPA',
+                data: data,
+                borderColor: '#20d68a',
+                backgroundColor: 'rgba(32, 214, 138, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { 
+                    min: 0,
+                    max: 10,
+                    grid: { color: 'rgba(255,255,255,0.05)' } 
+                },
+                x: { grid: { display: false } }
+            },
+            plugins: { legend: { display: false } }
+        }
+    });
+}

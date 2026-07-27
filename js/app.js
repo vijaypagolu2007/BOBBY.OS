@@ -8,6 +8,7 @@ import { wkKey, showToast } from './utils.js';
 import { DAY_N, setSlots, defSlots, getSlots } from './data.js';
 import { initPowerHub } from './power.js';
 import { initDiary } from './diary.js';
+import { setupScoreTracker } from './scores.js';
 
 // Phase 3: PWA & Notifications imports
 import { registerSW } from 'virtual:pwa-register';
@@ -61,9 +62,7 @@ function loadStoredSettings() {
 
     // 3. Notification toggle checkboxes
     const chk330 = document.getElementById('chk-330-alert');
-    const chkExam = document.getElementById('chk-exam-alert');
     if (chk330) chk330.checked = localStorage.getItem('alert:330') !== 'false';
-    if (chkExam) chkExam.checked = localStorage.getItem('alert:exam') !== 'false';
 }
 
 async function init() {
@@ -230,8 +229,11 @@ async function bootApp(user) {
                 }) || 'habit';
                 
                 if (activeTab === 'sched') renderSched(user.uid);
-                if (activeTab === 'habit') renderHabits(user.uid);
-                if (activeTab === 'exam') renderExam(user.uid);
+                if (activeTab === 'habit') {
+                    renderHabits(user.uid);
+                    setupScoreTracker(user.uid);
+                }
+
                 if (activeTab === 'power') initPowerHub(user.uid);
                 if (activeTab === 'study') initStudy(user.uid);
                 if (activeTab === 'notes') initDiary(user.uid);
@@ -284,8 +286,11 @@ async function bootApp(user) {
         }) || 'habit';
 
         if (activeTab === 'sched') renderSched(user.uid);
-        if (activeTab === 'habit') renderHabits(user.uid);
-        if (activeTab === 'exam') renderExam(user.uid);
+        if (activeTab === 'habit') {
+            renderHabits(user.uid);
+            setupScoreTracker(user.uid);
+        }
+
         if (activeTab === 'power') initPowerHub(user.uid);
         if (activeTab === 'study') initStudy(user.uid);
         if (activeTab === 'notes') initDiary(user.uid);
@@ -320,8 +325,7 @@ async function bootApp(user) {
     switchTab(tab);
     
 
-
-    // Initial check for exam/habit reminders on page boot
+    // Initial check for habit reminders on page boot
     setTimeout(() => {
         checkAndTriggerHabitAlert(user.uid);
     }, 3000);
@@ -345,7 +349,10 @@ function switchTab(t) {
     if (uid) dbSave(uid, 'ui:tab', t).catch(() => {});
     
     if (t === 'sched' && uid) renderSched(uid);
-    if (t === 'habit' && uid) renderHabits(uid);
+    if (t === 'habit' && uid) {
+        renderHabits(uid);
+        setupScoreTracker(uid);
+    }
     if (t === 'power' && uid) initPowerHub(uid);
     if (t === 'notes' && uid) initDiary(uid);
 }
@@ -522,17 +529,10 @@ function setupEventListeners() {
 
     // Intelligent Notifications Checkboxes & Controls
     const chk330 = document.getElementById('chk-330-alert');
-    const chkExam = document.getElementById('chk-exam-alert');
     if (chk330) {
         chk330.addEventListener('change', () => {
             localStorage.setItem('alert:330', chk330.checked);
             showToast(`3:30 AM alerts ${chk330.checked ? 'active 🔔' : 'disabled'}`);
-        });
-    }
-    if (chkExam) {
-        chkExam.addEventListener('change', () => {
-            localStorage.setItem('alert:exam', chkExam.checked);
-            showToast(`Exam morning alerts ${chkExam.checked ? 'active 🔔' : 'disabled'}`);
         });
     }
 
