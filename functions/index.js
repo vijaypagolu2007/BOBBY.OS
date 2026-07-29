@@ -86,7 +86,15 @@ Give a VERY short, punchy 1-2 sentence piece of advice targeting their weakest a
 // ─── Cloud Function ───────────────────────────────────────────────────────────
 
 exports.geminiProxy = onRequest(
-    { secrets: [GEMINI_API_KEY], cors: true },
+    {
+        secrets: [GEMINI_API_KEY],
+        // Only accept requests from the two Firebase Hosting origins.
+        // Add a custom domain here if you configure one later.
+        cors: [
+            'https://bobbyos-e7ba5.web.app',
+            'https://bobbyos-e7ba5.firebaseapp.com',
+        ],
+    },
     async (req, res) => {
         if (req.method !== 'POST') {
             res.status(405).json({ error: 'Method not allowed' });
