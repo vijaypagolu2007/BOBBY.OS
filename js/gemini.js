@@ -58,6 +58,14 @@ async function buildCPSummary(uid) {
 const CLOUD_FN_URL = import.meta.env.VITE_GEMINI_PROXY_URL || null;
 const DEV_API_KEY  = import.meta.env.VITE_GEMINI_API_KEY   || null;
 
+/** Distinguishes rate-limit rejections from real errors for better UX. */
+class RateLimitError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'RateLimitError';
+    }
+}
+
 /** Fetches an ID token for the current user, or null if not authenticated. */
 async function getIdToken() {
     try {
@@ -86,7 +94,10 @@ async function callGeminiProxy(ctx) {
 
     if (!response.ok) {
         const errorBody = await response.json().catch(() => null);
-        throw new Error(errorBody?.error || `Proxy error: ${response.status}`);
+        const message = errorBody?.error || `Proxy error: ${response.status}`;
+        // Surface rate-limit as a distinct error type so callers can show friendlier UI
+        if (response.status === 429) throw new RateLimitError(message);
+        throw new Error(message);
     }
 
     return response.json();
@@ -190,6 +201,10 @@ export async function getStudyAdvice(uid) {
 
         return extractAdvice(data);
     } catch (error) {
+        if (error instanceof RateLimitError) {
+            // Friendly UX — don't treat this like a real failure
+            return `⏳ ${error.message}`;
+        }
         console.error("Gemini API Error:", error.message);
         return `"AI Advisor unavailable: ${error.message}"`;
     }
