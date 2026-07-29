@@ -1,6 +1,6 @@
 import { initAuth, checkSession, loginWithGoogle, doLogin, doRegister, doLogout, currentUser } from './auth.js';
 import { auth } from './firebase.js';
-import { dbLoad, dbSave, uKey, listenToUserData, DB, S, preloadAllUserData, clearCache } from './db.js';
+import { dbLoad, dbSave, uKey, listenToUserData, DB, S, preloadAllUserData, clearCache, initSyncIndicator } from './db.js';
 import { renderHabits, weekOff, setWeekOff } from './habits.js';
 import { renderSched, curDay, setCurDay } from './schedule.js';
 import { renderNotes } from './notes.js';
@@ -15,7 +15,11 @@ import { registerSW } from 'virtual:pwa-register';
 import {
     updateNotificationBadge,
     requestNotificationPermission,
+    openNotificationSettings,
+    refreshNotificationSchedules,
     checkAndTriggerHabitAlert,
+    checkAndTriggerExamAlert,
+    loadExamDates,
     triggerTestNotification
 } from './notifications.js';
 
@@ -63,24 +67,15 @@ function loadStoredSettings() {
     // 3. Notification toggle checkboxes
     const chk330 = document.getElementById('chk-330-alert');
     if (chk330) chk330.checked = localStorage.getItem('alert:330') !== 'false';
+
+    const chkExam = document.getElementById('chk-exam-alert');
+    if (chkExam) chkExam.checked = localStorage.getItem('alert:exam') !== 'false';
 }
 
 async function init() {
     loadStoredSettings();
     updateNotificationBadge();
-
-    // Initial check for browser online/offline status
-    const syncInd = document.getElementById('sync-ind');
-    if (syncInd) {
-        syncInd.classList.remove('hidden');
-        if (navigator.onLine) {
-            syncInd.textContent = '✓ saved';
-            syncInd.className = 'sync-indicator saved';
-        } else {
-            syncInd.textContent = 'local only';
-            syncInd.className = 'sync-indicator offline';
-        }
-    }
+    initSyncIndicator();
 
     const loading = document.getElementById('loading-screen');
     const authScreen = document.getElementById('auth-screen');
@@ -127,6 +122,7 @@ async function bootApp(user) {
 
     // Preload all user data in the background to prevent boot hangs or blocking event listeners
     preloadAllUserData(user.uid).catch(err => console.error("BOBBY.OS: Preload background error:", err));
+    await loadExamDates(user.uid);
 
     // Configure Account Diagnostic Modal fields on boot
     const diagUid = document.getElementById('diag-uid');
@@ -278,7 +274,11 @@ async function bootApp(user) {
     }
 
     // Real-time listener for data sync
-    listenToUserData(user.uid, (data) => {
+    listenToUserData(user.uid, async (data) => {
+        if (data['exams:list']) {
+            await loadExamDates(user.uid);
+        }
+
         // Look up the actually active DOM tab to ensure we sync what the user is currently viewing
         const activeTab = ['habit', 'power', 'sched', 'notes'].find(id => {
             const el = document.getElementById(`tab-${id}`);
@@ -323,16 +323,21 @@ async function bootApp(user) {
 
     const tab = await dbLoad(user.uid, 'ui:tab', 'habit');
     switchTab(tab);
+
+    await updateNotificationBadge();
+    await refreshNotificationSchedules();
     
 
-    // Initial check for habit reminders on page boot
+    // Initial check for reminders on page boot
     setTimeout(() => {
         checkAndTriggerHabitAlert(user.uid);
+        checkAndTriggerExamAlert(user.uid);
     }, 3000);
 
     // Run active background reminders interval check every 60s
     setInterval(() => {
         checkAndTriggerHabitAlert(user.uid);
+        checkAndTriggerExamAlert(user.uid);
     }, 60000);
 }
 
@@ -530,17 +535,35 @@ function setupEventListeners() {
     // Intelligent Notifications Checkboxes & Controls
     const chk330 = document.getElementById('chk-330-alert');
     if (chk330) {
-        chk330.addEventListener('change', () => {
+        chk330.addEventListener('change', async () => {
             localStorage.setItem('alert:330', chk330.checked);
             showToast(`3:30 AM alerts ${chk330.checked ? 'active 🔔' : 'disabled'}`);
+            await refreshNotificationSchedules();
+        });
+    }
+
+    const chkExam = document.getElementById('chk-exam-alert');
+    if (chkExam) {
+        chkExam.addEventListener('change', async () => {
+            localStorage.setItem('alert:exam', chkExam.checked);
+            showToast(`Exam-day alerts ${chkExam.checked ? 'active 📝' : 'disabled'}`);
+            await refreshNotificationSchedules();
         });
     }
 
     const enableNotiBtn = document.getElementById('btn-enable-noti');
     const testNotiBtn = document.getElementById('btn-test-noti');
     if (enableNotiBtn) {
-        enableNotiBtn.addEventListener('click', () => {
-            requestNotificationPermission();
+        enableNotiBtn.addEventListener('click', async () => {
+            const badge = document.getElementById('noti-status');
+            if (badge?.textContent === 'DENIED') {
+                const opened = await openNotificationSettings();
+                if (!opened) {
+                    showToast('Enable notifications in Android Settings > Apps > BOBBY.OS > Notifications');
+                }
+                return;
+            }
+            await requestNotificationPermission();
         });
     }
     if (testNotiBtn) {

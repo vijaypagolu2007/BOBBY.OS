@@ -7,7 +7,8 @@
 ---
 
 ## ✅ PHASE 1: Pro-Minimalist Restoration (Complete)
-*Goal: Restored the elite minimalist aesthetic of V1.0 with modern tech*
+
+_Goal: Restored the elite minimalist aesthetic of V1.0 with modern tech_
 
 - [x] **Project Scaffolding**: Migrated to Vite/Modular JS structure.
 - [x] **UI Reversion**: Restored the clean, functional V1.0 aesthetic.
@@ -17,15 +18,18 @@
 ---
 
 ## ✅ PHASE 2: The Power User OS (Complete)
-*Goal: Implement practical features that make BOBBY.OS indispensable*
+
+_Goal: Implement practical features that make BOBBY.OS indispensable_
 
 ### ⏱️ Productivity Tools
+
 - [x] **Zen Pomodoro**: 25/5 or custom timer integrated into every habit slot.
 - [x] **Exam Countdown**: Live countdown for the current/next exam (CT2/SEE).
 - [x] **Daily Target Setter**: Set numeric goals (e.g., "Solve 5 problems") per habit.
 - [x] **Sleep Tracker**: Log actual sleep time vs scheduled vs target.
 
 ### 📊 Analytics & Progress
+
 - [x] **Contribution Heatmap**: GitHub-style grid for daily habit consistency.
 - [x] **CP Rating Tracker**: Codeforces & LeetCode stats via API integration.
 - [x] **Progress Charts**: Weekly/monthly trends for habits and CP problems.
@@ -34,19 +38,19 @@
 ---
 
 ## ✅ PHASE 3: Social & Professional Delivery (Complete)
-*Goal: Intelligence, Reminders, and Customization*
 
-- [ ] **Intelligent Notifications**:
-    - [ ] **Browser Push**: 3:30 AM habit triggers and exam-day alerts.
-    - [ ] **Sync Indicator**: Visual feedback for cloud data state.
+_Goal: Intelligence, Reminders, and Customization_
+
+- [x] **Intelligent Notifications**:
+  - [x] **Browser Push**: 3:30 AM habit triggers and exam-day alerts.
+  - [x] **Sync Indicator**: Visual feedback for cloud data state.
 - [ ] **Premium Customization**:
-    - [ ] **Theme Switcher**: Red, Green, and Monochrome premium modes.
-    - [ ] **UI Scaling**: Compact mode toggle for "Power User" density.
+  - [ ] **Theme Switcher**: Red, Green, and Monochrome premium modes.
+  - [ ] **UI Scaling**: Compact mode toggle for "Power User" density.
 - [ ] **PWA Mastery**:
-    - [ ] 100% Offline coverage with optimized background sync.
-    - [ ] App Store/Play Store ready assets.
+  - [ ] 100% Offline coverage with optimized background sync.
+  - [ ] App Store/Play Store ready assets.
 
 ---
 
-*“Success is a habit, not an event.” — BOBBY.OS Team*
-
+_“Success is a habit, not an event.” — BOBBY.OS Team_
