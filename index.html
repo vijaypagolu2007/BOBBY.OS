@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,480 +8,621 @@
     <meta name="description" content="A powerful productivity system for students and developers.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="./css/styles.css">
 </head>
+
 <body>
-<!-- MAIN APP CONTAINER -->
+    <!-- MAIN APP CONTAINER -->
 
-<!-- LOADING SCREEN -->
-<div id="loading-screen">
-    <div class="loading-logo">BOBBY<em>.OS</em></div>
-    <div class="loading-bar"><div class="loading-bar-fill"></div></div>
-    <div class="loading-sub">Initializing System</div>
-</div>
-
-<!-- AUTH SCREEN -->
-<div id="auth-screen">
-    <div class="auth-box">
-        <div class="auth-logo">BOBBY<em>.OS</em></div>
-        <div class="auth-sub">Productivity System</div>
-        <div class="auth-tabs">
-            <button class="auth-tab active" id="at-login">Sign In</button>
-            <button class="auth-tab" id="at-register">Register</button>
+    <!-- LOADING SCREEN -->
+    <div id="loading-screen">
+        <div class="loading-logo">BOBBY<em>.OS</em></div>
+        <div class="loading-bar">
+            <div class="loading-bar-fill"></div>
         </div>
-        <div id="form-login">
-            <div class="auth-field"><label>Email</label><input type="email" id="l-email" placeholder="you@example.com"></div>
-            <div class="auth-field"><label>Password</label><input type="password" id="l-pass" placeholder="••••••••"></div>
-            <button class="auth-btn" id="l-btn">Sign In</button>
-            <div class="auth-divider"><span>OR</span></div>
-            <button class="auth-btn google" id="g-btn">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
-                Sign in with Google
-            </button>
-            <div class="auth-err" id="l-err"></div>
-        </div>
-        <div id="form-register" style="display:none">
-            <div class="auth-field"><label>Full Name</label><input type="text" id="r-name" placeholder="Bobby Fisher"></div>
-            <div class="auth-field"><label>Email</label><input type="email" id="r-email" placeholder="you@example.com"></div>
-            <div class="auth-field"><label>Password</label><input type="password" id="r-pass" placeholder="Min 6 chars"></div>
-            <button class="auth-btn" id="r-btn">Create Account</button>
-            <div class="auth-err" id="r-err"></div>
-        </div>
-        <div class="db-badge" id="db-status">Initializing...</div>
+        <div class="loading-sub">Initializing System</div>
     </div>
-</div>
 
-<!-- MAIN APP -->
-<div id="app" style="display:none">
-    <div class="topbar">
-        <div class="brand">
-            <h1>BOBBY<em>.OS</em></h1>
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <span class="sub">V1.0 PRO</span>
-                <span id="u-uid" style="display: none !important;"></span>
+    <!-- AUTH SCREEN -->
+    <div id="auth-screen">
+        <div class="auth-box">
+            <div class="auth-logo">BOBBY<em>.OS</em></div>
+            <div class="auth-sub">Productivity System</div>
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="at-login">Sign In</button>
+                <button class="auth-tab" id="at-register">Register</button>
             </div>
-        </div>
-        <div class="topbar-right" style="display: flex; align-items: center; gap: 8px;">
-            <div id="top-date" style="display: none !important;">Monday, 5 May</div>
-            <div id="sync-ind" class="sync-indicator hidden" style="display: none !important;">✓ saved</div>
-            
-            <button class="auth-user-tag" id="auth-user-tag-btn" title="Click for Account Diagnostics" style="display: flex; align-items: center; gap: 8px; cursor: pointer; background: var(--accent-lo); border: 1px solid var(--border-hi); border-radius: 99px; padding: 4px 10px; min-height: 28px; box-sizing: border-box; outline: none; font-family: inherit; color: inherit; font-size: inherit; text-align: left; -webkit-tap-highlight-color: transparent;">
-                <div class="auth-avatar" id="u-avatar" style="margin: 0; display: flex; align-items: center; justify-content: center;">B</div>
-                <div class="auth-name" id="u-name" style="font-size: 10px; font-weight: 600; color: var(--text); letter-spacing: 0.04em; display: none;">Bobby</div>
-                <span style="font-size: 10px; line-height: 1; filter: drop-shadow(0 0 4px var(--accent-md));">🛡️</span>
-            </button>
+            <div id="form-login">
+                <div class="auth-field"><label>Email</label><input type="email" id="l-email"
+                        placeholder="you@example.com"></div>
+                <div class="auth-field"><label>Password</label><input type="password" id="l-pass"
+                        placeholder="••••••••"></div>
+                <button class="auth-btn" id="l-btn">Sign In</button>
+                <div class="auth-divider"><span>OR</span></div>
+                <button class="auth-btn google" id="g-btn">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                    Sign in with Google
+                </button>
+                <div class="auth-err" id="l-err"></div>
+            </div>
+            <div id="form-register" style="display:none">
+                <div class="auth-field"><label>Full Name</label><input type="text" id="r-name"
+                        placeholder="Bobby Fisher"></div>
+                <div class="auth-field"><label>Email</label><input type="email" id="r-email"
+                        placeholder="you@example.com"></div>
+                <div class="auth-field"><label>Password</label><input type="password" id="r-pass"
+                        placeholder="Min 6 chars"></div>
+                <button class="auth-btn" id="r-btn">Create Account</button>
+                <div class="auth-err" id="r-err"></div>
+            </div>
+            <div class="db-badge" id="db-status">Initializing...</div>
         </div>
     </div>
 
-    <div class="tabs">
-        <div class="tab active t-habit" id="tab-habit"><span class="tab-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></span>Habits</div>
-        <div class="tab t-power" id="tab-power"><span class="tab-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg></span>Power Hub</div>
-        <div class="tab t-sched" id="tab-sched"><span class="tab-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></span>Schedule</div>
-        <div class="tab t-notes" id="tab-notes"><span class="tab-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg></span>Diary</div>
-    </div>
-    <div class="tab-line"></div>
-
-    <div class="wrap">
-        <!-- HABIT PANEL -->
-        <div id="panel-habit" class="panel active">
-            <div class="slbl">Overall Performance</div>
-            <div class="stats-row">
-                <div class="stat-card"><div class="sv ca" id="s-grade">S</div><div class="sl">Current Grade</div></div>
-                <div class="stat-card"><div class="sv cg" id="s-done">0/0</div><div class="sl">Completed</div></div>
-                <div class="stat-card"><div class="sv cy" id="s-streak">0</div><div class="sl">Best Streak</div></div>
-                <div class="stat-card"><div class="sv cw" id="s-pct">0%</div><div class="sl">Consistency</div></div>
-            </div>
-
-            <div class="slbl">Contribution Heatmap</div>
-            <div id="habit-heatmap" class="heatmap-card"></div>
-
-            <div class="slbl" style="margin-top: 32px;">Weekly Progress</div>
-            <div class="week-nav">
-                <button class="nav-btn" id="prev">‹</button>
-                <div class="week-info" id="wk-range">Loading...</div>
-                <button class="nav-btn" id="next">›</button>
-            </div>
-
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th style="padding-left:14px">Habit / Activity</th>
-                            <th class="dc" id="h0">Mon</th><th class="dc" id="h1">Tue</th><th class="dc" id="h2">Wed</th>
-                            <th class="dc" id="h3">Thu</th><th class="dc" id="h4">Fri</th><th class="dc" id="h5">Sat</th>
-                            <th class="dc" id="h6">Sun</th><th class="dc">Strk</th><th class="dc">Perf</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tbody"></tbody>
-                </table>
-            </div>
-
-            <div class="slbl">Progress Charts</div>
-            <div class="power-grid charts-grid" style="margin-bottom: 24px;">
-                <div class="power-card">
-                    <div class="p-card-hdr">
-                        <h3>CP Rating</h3>
-                        <span class="p-badge" style="background:var(--accent-lo); color:var(--accent)">CODEFORCES</span>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="cp-trend-chart" height="150"></canvas>
-                    </div>
+    <!-- MAIN APP -->
+    <div id="app" style="display:none">
+        <div class="topbar">
+            <div class="brand">
+                <h1>BOBBY<em>.OS</em></h1>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="sub">V1.0 PRO</span>
+                    <span id="u-uid" style="display: none !important;"></span>
                 </div>
-                <div class="power-card">
-                    <div class="p-card-hdr">
-                        <h3>Score Tracker</h3>
-                        <span class="p-badge" style="background:var(--accent-lo); color:var(--accent)">SEMESTERS</span>
-                    </div>
-                    <div class="chart-container" style="margin-bottom: 12px; height: 150px; position: relative;">
-                        <canvas id="score-trend-chart" height="150"></canvas>
-                    </div>
-                    <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-                        <select id="score-sem-select" style="flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; color: var(--text); font-size: 11px; outline: none; font-family: var(--mono);"></select>
-                        <button id="score-add-sem-btn" style="background: var(--accent); border: none; border-radius: 6px; color: #fff; padding: 4px 8px; font-size: 11px; cursor: pointer;">+ Sem</button>
-                        <button id="score-del-sem-btn" style="background: none; border: 1px solid var(--red); border-radius: 6px; color: var(--red); padding: 4px 8px; font-size: 11px; cursor: pointer;">✕</button>
-                    </div>
-                    <div id="score-subjects-container" style="max-height: 120px; overflow-y: auto; margin-bottom: 10px; display: flex; flex-direction: column; gap: 6px;"></div>
-                    <div style="display: flex; gap: 6px;">
-                        <input id="score-sub-name" type="text" placeholder="Course Name" style="flex: 2; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; color: var(--text); font-size: 11px; outline: none; font-family: var(--mono);">
-                        <input id="score-sub-grade" type="number" step="0.1" min="0" max="10" placeholder="GPA" style="flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; color: var(--text); font-size: 11px; outline: none; font-family: var(--mono); text-align: center;">
-                        <button id="score-add-sub-btn" style="background: var(--accent); border: none; border-radius: 6px; color: #fff; padding: 4px 10px; font-size: 11px; cursor: pointer;">+</button>
-                    </div>
-                </div>
+            </div>
+            <div class="topbar-right" style="display: flex; align-items: center; gap: 8px;">
+                <div id="top-date" style="display: none !important;">Monday, 5 May</div>
+                <div id="sync-ind" class="sync-indicator hidden" title="Cloud sync status">✓ synced</div>
+
+                <button class="auth-user-tag" id="auth-user-tag-btn" title="Click for Account Diagnostics"
+                    style="display: flex; align-items: center; gap: 8px; cursor: pointer; background: var(--accent-lo); border: 1px solid var(--border-hi); border-radius: 99px; padding: 4px 10px; min-height: 28px; box-sizing: border-box; outline: none; font-family: inherit; color: inherit; font-size: inherit; text-align: left; -webkit-tap-highlight-color: transparent;">
+                    <div class="auth-avatar" id="u-avatar"
+                        style="margin: 0; display: flex; align-items: center; justify-content: center;">B</div>
+                    <div class="auth-name" id="u-name"
+                        style="font-size: 10px; font-weight: 600; color: var(--text); letter-spacing: 0.04em; display: none;">
+                        Bobby</div>
+                    <span
+                        style="font-size: 10px; line-height: 1; filter: drop-shadow(0 0 4px var(--accent-md));">🛡️</span>
+                </button>
             </div>
         </div>
-        
-        <!-- POWER HUB PANEL -->
-        <div id="panel-power" class="panel">
-            <div class="power-grid">
-                <!-- Zen Pomodoro -->
-                <div class="power-card p-pomodoro">
-                    <div class="p-card-hdr">
-                        <h3>Zen Pomodoro</h3>
-                        <span class="p-badge">FOCUS_MODE</span>
-                    </div>
-                    <div class="p-timer-display" id="p-timer">25:00</div>
 
-                    <div style="margin: 0 0 12px 0; display:flex; gap:8px;">
-                        <select id="p-duration" style="flex:1; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:8px 12px; color:var(--text); font-family:var(--mono); font-size:11px; outline:none;">
-                            <option value="25">25 min — Classic Pomodoro</option>
-                            <option value="45">45 min — Deep Work</option>
-                            <option value="60">60 min — Flow Session</option>
-                            <option value="90">90 min — Ultra Focus</option>
-                        </select>
-                    </div>
+        <div class="tabs">
+            <div class="tab active t-habit" id="tab-habit"><span class="tab-icon"><svg
+                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 20h9"></path>
+                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                    </svg></span>Habits</div>
+            <div class="tab t-power" id="tab-power"><span class="tab-icon"><svg xmlns="http://www.w3.org/2000/svg"
+                        width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                        <path d="M2 17l10 5 10-5"></path>
+                        <path d="M2 12l10 5 10-5"></path>
+                    </svg></span>Power Hub</div>
+            <div class="tab t-sched" id="tab-sched"><span class="tab-icon"><svg xmlns="http://www.w3.org/2000/svg"
+                        width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg></span>Schedule</div>
+            <div class="tab t-notes" id="tab-notes"><span class="tab-icon"><svg xmlns="http://www.w3.org/2000/svg"
+                        width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                    </svg></span>Diary</div>
+        </div>
+        <div class="tab-line"></div>
 
-                    <div style="margin: 0 0 16px 0;">
-                        <select id="p-habit-select" style="width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: var(--text); font-family: var(--mono); font-size: 11px; outline: none;">
-                            <option value="">-- Link to Habit (Optional) --</option>
-                        </select>
+        <div class="wrap">
+            <!-- HABIT PANEL -->
+            <div id="panel-habit" class="panel active">
+                <div class="slbl">Overall Performance</div>
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <div class="sv ca" id="s-grade">S</div>
+                        <div class="sl">Current Grade</div>
                     </div>
-
-                    <div class="p-timer-controls">
-                        <button class="p-btn" id="p-reset">Reset</button>
-                        <button class="p-btn primary" id="p-start">Start Session</button>
+                    <div class="stat-card">
+                        <div class="sv cg" id="s-done">0/0</div>
+                        <div class="sl">Completed</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="sv cy" id="s-streak">0</div>
+                        <div class="sl">Best Streak</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="sv cw" id="s-pct">0%</div>
+                        <div class="sl">Consistency</div>
                     </div>
                 </div>
 
-                <!-- CP Rating Tracker -->
-                <div class="power-card p-cp">
-                    <div class="p-card-hdr">
-                        <h3>Codeforces</h3>
-                        <span id="cp-handle-display" style="font-size:10px; color:var(--dim); font-family:var(--mono);">Vijaypagolu96</span>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom: 8px;">
-                        <span style="font-size:32px; font-weight:800; color:var(--text)" id="cp-rating">1450</span>
-                        <span style="font-size:12px; color:var(--dim)" id="cp-rank">Specialist</span>
-                    </div>
-                    <div class="p-sleep-wave" style="height:3px; background:linear-gradient(90deg, #6c63ff 50%, var(--surface) 50%); margin-bottom: 12px;"></div>
-                    <div style="display:flex; justify-content:space-between; font-size:10px; color:var(--dim); margin-bottom: 8px;">
-                        <span>Max: <strong style="color:var(--text)" id="cp-max">1510</strong></span>
-                        <button id="cp-refresh" style="background:none; border:none; color:var(--accent); cursor:pointer; font-size:10px;">Refresh API</button>
-                    </div>
-                    <div id="cf-handle-wrap" style="display:flex; gap:6px; align-items:center;">
-                        <input id="cf-handle-input" type="text" placeholder="Handle (e.g. tourist)"
-                            style="flex:1; background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:4px 8px; color:var(--text); font-size:10px; outline:none; font-family:var(--mono);">
-                        <button id="cf-handle-save" style="background:var(--glass); border:1px solid var(--border); border-radius:6px; color:var(--accent); padding:4px 8px; cursor:pointer; font-size:10px;">Set</button>
-                    </div>
+                <div class="slbl">Contribution Heatmap</div>
+                <div id="habit-heatmap" class="heatmap-card"></div>
+
+                <div class="slbl" style="margin-top: 32px;">Weekly Progress</div>
+                <div class="week-nav">
+                    <button class="nav-btn" id="prev">‹</button>
+                    <div class="week-info" id="wk-range">Loading...</div>
+                    <button class="nav-btn" id="next">›</button>
                 </div>
 
-                <!-- Night Shift -->
-                <div class="power-card p-sleep">
-                    <div class="p-card-hdr">
-                        <h3>Night Shift</h3>
-                        <span class="p-badge">RECOVERY</span>
-                    </div>
-                    <div class="p-sleep-stats">
-                        <div class="p-stat">
-                            <span class="p-stat-lbl">Target</span>
-                            <span class="p-stat-val">8.0h</span>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="padding-left:14px">Habit / Activity</th>
+                                <th class="dc" id="h0">Mon</th>
+                                <th class="dc" id="h1">Tue</th>
+                                <th class="dc" id="h2">Wed</th>
+                                <th class="dc" id="h3">Thu</th>
+                                <th class="dc" id="h4">Fri</th>
+                                <th class="dc" id="h5">Sat</th>
+                                <th class="dc" id="h6">Sun</th>
+                                <th class="dc">Strk</th>
+                                <th class="dc">Perf</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody"></tbody>
+                    </table>
+                </div>
+
+                <div class="slbl">Progress Charts</div>
+                <div class="power-grid charts-grid" style="margin-bottom: 24px;">
+                    <div class="power-card">
+                        <div class="p-card-hdr">
+                            <h3>CP Rating</h3>
+                            <span class="p-badge"
+                                style="background:var(--accent-lo); color:var(--accent)">CODEFORCES</span>
                         </div>
-                        <div class="p-stat">
-                            <span class="p-stat-lbl">Actual</span>
-                            <span class="p-stat-val hi" id="p-sleep-actual">--h</span>
+                        <div class="chart-container">
+                            <canvas id="cp-trend-chart" height="150"></canvas>
                         </div>
                     </div>
-                    <div class="p-sleep-wave" id="p-sleep-wave"></div>
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <p class="p-card-note" id="p-sleep-eff">Efficiency: --%</p>
-                        <div class="p-add-row" style="margin-top:0;">
-                            <input type="number" id="p-sleep-input" placeholder="e.g. 7.5" step="0.5" min="0" max="24" style="width: 60px;">
-                            <button id="p-sleep-add-btn" style="width: 32px; height: 32px; background: var(--accent); border: none; border-radius: 6px; color: #fff; cursor: pointer;">+</button>
+                    <div class="power-card">
+                        <div class="p-card-hdr">
+                            <h3>Score Tracker</h3>
+                            <span class="p-badge"
+                                style="background:var(--accent-lo); color:var(--accent)">SEMESTERS</span>
+                        </div>
+                        <div class="chart-container" style="margin-bottom: 12px; height: 150px; position: relative;">
+                            <canvas id="score-trend-chart" height="150"></canvas>
+                        </div>
+                        <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                            <select id="score-sem-select"
+                                style="flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; color: var(--text); font-size: 11px; outline: none; font-family: var(--mono);"></select>
+                            <button id="score-add-sem-btn"
+                                style="background: var(--accent); border: none; border-radius: 6px; color: #fff; padding: 4px 8px; font-size: 11px; cursor: pointer;">+
+                                Sem</button>
+                            <button id="score-del-sem-btn"
+                                style="background: none; border: 1px solid var(--red); border-radius: 6px; color: var(--red); padding: 4px 8px; font-size: 11px; cursor: pointer;">✕</button>
+                        </div>
+                        <div id="score-subjects-container"
+                            style="max-height: 120px; overflow-y: auto; margin-bottom: 10px; display: flex; flex-direction: column; gap: 6px;">
+                        </div>
+                        <div style="display: flex; gap: 6px;">
+                            <input id="score-sub-name" type="text" placeholder="Course Name"
+                                style="flex: 2; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; color: var(--text); font-size: 11px; outline: none; font-family: var(--mono);">
+                            <input id="score-sub-grade" type="number" step="0.1" min="0" max="10" placeholder="GPA"
+                                style="flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; color: var(--text); font-size: 11px; outline: none; font-family: var(--mono); text-align: center;">
+                            <button id="score-add-sub-btn"
+                                style="background: var(--accent); border: none; border-radius: 6px; color: #fff; padding: 4px 10px; font-size: 11px; cursor: pointer;">+</button>
                         </div>
                     </div>
                 </div>
-                
-                <!-- Daily Target -->
-                <div class="power-card p-target">
-                    <div class="p-card-hdr">
-                        <h3>The Big 3</h3>
-                        <span class="p-badge">CRITICAL</span>
-                    </div>
-                    <ul class="p-target-list">
-                        <li>
-                            <div class="p-chk"></div>
-                            <span>Solve 3 CP Problems</span>
-                        </li>
-                        <li>
-                            <div class="p-chk"></div>
-                            <span>Refactor Auth Module</span>
-                        </li>
-                        <li>
-                            <div class="p-chk"></div>
-                            <span>Leg Day Workout</span>
-                        </li>
-                    </ul>
-                </div>
+            </div>
 
-                <!-- Gemini Intelligence -->
-                <div class="power-card p-ai">
-                    <div class="p-card-hdr">
-                        <h3>Gemini Intelligence</h3>
-                        <span class="p-badge" style="background:var(--accent-lo); color:var(--accent)">AI_ADVISOR</span>
-                    </div>
-                    <div class="p-ai-content">
-                        <div class="p-ai-msg" id="ai-suggestion">
-                            "Analyzing your schedule....Suggesting a 2-hour deep focus session on Integrals tonight."
+            <!-- POWER HUB PANEL -->
+            <div id="panel-power" class="panel">
+                <div class="power-grid">
+                    <!-- Zen Pomodoro -->
+                    <div class="power-card p-pomodoro">
+                        <div class="p-card-hdr">
+                            <h3>Zen Pomodoro</h3>
+                            <span class="p-badge">FOCUS_MODE</span>
                         </div>
-                        <button class="p-btn primary" style="margin-top:14px" id="ai-refresh">Optimize Schedule</button>
-                    </div>
-                </div>
+                        <div class="p-timer-display" id="p-timer">25:00</div>
 
-                <!-- System Customizer -->
-                <div class="power-card p-customizer" style="grid-column: 1 / -1;">
-                    <div class="p-card-hdr">
-                        <h3>System Customizer</h3>
-                        <span class="p-badge" style="background:var(--accent-lo); color:var(--accent)">PREMIUM</span>
+                        <div style="margin: 0 0 12px 0; display:flex; gap:8px;">
+                            <select id="p-duration"
+                                style="flex:1; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:8px 12px; color:var(--text); font-family:var(--mono); font-size:11px; outline:none;">
+                                <option value="25">25 min — Classic Pomodoro</option>
+                                <option value="45">45 min — Deep Work</option>
+                                <option value="60">60 min — Flow Session</option>
+                                <option value="90">90 min — Ultra Focus</option>
+                            </select>
+                        </div>
+
+                        <div style="margin: 0 0 16px 0;">
+                            <select id="p-habit-select"
+                                style="width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: var(--text); font-family: var(--mono); font-size: 11px; outline: none;">
+                                <option value="">-- Link to Habit (Optional) --</option>
+                            </select>
+                        </div>
+
+                        <div class="p-timer-controls">
+                            <button class="p-btn" id="p-reset">Reset</button>
+                            <button class="p-btn primary" id="p-start">Start Session</button>
+                        </div>
                     </div>
-                    <div class="customizer-grid" style="gap: 24px; margin-top: 14px;">
-                        <!-- Left: Theme & Density -->
-                        <div>
-                            <h4 style="font-size: 11px; text-transform: uppercase; color: var(--muted); letter-spacing: 0.08em; margin-bottom: 10px; font-weight: 500;">Select Premium Theme</h4>
-                            <div class="theme-buttons" style="display: flex; gap: 10px; margin-bottom: 20px;">
-                                <button class="theme-btn active" data-theme="purple" title="Midnight Purple" style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--border-hi); background: #7c72ff; cursor: pointer; transition: all 0.2s; position: relative; outline: none;"></button>
-                                <button class="theme-btn" data-theme="red" title="Crimson Red" style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid transparent; background: #ff4d6d; cursor: pointer; transition: all 0.2s; position: relative; outline: none;"></button>
-                                <button class="theme-btn" data-theme="green" title="Emerald Green" style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid transparent; background: #20d68a; cursor: pointer; transition: all 0.2s; position: relative; outline: none;"></button>
-                                <button class="theme-btn" data-theme="mono" title="Matrix Monochrome" style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid transparent; background: #e0e0f0; cursor: pointer; transition: all 0.2s; position: relative; outline: none;"></button>
+
+                    <!-- CP Rating Tracker -->
+                    <div class="power-card p-cp">
+                        <div class="p-card-hdr">
+                            <h3>Codeforces</h3>
+                            <span id="cp-handle-display"
+                                style="font-size:10px; color:var(--dim); font-family:var(--mono);">Vijaypagolu96</span>
+                        </div>
+                        <div
+                            style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom: 8px;">
+                            <span style="font-size:32px; font-weight:800; color:var(--text)" id="cp-rating">1450</span>
+                            <span style="font-size:12px; color:var(--dim)" id="cp-rank">Specialist</span>
+                        </div>
+                        <div class="p-sleep-wave"
+                            style="height:3px; background:linear-gradient(90deg, #6c63ff 50%, var(--surface) 50%); margin-bottom: 12px;">
+                        </div>
+                        <div
+                            style="display:flex; justify-content:space-between; font-size:10px; color:var(--dim); margin-bottom: 8px;">
+                            <span>Max: <strong style="color:var(--text)" id="cp-max">1510</strong></span>
+                            <button id="cp-refresh"
+                                style="background:none; border:none; color:var(--accent); cursor:pointer; font-size:10px;">Refresh
+                                API</button>
+                        </div>
+                        <div id="cf-handle-wrap" style="display:flex; gap:6px; align-items:center;">
+                            <input id="cf-handle-input" type="text" placeholder="Handle (e.g. tourist)"
+                                style="flex:1; background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:4px 8px; color:var(--text); font-size:10px; outline:none; font-family:var(--mono);">
+                            <button id="cf-handle-save"
+                                style="background:var(--glass); border:1px solid var(--border); border-radius:6px; color:var(--accent); padding:4px 8px; cursor:pointer; font-size:10px;">Set</button>
+                        </div>
+                    </div>
+
+                    <!-- Night Shift -->
+                    <div class="power-card p-sleep">
+                        <div class="p-card-hdr">
+                            <h3>SLEEP TIME</h3>
+                            <span class="p-badge">RECOVERY</span>
+                        </div>
+                        <div class="p-sleep-stats">
+                            <div class="p-stat">
+                                <span class="p-stat-lbl">Target</span>
+                                <span class="p-stat-val">8.0h</span>
                             </div>
-
-                            <h4 style="font-size: 11px; text-transform: uppercase; color: var(--muted); letter-spacing: 0.08em; margin-bottom: 10px; font-weight: 500;">UI Scaling Density</h4>
-                            <div style="display: flex; gap: 8px;">
-                                <button class="density-btn active" id="btn-density-normal" data-density="normal" style="flex: 1; background: var(--surface); border: 1px solid var(--border-hi); border-radius: 8px; padding: 8px 12px; color: var(--text); font-family: var(--mono); font-size: 11px; cursor: pointer; transition: all 0.2s;">Standard Layout</button>
-                                <button class="density-btn" id="btn-density-compact" data-density="compact" style="flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: var(--muted); font-family: var(--mono); font-size: 11px; cursor: pointer; transition: all 0.2s;">Compact Mode</button>
+                            <div class="p-stat">
+                                <span class="p-stat-lbl">Actual</span>
+                                <span class="p-stat-val hi" id="p-sleep-actual">--h</span>
                             </div>
                         </div>
+                        <div class="p-sleep-wave" id="p-sleep-wave"></div>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <p class="p-card-note" id="p-sleep-eff">Efficiency: --%</p>
+                            <div class="p-add-row" style="margin-top:0;">
+                                <input type="number" id="p-sleep-input" placeholder="e.g. 7.5" step="0.5" min="0"
+                                    max="24" style="width: 60px;">
+                                <button id="p-sleep-add-btn"
+                                    style="width: 32px; height: 32px; background: var(--accent); border: none; border-radius: 6px; color: #fff; cursor: pointer;">+</button>
+                            </div>
+                        </div>
+                    </div>
 
-                        <!-- Right: Intelligent Notifications -->
-                        <div>
-                            <h4 style="font-size: 11px; text-transform: uppercase; color: var(--muted); letter-spacing: 0.08em; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; font-weight: 500;">
-                                Intelligent Notifications
-                                <span class="p-badge" id="noti-status" style="background:var(--red-lo); color:var(--red);">DISABLED</span>
-                            </h4>
-                            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px;">
-                                <div style="display: flex; align-items: center; justify-content: space-between;">
-                                    <span style="font-size: 11px; color: var(--muted);">3:30 AM Habit Reminders</span>
-                                    <input type="checkbox" id="chk-330-alert" checked style="accent-color: var(--accent); cursor: pointer;">
+                    <!-- Daily Target -->
+                    <div class="power-card p-target">
+                        <div class="p-card-hdr">
+                            <h3>The Big 3</h3>
+                            <span class="p-badge">CRITICAL</span>
+                        </div>
+                        <ul class="p-target-list">
+                            <li>
+                                <div class="p-chk"></div>
+                                <span>Solve 3 CP Problems</span>
+                            </li>
+                            <li>
+                                <div class="p-chk"></div>
+                                <span>Refactor Auth Module</span>
+                            </li>
+                            <li>
+                                <div class="p-chk"></div>
+                                <span>Leg Day Workout</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Gemini Intelligence -->
+                    <div class="power-card p-ai">
+                        <div class="p-card-hdr">
+                            <h3>Gemini Intelligence</h3>
+                            <span class="p-badge"
+                                style="background:var(--accent-lo); color:var(--accent)">AI_ADVISOR</span>
+                        </div>
+                        <div class="p-ai-content">
+                            <div class="p-ai-msg" id="ai-suggestion">
+                                "Analyzing your schedule....Suggesting a 2-hour deep focus session on Integrals
+                                tonight."
+                            </div>
+                            <button class="p-btn primary" style="margin-top:14px" id="ai-refresh">Optimize
+                                Schedule</button>
+                        </div>
+                    </div>
+
+                    <!-- System Customizer -->
+                    <div class="power-card p-customizer" style="grid-column: 1 / -1;">
+                        <div class="p-card-hdr">
+                            <h3>System Customizer</h3>
+                            <span class="p-badge"
+                                style="background:var(--accent-lo); color:var(--accent)">PREMIUM</span>
+                        </div>
+                        <div class="customizer-grid" style="gap: 24px; margin-top: 14px;">
+                            <!-- Left: Theme & Density -->
+                            <div>
+                                <h4
+                                    style="font-size: 11px; text-transform: uppercase; color: var(--muted); letter-spacing: 0.08em; margin-bottom: 10px; font-weight: 500;">
+                                    Select Premium Theme</h4>
+                                <div class="theme-buttons" style="display: flex; gap: 10px; margin-bottom: 20px;">
+                                    <button class="theme-btn active" data-theme="purple" title="Midnight Purple"
+                                        style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--border-hi); background: #7c72ff; cursor: pointer; transition: all 0.2s; position: relative; outline: none;"></button>
+                                    <button class="theme-btn" data-theme="red" title="Crimson Red"
+                                        style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid transparent; background: #ff4d6d; cursor: pointer; transition: all 0.2s; position: relative; outline: none;"></button>
+                                    <button class="theme-btn" data-theme="green" title="Emerald Green"
+                                        style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid transparent; background: #20d68a; cursor: pointer; transition: all 0.2s; position: relative; outline: none;"></button>
+                                    <button class="theme-btn" data-theme="mono" title="Matrix Monochrome"
+                                        style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid transparent; background: #e0e0f0; cursor: pointer; transition: all 0.2s; position: relative; outline: none;"></button>
+                                </div>
+
+                                <h4
+                                    style="font-size: 11px; text-transform: uppercase; color: var(--muted); letter-spacing: 0.08em; margin-bottom: 10px; font-weight: 500;">
+                                    UI Scaling Density</h4>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="density-btn active" id="btn-density-normal" data-density="normal"
+                                        style="flex: 1; background: var(--surface); border: 1px solid var(--border-hi); border-radius: 8px; padding: 8px 12px; color: var(--text); font-family: var(--mono); font-size: 11px; cursor: pointer; transition: all 0.2s;">Standard
+                                        Layout</button>
+                                    <button class="density-btn" id="btn-density-compact" data-density="compact"
+                                        style="flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: var(--muted); font-family: var(--mono); font-size: 11px; cursor: pointer; transition: all 0.2s;">Compact
+                                        Mode</button>
                                 </div>
                             </div>
-                            <div style="display: flex; gap: 8px; margin-top: 14px;">
-                                <button class="p-btn primary" id="btn-enable-noti" style="flex: 2; justify-content: center; font-size: 10px; padding: 8px 12px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; height: 32px;">Enable Push Alerts</button>
-                                <button class="p-btn" id="btn-test-noti" style="flex: 1; justify-content: center; font-size: 10px; padding: 8px 12px; background: var(--glass); border: 1px solid var(--border-hi); height: 32px;">Test Alarms</button>
+
+                            <!-- Right: Intelligent Notifications -->
+                            <div>
+                                <h4
+                                    style="font-size: 11px; text-transform: uppercase; color: var(--muted); letter-spacing: 0.08em; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; font-weight: 500;">
+                                    Intelligent Notifications
+                                    <span class="p-badge" id="noti-status"
+                                        style="background:var(--red-lo); color:var(--red);">DISABLED</span>
+                                </h4>
+                                <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                                        <span style="font-size: 11px; color: var(--muted);">3:30 AM Habit
+                                            Reminders</span>
+                                        <input type="checkbox" id="chk-330-alert" checked
+                                            style="accent-color: var(--accent); cursor: pointer;">
+                                    </div>
+                                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                                        <span style="font-size: 11px; color: var(--muted);">6:30 AM Exam-Day
+                                            Alerts</span>
+                                        <input type="checkbox" id="chk-exam-alert" checked
+                                            style="accent-color: var(--accent); cursor: pointer;">
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 8px; margin-top: 14px;">
+                                    <button class="p-btn primary" id="btn-enable-noti"
+                                        style="flex: 2; justify-content: center; font-size: 10px; padding: 8px 12px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; height: 32px;">Enable
+                                        Push Alerts</button>
+                                    <button class="p-btn" id="btn-test-noti"
+                                        style="flex: 1; justify-content: center; font-size: 10px; padding: 8px 12px; background: var(--glass); border: 1px solid var(--border-hi); height: 32px;">Test
+                                        Alarms</button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- SCHEDULE PANEL -->
-        <div id="panel-sched" class="panel">
-            <!-- Day Selector -->
-            <div class="sched-day-strip">
-                <button class="sched-day-btn active" data-day="0">
-                    <span class="sdb-label">Mon</span>
-                </button>
-                <button class="sched-day-btn" data-day="1">
-                    <span class="sdb-label">Tue</span>
-                </button>
-                <button class="sched-day-btn" data-day="2">
-                    <span class="sdb-label">Wed</span>
-                </button>
-                <button class="sched-day-btn" data-day="3">
-                    <span class="sdb-label">Thu</span>
-                </button>
-                <button class="sched-day-btn" data-day="4">
-                    <span class="sdb-label">Fri</span>
-                </button>
-                <button class="sched-day-btn sdb-we" data-day="5">
-                    <span class="sdb-label">Sat</span>
-                </button>
-                <button class="sched-day-btn sdb-we" data-day="6">
-                    <span class="sdb-label">Sun</span>
-                </button>
-            </div>
-
-            <!-- Header -->
-            <div class="sched-hdr">
-                <div>
-                    <h2 id="ed-title" class="sched-hdr-title">Monday</h2>
-                    <span id="ed-sub" class="sched-hdr-sub">Weekday schedule</span>
+            <!-- SCHEDULE PANEL -->
+            <div id="panel-sched" class="panel">
+                <!-- Day Selector -->
+                <div class="sched-day-strip">
+                    <button class="sched-day-btn active" data-day="0">
+                        <span class="sdb-label">Mon</span>
+                    </button>
+                    <button class="sched-day-btn" data-day="1">
+                        <span class="sdb-label">Tue</span>
+                    </button>
+                    <button class="sched-day-btn" data-day="2">
+                        <span class="sdb-label">Wed</span>
+                    </button>
+                    <button class="sched-day-btn" data-day="3">
+                        <span class="sdb-label">Thu</span>
+                    </button>
+                    <button class="sched-day-btn" data-day="4">
+                        <span class="sdb-label">Fri</span>
+                    </button>
+                    <button class="sched-day-btn sdb-we" data-day="5">
+                        <span class="sdb-label">Sat</span>
+                    </button>
+                    <button class="sched-day-btn sdb-we" data-day="6">
+                        <span class="sdb-label">Sun</span>
+                    </button>
                 </div>
-                <div style="display:flex; gap:8px; align-items:center;">
-                    <button class="sched-action-btn" id="reset-sched">↺ Reset</button>
-                    <button class="sched-action-btn primary" id="add-slot">+ Add</button>
-                </div>
-            </div>
 
-            <!-- Slots List (rebuilt by JS) -->
-            <div id="slots-list" class="sched-slots-list"></div>
-
-            <!-- Smart Add Bar -->
-            <div class="sched-smart-add">
-                <input id="nlp-input" type="text" placeholder="e.g.  Gym 6-7 AM  or  Read book 9-10 PM" class="sched-nlp-input">
-                <button id="nlp-add-btn" class="sched-action-btn primary">✨ Smart Add</button>
-            </div>
-
-            <!-- Hidden elements kept for JS compatibility -->
-            <div id="sync-wrap" style="display:none;"></div>
-        </div>
-
-        <!-- NOTES / DAILY DIARY PANEL -->
-        <div id="panel-notes" class="panel">
-            <div class="slbl">Daily Diary</div>
-            <div class="diary-layout">
-
-                <!-- Left: Write Today's Entry -->
-                <div style="flex:1; min-width:0;">
-                    <div class="panel-card" style="padding:20px; margin-bottom:16px;">
-                        <div class="diary-header">
-                            <div>
-                                <div style="font-size:16px; font-weight:700; color:var(--text)" id="diary-date">Today</div>
-                                <div style="font-size:11px; color:var(--dim); margin-top:2px;">Write your daily reflection</div>
-                            </div>
-                            <div class="diary-mood-wrap">
-                                <span style="font-size:11px; color:var(--dim);">Mood</span>
-                                <div id="diary-mood" style="display:flex; gap:4px;">
-                                    <button class="mood-btn" data-mood="1" title="Terrible">😫</button>
-                                    <button class="mood-btn" data-mood="2" title="Bad">😞</button>
-                                    <button class="mood-btn" data-mood="3" title="Okay">😐</button>
-                                    <button class="mood-btn" data-mood="4" title="Good">😊</button>
-                                    <button class="mood-btn" data-mood="5" title="Great">🔥</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="diary-grid">
-                            <div>
-                                <label style="font-size:10px; color:var(--green); text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:6px;">✅ Today's Wins</label>
-                                <textarea id="diary-wins" rows="3" placeholder="What did you accomplish today?" style="width:100%; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:10px; color:var(--text); font-size:12px; outline:none; resize:vertical; font-family:var(--mono); box-sizing:border-box;"></textarea>
-                            </div>
-                            <div>
-                                <label style="font-size:10px; color:var(--red); text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:6px;">⚡ Challenges</label>
-                                <textarea id="diary-challenges" rows="3" placeholder="What was hard today?" style="width:100%; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:10px; color:var(--text); font-size:12px; outline:none; resize:vertical; font-family:var(--mono); box-sizing:border-box;"></textarea>
-                            </div>
-                            <div>
-                                <label style="font-size:10px; color:var(--accent); text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:6px;">💡 Learned</label>
-                                <textarea id="diary-learned" rows="3" placeholder="Key lessons from today" style="width:100%; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:10px; color:var(--text); font-size:12px; outline:none; resize:vertical; font-family:var(--mono); box-sizing:border-box;"></textarea>
-                            </div>
-                            <div>
-                                <label style="font-size:10px; color:var(--yellow); text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:6px;">🎯 Tomorrow</label>
-                                <textarea id="diary-tomorrow" rows="3" placeholder="Top priority for tomorrow" style="width:100%; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:10px; color:var(--text); font-size:12px; outline:none; resize:vertical; font-family:var(--mono); box-sizing:border-box;"></textarea>
-                            </div>
-                        </div>
-
-                        <div class="diary-footer">
-                            <div style="flex:1;">
-                                <label style="font-size:10px; color:var(--dim); text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:6px;">Energy Level</label>
-                                <input type="range" id="diary-energy" min="1" max="10" value="7" style="width:100%; accent-color:var(--accent);">
-                                <div style="display:flex; justify-content:space-between; font-size:10px; color:var(--dim); margin-top:2px;">
-                                    <span>Drained</span><span id="diary-energy-val">7/10</span><span>Peak</span>
-                                </div>
-                            </div>
-                            <button id="diary-save" class="save-btn" style="margin-top:16px; padding:10px 24px;">Save Entry 📓</button>
-                        </div>
+                <!-- Header -->
+                <div class="sched-hdr">
+                    <div>
+                        <h2 id="ed-title" class="sched-hdr-title">Monday</h2>
+                        <span id="ed-sub" class="sched-hdr-sub">Weekday schedule</span>
+                    </div>
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        <button class="sched-action-btn" id="reset-sched">↺ Reset</button>
+                        <button class="sched-action-btn primary" id="add-slot">+ Add</button>
                     </div>
                 </div>
 
-                <!-- Right: Past Entries -->
-                <div style="width:300px; flex-shrink:0;">
-                    <div class="slbl" style="font-size:11px; margin-bottom:12px;">Past Entries</div>
-                    <div id="diary-history" style="display:flex; flex-direction:column; gap:10px; max-height:600px; overflow-y:auto;">
-                        <!-- Populated by JS -->
+                <!-- Slots List (rebuilt by JS) -->
+                <div id="slots-list" class="sched-slots-list"></div>
+
+                <!-- Smart Add Bar -->
+                <div class="sched-smart-add">
+                    <input id="nlp-input" type="text" placeholder="e.g.  Gym 6-7 AM  or  Read book 9-10 PM"
+                        class="sched-nlp-input">
+                    <button id="nlp-add-btn" class="sched-action-btn primary">✨ Smart Add</button>
+                </div>
+
+                <!-- Hidden elements kept for JS compatibility -->
+                <div id="sync-wrap" style="display:none;"></div>
+            </div>
+
+            <!-- NOTES / DAILY DIARY PANEL -->
+            <div id="panel-notes" class="panel">
+                <div class="slbl">Daily Diary</div>
+                <div class="diary-layout">
+
+                    <!-- Left: Write Today's Entry -->
+                    <div style="flex:1; min-width:0;">
+                        <div class="panel-card" style="padding:20px; margin-bottom:16px;">
+                            <div class="diary-header">
+                                <div>
+                                    <div style="font-size:16px; font-weight:700; color:var(--text)" id="diary-date">
+                                        Today</div>
+                                    <div style="font-size:11px; color:var(--dim); margin-top:2px;">Write your daily
+                                        reflection</div>
+                                </div>
+                                <div class="diary-mood-wrap">
+                                    <span style="font-size:11px; color:var(--dim);">Mood</span>
+                                    <div id="diary-mood" style="display:flex; gap:4px;">
+                                        <button class="mood-btn" data-mood="1" title="Terrible">😫</button>
+                                        <button class="mood-btn" data-mood="2" title="Bad">😞</button>
+                                        <button class="mood-btn" data-mood="3" title="Okay">😐</button>
+                                        <button class="mood-btn" data-mood="4" title="Good">😊</button>
+                                        <button class="mood-btn" data-mood="5" title="Great">🔥</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="diary-grid">
+                                <div>
+                                    <label
+                                        style="font-size:10px; color:var(--green); text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:6px;">✅
+                                        Today's Wins</label>
+                                    <textarea id="diary-wins" rows="3" placeholder="What did you accomplish today?"
+                                        style="width:100%; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:10px; color:var(--text); font-size:12px; outline:none; resize:vertical; font-family:var(--mono); box-sizing:border-box;"></textarea>
+                                </div>
+                                <div>
+                                    <label
+                                        style="font-size:10px; color:var(--red); text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:6px;">⚡
+                                        Challenges</label>
+                                    <textarea id="diary-challenges" rows="3" placeholder="What was hard today?"
+                                        style="width:100%; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:10px; color:var(--text); font-size:12px; outline:none; resize:vertical; font-family:var(--mono); box-sizing:border-box;"></textarea>
+                                </div>
+                                <div>
+                                    <label
+                                        style="font-size:10px; color:var(--accent); text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:6px;">💡
+                                        Learned</label>
+                                    <textarea id="diary-learned" rows="3" placeholder="Key lessons from today"
+                                        style="width:100%; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:10px; color:var(--text); font-size:12px; outline:none; resize:vertical; font-family:var(--mono); box-sizing:border-box;"></textarea>
+                                </div>
+                                <div>
+                                    <label
+                                        style="font-size:10px; color:var(--yellow); text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:6px;">🎯
+                                        Tomorrow</label>
+                                    <textarea id="diary-tomorrow" rows="3" placeholder="Top priority for tomorrow"
+                                        style="width:100%; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:10px; color:var(--text); font-size:12px; outline:none; resize:vertical; font-family:var(--mono); box-sizing:border-box;"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="diary-footer">
+                                <div style="flex:1;">
+                                    <label
+                                        style="font-size:10px; color:var(--dim); text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:6px;">Energy
+                                        Level</label>
+                                    <input type="range" id="diary-energy" min="1" max="10" value="7"
+                                        style="width:100%; accent-color:var(--accent);">
+                                    <div
+                                        style="display:flex; justify-content:space-between; font-size:10px; color:var(--dim); margin-top:2px;">
+                                        <span>Drained</span><span id="diary-energy-val">7/10</span><span>Peak</span>
+                                    </div>
+                                </div>
+                                <button id="diary-save" class="save-btn"
+                                    style="margin-top:16px; padding:10px 24px;">Save Entry 📓</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Past Entries -->
+                    <div style="width:300px; flex-shrink:0;">
+                        <div class="slbl" style="font-size:11px; margin-bottom:12px;">Past Entries</div>
+                        <div id="diary-history"
+                            style="display:flex; flex-direction:column; gap:10px; max-height:600px; overflow-y:auto;">
+                            <!-- Populated by JS -->
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- DIAGNOSTIC MODAL -->
-<div id="diag-modal" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); backdrop-filter:blur(8px); z-index:9999; align-items:center; justify-content:center;">
-    <div class="diag-card" style="background:var(--surface); border:1px solid var(--border-hi); border-radius:16px; padding:24px; width:90%; max-width:440px; box-shadow:0 20px 40px rgba(0,0,0,0.4); position:relative;">
-        <button id="diag-close" style="position:absolute; top:16px; right:16px; background:none; border:none; color:var(--muted); font-size:18px; cursor:pointer; font-family:var(--mono);">×</button>
-        <div style="display:flex; align-items:center; gap:12px; margin-bottom:18px;">
-            <span style="font-size:24px;">🛡️</span>
-            <h3 style="margin:0; font-size:16px; font-weight:700; color:var(--text);">Account Info</h3>
-        </div>
-        <div style="display:flex; flex-direction:column; gap:12px; background:var(--glass); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:20px; font-family:var(--mono); font-size:11px;">
-            <div style="display:flex; justify-content:space-between;">
-                <span style="color:var(--muted);">UID (Unique ID):</span>
-                <span id="diag-uid" style="color:var(--text); font-weight:700; text-align:right; word-break:break-all; max-width:240px; user-select:all;">loading...</span>
+    <!-- DIAGNOSTIC MODAL -->
+    <div id="diag-modal" class="modal-overlay"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); backdrop-filter:blur(8px); z-index:9999; align-items:center; justify-content:center;">
+        <div class="diag-card"
+            style="background:var(--surface); border:1px solid var(--border-hi); border-radius:16px; padding:24px; width:90%; max-width:440px; box-shadow:0 20px 40px rgba(0,0,0,0.4); position:relative;">
+            <button id="diag-close"
+                style="position:absolute; top:16px; right:16px; background:none; border:none; color:var(--muted); font-size:18px; cursor:pointer; font-family:var(--mono);">×</button>
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:18px;">
+                <span style="font-size:24px;">🛡️</span>
+                <h3 style="margin:0; font-size:16px; font-weight:700; color:var(--text);">Account Info</h3>
             </div>
-            <div style="display:flex; justify-content:space-between;">
-                <span style="color:var(--muted);">Email:</span>
-                <span id="diag-email" style="color:var(--text); text-align:right;">loading...</span>
+            <div
+                style="display:flex; flex-direction:column; gap:12px; background:var(--glass); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:20px; font-family:var(--mono); font-size:11px;">
+                <div style="display:flex; justify-content:space-between;">
+                    <span style="color:var(--muted);">UID (Unique ID):</span>
+                    <span id="diag-uid"
+                        style="color:var(--text); font-weight:700; text-align:right; word-break:break-all; max-width:240px; user-select:all;">loading...</span>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                    <span style="color:var(--muted);">Email:</span>
+                    <span id="diag-email" style="color:var(--text); text-align:right;">loading...</span>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                    <span style="color:var(--muted);">Auth Provider:</span>
+                    <span id="diag-provider" style="color:var(--accent); font-weight:700;">loading...</span>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                    <span style="color:var(--muted);">Database Mode:</span>
+                    <span id="diag-db-mode" style="color:var(--green); font-weight:700;">loading...</span>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                    <span style="color:var(--muted);">Telemetry Sync:</span>
+                    <span id="diag-sync" style="color:var(--green);">loading...</span>
+                </div>
             </div>
-            <div style="display:flex; justify-content:space-between;">
-                <span style="color:var(--muted);">Auth Provider:</span>
-                <span id="diag-provider" style="color:var(--accent); font-weight:700;">loading...</span>
-            </div>
-            <div style="display:flex; justify-content:space-between;">
-                <span style="color:var(--muted);">Database Mode:</span>
-                <span id="diag-db-mode" style="color:var(--green); font-weight:700;">loading...</span>
-            </div>
-            <div style="display:flex; justify-content:space-between;">
-                <span style="color:var(--muted);">Telemetry Sync:</span>
-                <span id="diag-sync" style="color:var(--green);">loading...</span>
-            </div>
-        </div>
 
-        <div style="display:flex; gap:10px;">
-            <button id="diag-logout-btn" class="p-btn" style="flex:1; justify-content:center; font-size:11px; height:36px; cursor:pointer; background:rgba(255, 77, 109, 0.1); border: 1px solid rgba(255, 77, 109, 0.2); color: var(--red);">Logout</button>
-            <button id="diag-force-sync" class="p-btn primary" style="flex:1; justify-content:center; font-size:11px; height:36px; cursor:pointer;">Force Sync 🔄</button>
+            <div style="display:flex; gap:10px;">
+                <button id="diag-logout-btn" class="p-btn"
+                    style="flex:1; justify-content:center; font-size:11px; height:36px; cursor:pointer; background:rgba(255, 77, 109, 0.1); border: 1px solid rgba(255, 77, 109, 0.2); color: var(--red);">Logout</button>
+                <button id="diag-force-sync" class="p-btn primary"
+                    style="flex:1; justify-content:center; font-size:11px; height:36px; cursor:pointer;">Force Sync
+                    🔄</button>
+            </div>
+
+            <p id="diag-sync-note"
+                style="font-size:9px; color:var(--dim); margin:12px 0 0 0; text-align:center; line-height:1.3;">
+                ⚠️ <strong>Crucial Checklist:</strong> Both devices MUST display the exact same <strong>UID</strong> to
+                sync.
+            </p>
         </div>
-        
-        <p id="diag-sync-note" style="font-size:9px; color:var(--dim); margin:12px 0 0 0; text-align:center; line-height:1.3;">
-            ⚠️ <strong>Crucial Checklist:</strong> Both devices MUST display the exact same <strong>UID</strong> to sync.
-        </p>
     </div>
-</div>
 
-<!-- TOAST -->
-<div id="toast" class="toast">Action completed ✓</div>
+    <!-- TOAST -->
+    <div id="toast" class="toast">Action completed ✓</div>
 
-<!-- MAIN SCRIPT LOAD -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script type="module" src="./js/app.js"></script>
+    <!-- MAIN SCRIPT LOAD -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="./js/app.js"></script>
 
 </body>
+
 </html>

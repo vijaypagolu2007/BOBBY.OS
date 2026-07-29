@@ -462,7 +462,8 @@ body.sched-mode::after {
     padding: 2px 8px;
     border-radius: 99px;
     letter-spacing: 0.06em;
-    transition: all 0.3s;
+    transition: opacity 0.3s, background 0.3s, color 0.3s;
+    white-space: nowrap;
 }
 
 .sync-indicator.saving {
@@ -491,6 +492,7 @@ body.sched-mode::after {
 
 .sync-indicator.hidden {
     opacity: 0;
+    pointer-events: none;
 }
 
 /* ══ TABS ══ */
@@ -1628,6 +1630,40 @@ td.pc {
 
 #p-target-input::placeholder {
     color: var(--dim);
+}
+
+/* Keep the Night Shift sleep entry aligned with the active app theme.
+   Android WebView otherwise applies its default white number-input surface. */
+#p-sleep-input {
+    box-sizing: border-box;
+    min-height: 32px;
+    padding: 6px 8px;
+    background: var(--surface);
+    border: 1px solid var(--border-hi);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 11px;
+    outline: none;
+    appearance: textfield;
+    -moz-appearance: textfield;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#p-sleep-input::placeholder {
+    color: var(--dim);
+    opacity: 1;
+}
+
+#p-sleep-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-lo);
+}
+
+#p-sleep-input::-webkit-inner-spin-button,
+#p-sleep-input::-webkit-outer-spin-button {
+    appearance: none;
+    margin: 0;
 }
 
 #p-target-add-btn {

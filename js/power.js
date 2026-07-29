@@ -2,6 +2,7 @@ import { dbLoad, dbSave, uKey } from './db.js';
 import { showToast } from './utils.js';
 import { markHabitDoneToday } from './habits.js';
 import { buildHabits } from './data.js';
+import { getStudyAdvice } from './gemini.js';
 
 let pomodoroInterval;
 let timeLeft = 25 * 60;

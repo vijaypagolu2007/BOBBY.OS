@@ -163,31 +163,72 @@ export function listenToUserData(uid, onUpdate) {
     if (!uid) return;
     const userRef = uDoc(uid);
     if (!userRef) return;
-    return onSnapshot(userRef, (doc) => {
-        if (doc.exists()) {
-            const data = doc.data();
-            Object.assign(S, data);
-            
-            // Sync all keys to LocalStorage
-            for (const k in data) {
-                DB.set(uKey(uid, k), data[k]);
+    return onSnapshot(
+        userRef,
+        (doc) => {
+            if (doc.exists()) {
+                const data = doc.data();
+                Object.assign(S, data);
+
+                // Sync all keys to LocalStorage
+                for (const k in data) {
+                    DB.set(uKey(uid, k), data[k]);
+                }
+
+                if (onUpdate) onUpdate(data);
+                showSyncIndicator('saved');
             }
-            
-            if (onUpdate) onUpdate(data);
+        },
+        (error) => {
+            console.error("BOBBY.OS: Snapshot listener error:", error.code, error.message);
+            showSyncIndicator('error');
         }
-    });
+    );
 }
 
 let syncTimer;
+let syncState = 'saved';
+
 export function showSyncIndicator(state) {
     const el = document.getElementById('sync-ind');
     if (!el) return;
+
+    syncState = state;
+    el.style.display = '';
     el.className = `sync-indicator ${state}`;
+
     if (state === 'saving') el.textContent = 'syncing...';
     else if (state === 'error') el.textContent = '⚠ sync error';
     else if (state === 'offline') el.textContent = 'local only';
     else el.textContent = '✓ synced';
-    
+
     clearTimeout(syncTimer);
-    if (state === 'saved') syncTimer = setTimeout(() => el.classList.add('hidden'), 2000);
+    if (state === 'saved') {
+        syncTimer = setTimeout(() => {
+            if (syncState === 'saved' && navigator.onLine) {
+                el.classList.add('hidden');
+            }
+        }, 2500);
+    }
+}
+
+export function initSyncIndicator() {
+    const el = document.getElementById('sync-ind');
+    if (!el) return;
+
+    const updateFromNetwork = () => {
+        if (!navigator.onLine) {
+            showSyncIndicator('offline');
+            return;
+        }
+
+        if (syncState === 'offline' || syncState === 'error') {
+            showSyncIndicator('saved');
+        }
+    };
+
+    window.addEventListener('online', updateFromNetwork);
+    window.addEventListener('offline', () => showSyncIndicator('offline'));
+
+    updateFromNetwork();
 }
