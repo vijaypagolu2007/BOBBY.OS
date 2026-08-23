@@ -72,4 +72,4 @@ jobs:
           service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
 
       - name: Deploy Firebase Functions
-        run: npx firebase-tools@latest deploy --only functions --project "$FIREBASE_PROJECT_ID"
+        run: npx firebase-tools@latest deploy --only functions --project "$FIREBASE_PROJECT_ID" --ci

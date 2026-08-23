@@ -80,4 +80,4 @@ jobs:
           service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
 
       - name: Deploy Firebase Hosting preview channel
-        run: npx firebase-tools@latest hosting:channel:deploy "pr-${{ github.event.pull_request.number || github.run_id }}" --expires 7d --project "$FIREBASE_PROJECT_ID"
+        run: npx firebase-tools@latest hosting:channel:deploy "pr-${{ github.event.pull_request.number || github.run_id }}" --expires 7d --project "$FIREBASE_PROJECT_ID" --ci
