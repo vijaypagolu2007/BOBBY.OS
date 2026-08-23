@@ -67,17 +67,25 @@ jobs:
           fi
 
       - name: Authenticate with service-account JSON
+        id: auth-sa
         if: ${{ env.FIREBASE_SERVICE_ACCOUNT != '' }}
         uses: google-github-actions/auth@v3
         with:
           credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          create_credentials_file: true
+          export_environment_variables: true
 
       - name: Authenticate with Workload Identity Federation
+        id: auth-wif
         if: ${{ env.FIREBASE_SERVICE_ACCOUNT == '' && env.WIF_PROVIDER != '' && env.WIF_SERVICE_ACCOUNT != '' }}
         uses: google-github-actions/auth@v3
         with:
           workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
           service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+          create_credentials_file: true
+          export_environment_variables: true
 
       - name: Deploy Firebase Hosting preview channel
-        run: npx firebase-tools@latest hosting:channel:deploy "pr-${{ github.event.pull_request.number || github.run_id }}" --expires 7d --project "$FIREBASE_PROJECT_ID" --ci
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.auth-sa.outputs.credentials_file_path || steps.auth-wif.outputs.credentials_file_path }}
+        run: npx firebase-tools@latest hosting:channel:deploy "pr-${{ github.event.pull_request.number || github.run_id }}" --expires 7d --project "$FIREBASE_PROJECT_ID"
