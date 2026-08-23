@@ -15,6 +15,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 jobs:
   deploy:
@@ -26,6 +27,9 @@ jobs:
       cancel-in-progress: false
     env:
       FIREBASE_PROJECT_ID: ${{ inputs.project_id || secrets.FIREBASE_PROJECT_ID }}
+      FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+      WIF_PROVIDER: ${{ secrets.WIF_PROVIDER }}
+      WIF_SERVICE_ACCOUNT: ${{ secrets.WIF_SERVICE_ACCOUNT }}
 
     steps:
       - name: Check out repository
@@ -42,10 +46,30 @@ jobs:
         working-directory: functions
         run: npm install
 
-      - name: Authenticate to Google Cloud
+      - name: Validate deployment authentication
+        shell: bash
+        run: |
+          if [[ -z "$FIREBASE_PROJECT_ID" ]]; then
+            echo "::error::Set FIREBASE_PROJECT_ID or provide the workflow_dispatch project_id input."
+            exit 1
+          fi
+          if [[ -z "$FIREBASE_SERVICE_ACCOUNT" && ( -z "$WIF_PROVIDER" || -z "$WIF_SERVICE_ACCOUNT" ) ]]; then
+            echo "::error::Set FIREBASE_SERVICE_ACCOUNT, or set both WIF_PROVIDER and WIF_SERVICE_ACCOUNT."
+            exit 1
+          fi
+
+      - name: Authenticate with service-account JSON
+        if: ${{ env.FIREBASE_SERVICE_ACCOUNT != '' }}
         uses: google-github-actions/auth@v2
         with:
-          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          credentials_json: ${{ env.FIREBASE_SERVICE_ACCOUNT }}
+
+      - name: Authenticate with Workload Identity Federation
+        if: ${{ env.FIREBASE_SERVICE_ACCOUNT == '' && env.WIF_PROVIDER != '' && env.WIF_SERVICE_ACCOUNT != '' }}
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ env.WIF_PROVIDER }}
+          service_account: ${{ env.WIF_SERVICE_ACCOUNT }}
 
       - name: Deploy Firebase Functions
         run: npx firebase-tools@latest deploy --only functions --project "$FIREBASE_PROJECT_ID"

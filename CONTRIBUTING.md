@@ -35,4 +35,9 @@ Use the bug-report or feature-request form. Include clear reproduction steps for
 
 ## Deployments
 
-Repository administrators must add `FIREBASE_SERVICE_ACCOUNT` and `FIREBASE_PROJECT_ID` as repository secrets before deployments can run. Pushes to `main` deploy changed Functions files to the protected `production` environment. Pull requests from the same repository create a Firebase Hosting preview channel in the `staging` environment; previews intentionally do not run for forked pull requests because secrets are unavailable there.
+Repository administrators must set `FIREBASE_PROJECT_ID` and one authentication method before deployments can run:
+
+- `FIREBASE_SERVICE_ACCOUNT`: the complete service-account JSON, or
+- `WIF_PROVIDER` and `WIF_SERVICE_ACCOUNT`: a Workload Identity Federation provider resource and service-account email.
+
+Pushes to `main` deploy changed Functions files to the protected `production` environment. Pull requests from the same repository create a Firebase Hosting preview channel in the `staging` environment; previews intentionally do not run for forked pull requests because secrets are unavailable there.
