@@ -85,7 +85,16 @@ jobs:
           create_credentials_file: true
           export_environment_variables: true
 
+      # firebase-tools does not support WIF external_account credential files.
+      # We work around this by obtaining a short-lived OAuth2 access token from
+      # gcloud (which already has WIF credentials loaded) and passing it as
+      # FIREBASE_TOKEN, which firebase-tools does honour in CI environments.
+      - name: Obtain short-lived Firebase token from gcloud
+        id: firebase-token
+        shell: bash
+        run: echo "token=$(gcloud auth print-access-token)" >> "$GITHUB_OUTPUT"
+
       - name: Deploy Firebase Hosting preview channel
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.auth-sa.outputs.credentials_file_path || steps.auth-wif.outputs.credentials_file_path }}
+          FIREBASE_TOKEN: ${{ steps.firebase-token.outputs.token }}
         run: npx firebase-tools@latest hosting:channel:deploy "pr-${{ github.event.pull_request.number || github.run_id }}" --expires 7d --project "$FIREBASE_PROJECT_ID"
