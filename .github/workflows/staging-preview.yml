@@ -89,10 +89,24 @@ jobs:
       # We work around this by obtaining a short-lived OAuth2 access token from
       # gcloud (which already has WIF credentials loaded) and passing it as
       # FIREBASE_TOKEN, which firebase-tools does honour in CI environments.
+      # With WIF the active identity is the pool principal, not the SA — we must
+      # impersonate the SA explicitly to get an OAuth2 access token for it.
       - name: Obtain short-lived Firebase token from gcloud
         id: firebase-token
         shell: bash
-        run: echo "token=$(gcloud auth print-access-token)" >> "$GITHUB_OUTPUT"
+        env:
+          WIF_SERVICE_ACCOUNT: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+          FIREBASE_SERVICE_ACCOUNT_EMAIL: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          set -euo pipefail
+          # Use SA impersonation for WIF; fall back to direct ADC for SA-JSON
+          if [[ -n "${WIF_SERVICE_ACCOUNT:-}" ]]; then
+            TOKEN=$(gcloud auth print-access-token --impersonate-service-account="$WIF_SERVICE_ACCOUNT")
+          else
+            TOKEN=$(gcloud auth print-access-token)
+          fi
+          echo "token=$TOKEN" >> "$GITHUB_OUTPUT"
+          echo "::notice::Firebase access token obtained (${#TOKEN} chars)"
 
       - name: Deploy Firebase Hosting preview channel
         env:
