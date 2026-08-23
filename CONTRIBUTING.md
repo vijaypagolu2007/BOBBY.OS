@@ -40,4 +40,4 @@ Repository administrators must set `FIREBASE_PROJECT_ID` and one authentication 
 - `FIREBASE_SERVICE_ACCOUNT`: the complete service-account JSON, or
 - `WIF_PROVIDER` and `WIF_SERVICE_ACCOUNT`: a Workload Identity Federation provider resource and service-account email.
 
-Pushes to `main` deploy changed Functions files to the protected `production` environment. Pull requests from the same repository create a Firebase Hosting preview channel in the `staging` environment; previews intentionally do not run for forked pull requests because secrets are unavailable there.
+Pushes to `main` deploy changed Functions files to the protected `production` environment. Pull requests from the same repository create a Firebase Hosting preview channel in the `staging` environment; previews intentionally do not run for forked or Dependabot pull requests because secrets are unavailable there.
