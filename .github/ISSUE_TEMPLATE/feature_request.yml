@@ -1,0 +1,24 @@
+name: Feature request
+description: Suggest an improvement to BOBBY.OS.
+title: '[Feature]: '
+labels: ['enhancement']
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: Explain the user need or friction this feature would address.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the experience or behavior you would like.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Include workarounds or other approaches, if any.

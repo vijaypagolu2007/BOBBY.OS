@@ -1,0 +1,32 @@
+name: Bug report
+description: Report a reproducible problem in BOBBY.OS.
+title: '[Bug]: '
+labels: ['bug']
+body:
+  - type: markdown
+    attributes:
+      value: Thank you for helping improve BOBBY.OS. Please remove any personal or Firebase credential data before posting.
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: Describe the observed behavior and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open ...
+        2. Click ...
+        3. See ...
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Browser/device, operating system, and app version or commit.
+    validations:
+      required: true

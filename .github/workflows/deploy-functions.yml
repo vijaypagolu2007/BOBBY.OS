@@ -1,0 +1,51 @@
+name: Deploy Firebase Functions
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'functions/**'
+      - 'firebase.json'
+  workflow_dispatch:
+    inputs:
+      project_id:
+        description: Firebase project ID to deploy to
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy functions
+    runs-on: ubuntu-latest
+    environment: production
+    concurrency:
+      group: firebase-functions-production
+      cancel-in-progress: false
+    env:
+      FIREBASE_PROJECT_ID: ${{ inputs.project_id || secrets.FIREBASE_PROJECT_ID }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+          cache-dependency-path: functions/package.json
+
+      - name: Install function dependencies
+        working-directory: functions
+        run: npm install
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
+      - name: Deploy Firebase Functions
+        run: npx firebase-tools@latest deploy --only functions --project "$FIREBASE_PROJECT_ID"
