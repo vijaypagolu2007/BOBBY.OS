@@ -12,7 +12,7 @@ if (!getApps().length) initializeApp();
 const GEMINI_API_KEY = defineSecret('GEMINI_API_KEY');
 
 const GEMINI_ENDPOINT =
-    'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
+  'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
 
 const GENERATION_CONFIG = { temperature: 0.7, maxOutputTokens: 120 };
 
@@ -20,15 +20,15 @@ const GENERATION_CONFIG = { temperature: 0.7, maxOutputTokens: 120 };
 
 /** Verifies Bearer token from the Authorization header. Returns decoded uid or throws. */
 async function verifyAuth(req) {
-    const authHeader = req.headers.authorization || '';
-    const idToken = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
-    if (!idToken) throw Object.assign(new Error('Missing auth token'), { status: 401 });
-    try {
-        const decoded = await getAuth().verifyIdToken(idToken);
-        return decoded.uid;
-    } catch {
-        throw Object.assign(new Error('Invalid auth token'), { status: 401 });
-    }
+  const authHeader = req.headers.authorization || '';
+  const idToken = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+  if (!idToken) throw Object.assign(new Error('Missing auth token'), { status: 401 });
+  try {
+    const decoded = await getAuth().verifyIdToken(idToken);
+    return decoded.uid;
+  } catch {
+    throw Object.assign(new Error('Invalid auth token'), { status: 401 });
+  }
 }
 
 // ─── Rate-limit helper ───────────────────────────────────────────────────────
@@ -40,24 +40,23 @@ const RATE_LIMIT_WINDOW_MS = 30_000; // 30 seconds per user
  * Throws if the uid has made a request within the last RATE_LIMIT_WINDOW_MS.
  */
 async function checkRateLimit(uid) {
-    const db = getFirestore();
-    const ref = db.collection('gemini_rate_limits').doc(uid);
+  const db = getFirestore();
+  const ref = db.collection('gemini_rate_limits').doc(uid);
 
-    await db.runTransaction(async (tx) => {
-        const snap = await tx.get(ref);
-        const now = Date.now();
-        const last = snap.exists ? (snap.data().lastCall || 0) : 0;
+  await db.runTransaction(async (tx) => {
+    const snap = await tx.get(ref);
+    const now = Date.now();
+    const last = snap.exists ? snap.data().lastCall || 0 : 0;
 
-        if (now - last < RATE_LIMIT_WINDOW_MS) {
-            const waitSecs = Math.ceil((RATE_LIMIT_WINDOW_MS - (now - last)) / 1000);
-            throw Object.assign(
-                new Error(`Rate limit: wait ${waitSecs}s before next AI request.`),
-                { status: 429 }
-            );
-        }
+    if (now - last < RATE_LIMIT_WINDOW_MS) {
+      const waitSecs = Math.ceil((RATE_LIMIT_WINDOW_MS - (now - last)) / 1000);
+      throw Object.assign(new Error(`Rate limit: wait ${waitSecs}s before next AI request.`), {
+        status: 429,
+      });
+    }
 
-        tx.set(ref, { lastCall: now }, { merge: true });
-    });
+    tx.set(ref, { lastCall: now }, { merge: true });
+  });
 }
 
 // ─── Server-side prompt builder ──────────────────────────────────────────────
@@ -67,9 +66,10 @@ async function checkRateLimit(uid) {
  * The client sends structured data; the server controls the prompt template.
  */
 function buildPrompt(ctx) {
-    const { time, sleepHours, habitSummary, cpSummary, schedSummary, pendingTargets, doneTargets } = ctx;
+  const { time, sleepHours, habitSummary, cpSummary, schedSummary, pendingTargets, doneTargets } =
+    ctx;
 
-    return `You are BOBBY.OS, an elite AI study and productivity advisor.
+  return `You are BOBBY.OS, an elite AI study and productivity advisor.
 The user is a computer science student preparing for PLACEMENTS.
 Here is their current state:
 - Time: ${time}
@@ -86,76 +86,78 @@ Give a VERY short, punchy 1-2 sentence piece of advice targeting their weakest a
 // ─── Cloud Function ───────────────────────────────────────────────────────────
 
 exports.geminiProxy = onRequest(
-    {
-        secrets: [GEMINI_API_KEY],
-        // Only accept requests from the two Firebase Hosting origins.
-        // Add a custom domain here if you configure one later.
-        cors: [
-            'https://bobbyos-e7ba5.web.app',
-            'https://bobbyos-e7ba5.firebaseapp.com',
-        ],
-    },
-    async (req, res) => {
-        if (req.method !== 'POST') {
-            res.status(405).json({ error: 'Method not allowed' });
-            return;
-        }
-
-        // 1. Authenticate — reject unauthenticated callers
-        let uid;
-        try {
-            uid = await verifyAuth(req);
-        } catch (err) {
-            res.status(err.status || 401).json({ error: err.message });
-            return;
-        }
-
-        // 2. Rate-limit — max 1 call per 30s per user
-        try {
-            await checkRateLimit(uid);
-        } catch (err) {
-            res.status(err.status || 429).json({ error: err.message });
-            return;
-        }
-
-        // 3. Validate the incoming context fields (client sends data, not a raw prompt)
-        const ctx = req.body;
-        const requiredFields = ['time', 'sleepHours', 'habitSummary', 'cpSummary', 'schedSummary', 'pendingTargets', 'doneTargets'];
-        for (const field of requiredFields) {
-            if (ctx[field] === undefined || ctx[field] === null) {
-                res.status(400).json({ error: `Missing required field: ${field}` });
-                return;
-            }
-        }
-
-        // 4. Build prompt server-side and call Gemini
-        try {
-            const prompt = buildPrompt(ctx);
-
-            const upstream = await fetch(
-                `${GEMINI_ENDPOINT}?key=${GEMINI_API_KEY.value()}`,
-                {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: prompt }] }],
-                        generationConfig: GENERATION_CONFIG,
-                    }),
-                }
-            );
-
-            const data = await upstream.json();
-
-            if (!upstream.ok) {
-                const message = data?.error?.message || `Gemini API error ${upstream.status}`;
-                res.status(upstream.status).json({ error: message });
-                return;
-            }
-
-            res.status(200).json(data);
-        } catch (err) {
-            console.error('geminiProxy error:', err);
-            res.status(500).json({ error: 'Proxy internal error.' });
-        }
+  {
+    secrets: [GEMINI_API_KEY],
+    // Only accept requests from the two Firebase Hosting origins.
+    // Add a custom domain here if you configure one later.
+    cors: ['https://bobbyos-e7ba5.web.app', 'https://bobbyos-e7ba5.firebaseapp.com'],
+  },
+  async (req, res) => {
+    if (req.method !== 'POST') {
+      res.status(405).json({ error: 'Method not allowed' });
+      return;
     }
+
+    // 1. Authenticate — reject unauthenticated callers
+    let uid;
+    try {
+      uid = await verifyAuth(req);
+    } catch (err) {
+      res.status(err.status || 401).json({ error: err.message });
+      return;
+    }
+
+    // 2. Rate-limit — max 1 call per 30s per user
+    try {
+      await checkRateLimit(uid);
+    } catch (err) {
+      res.status(err.status || 429).json({ error: err.message });
+      return;
+    }
+
+    // 3. Validate the incoming context fields (client sends data, not a raw prompt)
+    const ctx = req.body;
+    const requiredFields = [
+      'time',
+      'sleepHours',
+      'habitSummary',
+      'cpSummary',
+      'schedSummary',
+      'pendingTargets',
+      'doneTargets',
+    ];
+    for (const field of requiredFields) {
+      if (ctx[field] === undefined || ctx[field] === null) {
+        res.status(400).json({ error: `Missing required field: ${field}` });
+        return;
+      }
+    }
+
+    // 4. Build prompt server-side and call Gemini
+    try {
+      const prompt = buildPrompt(ctx);
+
+      const upstream = await fetch(`${GEMINI_ENDPOINT}?key=${GEMINI_API_KEY.value()}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: GENERATION_CONFIG,
+        }),
+      });
+
+      const data = await upstream.json();
+
+      if (!upstream.ok) {
+        const message = data?.error?.message || `Gemini API error ${upstream.status}`;
+        res.status(upstream.status).json({ error: message });
+        return;
+      }
+
+      res.status(200).json(data);
+    } catch (err) {
+      console.error('geminiProxy error:', err);
+      res.status(500).json({ error: 'Proxy internal error.' });
+    }
+  }
 );
