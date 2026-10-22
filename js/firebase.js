@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore, enableIndexedDbPersistence } from 'firebase/firestore';
-import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
+import { initializeAppCheck, ReCaptchaEnterpriseProvider } from 'firebase/app-check';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -18,14 +18,14 @@ const useMockAuth = import.meta.env.VITE_E2E_MOCK_AUTH === 'true';
 if (!useMockAuth && firebaseConfig.apiKey && firebaseConfig.apiKey !== 'your_api_key') {
   app = initializeApp(firebaseConfig);
 
-  // App Check protects Firebase AI Logic (Gemini) from abuse. Free on the Spark plan.
+  // App Check (reCAPTCHA Enterprise / Fraud Defense, free up to 10k assessments/month) protects Firebase AI Logic (Gemini) from abuse.
   // Local dev: a debug token is printed in the console; register it in
   // Firebase console > App Check > Apps > Manage debug tokens.
   const recaptchaKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
   if (typeof window !== 'undefined' && recaptchaKey) {
     if (import.meta.env.DEV) self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
     initializeAppCheck(app, {
-      provider: new ReCaptchaV3Provider(recaptchaKey),
+      provider: new ReCaptchaEnterpriseProvider(recaptchaKey),
       isTokenAutoRefreshEnabled: true,
     });
   }
