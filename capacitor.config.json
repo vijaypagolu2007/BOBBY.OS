@@ -8,5 +8,9 @@
       "providers": ["google.com"],
       "googleClientId": "344114419964-7mjjo0ut6tuc2qhes70vefq0plo1vhlj.apps.googleusercontent.com"
     }
+  },
+  "server": {
+    "androidScheme": "https",
+    "hostname": "app.bobbyos-e7ba5.web.app"
   }
 }

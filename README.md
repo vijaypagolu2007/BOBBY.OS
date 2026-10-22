@@ -143,23 +143,24 @@ npx cap sync android
 To sync laptop code updates to your phone in real-time over your local Wi-Fi:
 
 1.  Find your laptop's local IPv4 Address (e.g. `192.168.1.5`).
-2.  Open `capacitor.config.json` and add the `server` block:
+2.  In `capacitor.config.json`, temporarily add `url` and `cleartext` to the existing `server` block (don't commit this):
     ```json
-    {
-      "appId": "com.bobbyos.app",
-      "appName": "BOBBY.OS",
-      "webDir": "dist",
-      "server": {
-        "url": "http://192.168.1.5:3000",
-        "cleartext": true,
-        "androidScheme": "http"
-      }
+    "server": {
+      "url": "http://192.168.1.5:3000",
+      "cleartext": true,
+      "androidScheme": "https",
+      "hostname": "app.bobbyos-e7ba5.web.app"
     }
     ```
+    Dev builds use the App Check debug token, so the AI advisor works over live reload once that token is registered.
 3.  Expose the local server to your Wi-Fi network:
     ```bash
     npm run dev -- --host
     ```
+
+### App Check on Android
+
+The app loads its bundled files from `https://app.bobbyos-e7ba5.web.app` (`server.hostname` in `capacitor.config.json`). Capacitor serves that origin from inside the APK, so nothing goes over the network for it. Because it's a subdomain of the hosting domain already on the reCAPTCHA Enterprise key, the web App Check provider works inside the Android WebView with no extra console setup and no Play Console account. If you change the Firebase project, update the hostname to match its domain.
 
 ### 3. Deploy to Connected Phone
 
