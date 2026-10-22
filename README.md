@@ -160,7 +160,16 @@ To sync laptop code updates to your phone in real-time over your local Wi-Fi:
 
 ### App Check on Android
 
-The app loads its bundled files from `https://app.bobbyos-e7ba5.web.app` (`server.hostname` in `capacitor.config.json`). Capacitor serves that origin from inside the APK, so nothing goes over the network for it. Because it's a subdomain of the hosting domain already on the reCAPTCHA Enterprise key, the web App Check provider works inside the Android WebView with no extra console setup and no Play Console account. If you change the Firebase project, update the hostname to match its domain.
+App Check rejects reCAPTCHA tokens from the Android WebView, and Play Integrity needs a paid Play Console account, so Android builds use a registered App Check debug token instead:
+
+1. Firebase console > App Check > Apps > your web app > ⋮ > **Manage debug tokens** > Add debug token. Copy it.
+2. Create `.env.android` (gitignored) next to `.env`:
+   ```
+   VITE_APPCHECK_ANDROID_TOKEN=paste-the-token-here
+   ```
+3. Build and install with `npm run android` (Vite `--mode android` reads `.env.android` on top of `.env`). The plain `npm run build` used for Firebase Hosting never includes the token.
+
+Anyone with the APK could extract the token, so keep the APK to yourself and delete the token in the console if it leaks. The project has no billing, so the worst case is someone using up the free Gemini quota.
 
 ### 3. Deploy to Connected Phone
 
