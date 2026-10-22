@@ -12,9 +12,15 @@ if (!getApps().length) initializeApp();
 const GEMINI_API_KEY = defineSecret('GEMINI_API_KEY');
 
 const GEMINI_ENDPOINT =
-  'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
+  'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent';
 
-const GENERATION_CONFIG = { temperature: 0.7, maxOutputTokens: 120 };
+// Thinking tokens count against maxOutputTokens, so keep thinking minimal and
+// leave headroom; the prompt itself still asks for <150 characters.
+const GENERATION_CONFIG = {
+  temperature: 0.7,
+  maxOutputTokens: 512,
+  thinkingConfig: { thinkingLevel: 'MINIMAL' },
+};
 
 // ─── Auth helper ─────────────────────────────────────────────────────────────
 

@@ -1,11 +1,9 @@
 name: Deploy Firebase Functions
 
+# Manual only: Cloud Functions need the paid Blaze plan, and the app now calls
+# Gemini through Firebase AI Logic on the free Spark plan. Run this by hand only
+# if the project is ever upgraded to Blaze.
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'functions/**'
-      - 'firebase.json'
   workflow_dispatch:
     inputs:
       project_id:

@@ -1,4 +1,5 @@
 import { getStudyAdvice } from '../../gemini.js';
+import { renderAdvice } from '../../ai-format.js';
 
 export function setupAI(uid) {
   const button = document.getElementById('ai-refresh');
@@ -10,9 +11,9 @@ export function setupAI(uid) {
     button.style.opacity = '0.7';
     button.disabled = true;
     try {
-      message.innerHTML = `"${await getStudyAdvice(uid)}"`;
+      renderAdvice(message, await getStudyAdvice(uid));
     } catch {
-      message.innerHTML = '"Error generating insights."';
+      message.textContent = 'Error generating insights.';
     } finally {
       button.textContent = 'Optimize Schedule';
       button.style.opacity = '1';
