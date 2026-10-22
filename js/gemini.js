@@ -2,6 +2,7 @@ import { dbLoad } from './db.js';
 import { wkKey, ck } from './utils.js';
 import { buildHabits, defSlots } from './data.js';
 import { auth } from './firebase.js';
+import { extractAdvice } from './ai-format.js';
 
 // ─── Context builders ────────────────────────────────────────────────────────
 
@@ -110,13 +111,17 @@ async function callGeminiProxy(ctx) {
  */
 async function callGeminiDirect(prompt) {
   const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${DEV_API_KEY}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${DEV_API_KEY}`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.7, maxOutputTokens: 120 },
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 512,
+          thinkingConfig: { thinkingLevel: 'MINIMAL' },
+        },
       }),
     }
   );
@@ -127,26 +132,6 @@ async function callGeminiDirect(prompt) {
   }
 
   return response.json();
-}
-
-/**
- * Safely extracts advice text from a Gemini generateContent response.
- * Treats MAX_TOKENS as valid (truncated but usable); only hard-errors on
- * genuine safety blocks or empty content.
- */
-function extractAdvice(data) {
-  const candidate = data?.candidates?.[0];
-  if (!candidate) throw new Error('Gemini returned no candidates (possible safety block).');
-
-  const { finishReason } = candidate;
-  const TERMINAL_REASONS = new Set(['STOP', 'MAX_TOKENS']); // both yield real text
-  if (finishReason && !TERMINAL_REASONS.has(finishReason)) {
-    throw new Error(`Gemini response blocked (finishReason: ${finishReason}).`);
-  }
-
-  const text = candidate.content?.parts?.[0]?.text;
-  if (!text) throw new Error('Gemini returned an empty response.');
-  return text.trim();
 }
 
 // ─── Public API ───────────────────────────────────────────────────────────────
