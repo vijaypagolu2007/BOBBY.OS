@@ -1,12 +1,5 @@
 @charset "UTF-8";
 
-@font-face {
-  font-family: 'Material Symbols Rounded';
-  font-style: normal;
-  font-weight: 100 700;
-  src: url('./fonts/material-symbols-rounded.woff2') format('woff2');
-}
-
 :root {
   --bg: #030308;
   --surface: #0e0d15;

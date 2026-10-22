@@ -49,8 +49,9 @@ _Goal: Intelligence, Reminders, and Customization_
   - [x] **Theme Switcher**: Red, Green, and Monochrome premium modes.
   - [x] **UI Scaling**: Compact mode toggle for "Power User" density.
 - [ ] **PWA Mastery**:
-  - [ ] 100% Offline coverage with optimized background sync.
-  - [ ] App Store/Play Store ready assets.
+  - [x] Offline shell: precache trimmed to ~1.2 MB (unused 5.3 MB icon font removed), Chart.js bundled, Firestore offline persistence queues writes and syncs on reconnect.
+  - [x] Install-ready manifest: id/start_url/scope, separate maskable icon, compressed icons.
+  - [ ] Install screenshots in the manifest (richer install sheet on Android/desktop).
 
 ---
 

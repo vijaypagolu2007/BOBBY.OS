@@ -8,11 +8,16 @@ export default defineConfig(({ mode }) => {
     plugins: [
       VitePWA({
         registerType: 'autoUpdate',
-        includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
+        includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
         manifest: {
           name: 'BOBBY.OS',
           short_name: 'BOBBYOS',
           description: 'Premium Productivity System for Developers',
+          id: '/',
+          start_url: '/',
+          scope: '/',
+          lang: 'en',
+          categories: ['productivity', 'education'],
           theme_color: '#07070f',
           background_color: '#07070f',
           display: 'standalone',
@@ -31,7 +36,7 @@ export default defineConfig(({ mode }) => {
               src: 'pwa-512x512.png',
               sizes: '512x512',
               type: 'image/png',
-              purpose: 'any maskable',
+              purpose: 'maskable',
             },
           ],
         },
@@ -58,20 +63,6 @@ export default defineConfig(({ mode }) => {
                 expiration: {
                   maxEntries: 30,
                   maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
-                },
-                cacheableResponse: {
-                  statuses: [0, 200],
-                },
-              },
-            },
-            {
-              urlPattern: /^https:\/\/cdn\.jsdelivr\.net\/.*/i,
-              handler: 'CacheFirst',
-              options: {
-                cacheName: 'jsdelivr-cdn',
-                expiration: {
-                  maxEntries: 10,
-                  maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
                 },
                 cacheableResponse: {
                   statuses: [0, 200],
