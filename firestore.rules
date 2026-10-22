@@ -3,13 +3,6 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ── Internal-only collections ────────────────────────────────────────────
-    // gemini_rate_limits is written exclusively by the Cloud Function (Admin SDK).
-    // No client — even an authenticated one — may read or write it.
-    match /gemini_rate_limits/{uid} {
-      allow read, write: if false;
-    }
-
     // ── User data ────────────────────────────────────────────────────────────
     // Each user may only access their own document.
     match /users/{uid} {

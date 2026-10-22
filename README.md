@@ -58,7 +58,7 @@
 | Android     | Capacitor 8 WebView wrapper                                                      |
 | Hosting     | Firebase Hosting                                                                 |
 
-Everything runs on Firebase's **free Spark plan**. There is no backend server and no Cloud Functions; the `functions/` folder is legacy and not deployed.
+Everything runs on Firebase's **free Spark plan**. There is no backend server and no Cloud Functions.
 
 Data uses a three-tier offline-first model:
 
