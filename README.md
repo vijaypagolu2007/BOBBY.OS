@@ -6,227 +6,217 @@
 [![Platform](https://img.shields.io/badge/platform-pwa%20%7C%20android-20d68a?style=for-the-badge)](https://capacitorjs.com/)
 
 > **"Elite Productivity through Aesthetic Precision."**  
-> BOBBY.OS is a premium personal dashboard and productivity shell designed specifically for developers and competitive programmers. It transforms your daily habits, study routines, and competitive stats into a unified, high-performance visual dashboard.
+> BOBBY.OS is a premium personal dashboard for developers, students and competitive programmers. It turns your daily habits, schedule, study routine and Codeforces stats into one fast, offline-first dashboard, with a Gemini-powered advisor on top.
 
-Want to help? See the [contributor guide](CONTRIBUTING.md).
+**Live app:** [bobbyos-e7ba5.web.app](https://bobbyos-e7ba5.web.app) · Want to help? See the [contributor guide](CONTRIBUTING.md).
 
----
-
-## 🚀 Key Feature Hubs
-
-### ⏱️ Focus & Daily Logging
-
-- **Zen Pomodoro:** Integrated timer with customizable durations (25, 45, 60, 90 mins). Connect focus sessions directly to your habits.
-- **Sleep Tracker (Night Shift):** Log actual sleep, compare against targets, and visualize recovery efficiency trends.
-- **Daily Diary:** Structured logging for daily wins, challenges faced, lessons learned, and tomorrow's top priorities, complete with mood and energy indicators.
-- **The Big 3 (Smart Targets):** Set and cross off critical daily objectives to maintain consistent focus.
-
-### 📊 Competitive Programming
-
-- **Codeforces Command Center:** Real-time stats integration (rating, rank, max rating) with automated handle extraction and delta tracking.
-
-### 🎨 Personalization & Customization
-
-- **Dynamic Theme Engine:** Instantly swap between **Obsidian Void** (Midnight Purple), **Crimson Matrix** (Red), **Emerald Green** (Green), and **Matrix Monochrome** (Monochrome).
-- **UI Density Scaling:** Toggle between _Standard Layout_ and _Compact Mode_ for high-density information displays.
-- **Intelligent Alerts:** Browser push notifications for 3:30 AM completeness checks.
+![BOBBY.OS habits dashboard](public/screenshots/desktop-habits.webp)
 
 ---
 
-## 🛠️ Technical Architecture
+## 🚀 Features
 
-BOBBY.OS implements a **three-tier offline-first storage model** to achieve zero latency:
+### ✅ Habits
 
-1.  **Memory Store (S):** Global reactive state cache for instant O(1) reads.
-2.  **LocalStorage Cache:** Device-level persistence indexed by user UID to allow 100% functional offline use.
-3.  **Firebase Firestore:** Real-time bi-directional cloud synchronization across devices (laptop and mobile) when internet is available.
+- **Weekly habit grid:** habits come from your schedule; tick them off day by day and see per-habit streaks and completion %.
+- **Performance overview:** letter grade, completed count, best streak and consistency at a glance.
+- **Contribution heatmap:** GitHub-style view of your recent activity.
+
+### 🗓️ Schedule
+
+- **Day-by-day timetable** (Mon to Sun) with everyday, college and custom blocks.
+- **Smart Add:** type `Gym 6-7 AM` and it becomes a schedule block.
+
+### ⚡ Power Hub
+
+- **Zen Pomodoro:** 25, 45, 60 or 90 minute sessions, optionally linked to a habit.
+- **The Big 3:** your three critical targets for the day.
+- **Sleep tracker:** log actual sleep against your target and see recovery efficiency.
+- **Codeforces command center:** live rating, rank and max rating for your handle.
+- **Gemini Intelligence:** one tap on **Optimize Schedule** sends your schedule and progress to Gemini for a short, practical suggestion.
+
+### 📔 Diary
+
+- Daily wins, challenges, lessons and tomorrow's top priority, with mood and energy level.
+
+### 🎨 Personalization
+
+- **Themes:** Obsidian Void (purple), Crimson Matrix (red), Emerald Green and Matrix Monochrome.
+- **UI density:** Standard or Compact layout.
+- **Reminders:** browser and Android notifications for your daily check-in.
 
 ---
 
-## Code Organization
+## 🛠️ Architecture
 
-Feature entry points stay small and delegate to focused modules. For example, `js/power.js` only initializes the Power Hub; its Pomodoro timer, targets, sleep tracker, AI insights, and Codeforces integration live in `js/features/power/`. New feature work should follow this pattern: keep DOM wiring close to the feature and share persistence through `js/db.js`.
+| Layer       | What it uses                                                                     |
+| ----------- | -------------------------------------------------------------------------------- |
+| Frontend    | Vanilla JS modules + Vite, Chart.js (bundled, no CDN)                            |
+| Auth & data | Firebase Auth (email + Google) and Cloud Firestore                               |
+| AI          | Firebase AI Logic (Gemini Developer API), protected by App Check (reCAPTCHA)     |
+| Offline     | PWA service worker (vite-plugin-pwa, ~1.2 MB precache) + Firestore offline queue |
+| Android     | Capacitor 8 WebView wrapper                                                      |
+| Hosting     | Firebase Hosting                                                                 |
+
+Everything runs on Firebase's **free Spark plan**. There is no backend server and no Cloud Functions; the `functions/` folder is legacy and not deployed.
+
+Data uses a three-tier offline-first model:
+
+1. **Memory store (`S`):** global in-memory state for instant reads.
+2. **LocalStorage cache:** per-user copy so the app works fully offline.
+3. **Cloud Firestore:** syncs across laptop and phone when you're online.
+
+### Code organization
+
+Feature entry points stay small and delegate to focused modules. For example, `js/power.js` only initializes the Power Hub; its Pomodoro timer, targets, sleep tracker, AI insights and Codeforces integration live in `js/features/power/`. Share persistence through `js/db.js`, and keep DOM wiring close to the feature.
 
 ---
 
-## ⚙️ Installation & Setup
+## ⚙️ Setup
 
 ### Prerequisites
 
-Make sure you have the following installed on your machine:
+- [Node.js](https://nodejs.org/) **20.19+ or 22.12+** (required by Vite 8)
+- npm 10+
+- For Android only: the Android SDK + platform tools (`adb`) and **JDK 21**. Newer JDKs (for example Java 25) don't work with the bundled Gradle 8.14.
 
-- [Node.js](https://nodejs.org/) (v18+)
-- [npm](https://www.npmjs.com/) (v9+)
-- [Android Studio](https://developer.android.com/studio) (only if compiling the native Android app)
-
-### 1. Web App Setup
-
-Clone the repository and install the dependencies:
+### 1. Install
 
 ```bash
-# Clone the project repository
 git clone https://github.com/vijaypagolu2007/BOBBY.OS.git
-
-# Enter the project directory
 cd BOBBY.OS
-
-# Install npm dependencies
 npm install
 ```
 
-### 2. Environment Variables Configuration
-
-Configure the Firebase integration by setting up your local environment file:
-
-1.  Create a `.env` file in the root of the project (copying `.env.example`):
-    ```bash
-    cp .env.example .env
-    ```
-2.  Open `.env` and fill in your Firebase Web App configuration:
-    ```ini
-    VITE_FIREBASE_API_KEY=your_api_key
-    VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
-    VITE_FIREBASE_PROJECT_ID=your_project_id
-    VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket
-    VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
-    VITE_FIREBASE_APP_ID=your_app_id
-    ```
-
-### 3. Run Locally (Web)
-
-Start the local Vite development server:
+### 2. Configure Firebase
 
 ```bash
-# Start Vite development server
+cp .env.example .env
+```
+
+Fill in `.env`:
+
+```ini
+VITE_FIREBASE_API_KEY=your_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+
+# Gemini advisor (optional)
+VITE_RECAPTCHA_SITE_KEY=your_recaptcha_site_key
+VITE_APPCHECK_DEBUG_TOKEN=          # local dev only
+```
+
+To enable the Gemini advisor:
+
+1. Firebase console > **AI Logic** > Get started > **Gemini Developer API**.
+2. Create a score-based reCAPTCHA key at [google.com/recaptcha/admin](https://www.google.com/recaptcha/admin) and add your domains (`localhost`, `bobbyos-e7ba5.web.app`).
+3. Firebase console > **App Check** > register the web app with that key, and paste the site key into `VITE_RECAPTCHA_SITE_KEY`.
+4. For local dev, generate a debug token under App Check > Apps > ⋮ > **Manage debug tokens** and put it in `VITE_APPCHECK_DEBUG_TOKEN`.
+
+### 3. Run locally
+
+```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
+Open [http://localhost:3000](http://localhost:3000).
 
 ---
 
-## Code Quality
-
-Run the checks used by CI before opening a pull request:
+## 🧪 Tests & Code Quality
 
 ```bash
-# Check JavaScript issues and formatting
-npm run check
+npm run check       # ESLint + Prettier check (same as CI)
+npm run test:unit   # Jest unit tests
+npm run test:e2e    # Playwright end-to-end tests
+npm test            # both test suites
 
-# Automatically apply lint fixes and formatting
-npm run lint:fix
-npm run format
+npm run lint:fix    # auto-fix lint issues
+npm run format      # apply Prettier formatting
 ```
 
-`npm run lint` checks the application and test JavaScript files. `npm run format:check` verifies Prettier formatting without changing files.
-
 ---
 
-## 📱 Mobile Android Setup (Capacitor)
+## 📱 Android (Capacitor)
 
-Capacitor bridges the web application into a native Android app wrapper.
+### 1. Point Java at JDK 21 (Windows)
 
-### 1. Build and Sync Assets
+Run this in the same terminal before building:
 
-Compile the static web bundle and sync it to the Android shell:
+```bat
+set "JAVA_HOME=C:\Program Files\Eclipse Adoptium\jdk-21.0.12.101-hotspot"
+set "PATH=%JAVA_HOME%\bin;%PATH%"
+java -version
+```
+
+Adjust the path to wherever your JDK 21 is installed.
+
+### 2. App Check debug token
+
+App Check rejects reCAPTCHA tokens from the Android WebView, and Play Integrity needs a paid Play Console account, so Android builds use a registered debug token instead:
+
+1. Firebase console > App Check > Apps > your web app > ⋮ > **Manage debug tokens** > Add debug token. Copy the generated token.
+2. Save it in `.env.android` (gitignored) next to `.env`. On Windows, note the `>` right after the token:
+   ```bat
+   echo VITE_APPCHECK_ANDROID_TOKEN=YOUR-TOKEN-HERE> .env.android
+   type .env.android
+   ```
+
+Anyone with the APK could extract the token, so keep the APK to yourself and delete the token in the console if it leaks. With no billing on the project, the worst case is someone using up the free Gemini quota.
+
+### 3. Build and install on your phone
+
+Connect your phone by USB with USB debugging on, then:
 
 ```bash
-# Compile Vite production build
-npm run build
+npm run android
+```
 
-# Sync web assets and capacitor configs to Android resources
+This runs `vite build --mode android` (which reads `.env.android` on top of `.env`), `cap sync android` and `cap run android`. Use this instead of `npm run build`, which never includes the Android token.
+
+**If the device isn't detected** (or you see `Invalid target ID`), install manually:
+
+```bash
+npm run build:android
 npx cap sync android
+cd android && gradlew assembleDebug && cd ..
+adb install -r android/app/build/outputs/apk/debug/app-debug.apk
+adb shell monkey -p com.bobbyos.app -c android.intent.category.LAUNCHER 1
 ```
 
-### 2. Configure Live Reload (Optional for Development)
+On macOS/Linux use `./gradlew` instead of `gradlew`.
 
-To sync laptop code updates to your phone in real-time over your local Wi-Fi:
+### Live reload (optional)
 
-1.  Find your laptop's local IPv4 Address (e.g. `192.168.1.5`).
-2.  In `capacitor.config.json`, temporarily add `url` and `cleartext` to the existing `server` block (don't commit this):
-    ```json
-    "server": {
-      "url": "http://192.168.1.5:3000",
-      "cleartext": true,
-      "androidScheme": "https",
-      "hostname": "app.bobbyos-e7ba5.web.app"
-    }
-    ```
-    Dev builds use the App Check debug token, so the AI advisor works over live reload once that token is registered.
-3.  Expose the local server to your Wi-Fi network:
-    ```bash
-    npm run dev -- --host
-    ```
-
-### App Check on Android
-
-App Check rejects reCAPTCHA tokens from the Android WebView, and Play Integrity needs a paid Play Console account, so Android builds use a registered App Check debug token instead:
-
-1. Firebase console > App Check > Apps > your web app > ⋮ > **Manage debug tokens** > Add debug token. Copy it.
-2. Create `.env.android` (gitignored) next to `.env`:
+1. Find your laptop's local IP (for example `192.168.1.5`).
+2. In `capacitor.config.json`, temporarily add `url` and `cleartext` to the `server` block (don't commit this):
+   ```json
+   "server": {
+     "url": "http://192.168.1.5:3000",
+     "cleartext": true,
+     "androidScheme": "https",
+     "hostname": "app.bobbyos-e7ba5.web.app"
+   }
    ```
-   VITE_APPCHECK_ANDROID_TOKEN=paste-the-token-here
-   ```
-3. Build and install with `npm run android` (Vite `--mode android` reads `.env.android` on top of `.env`). The plain `npm run build` used for Firebase Hosting never includes the token.
-
-Anyone with the APK could extract the token, so keep the APK to yourself and delete the token in the console if it leaks. The project has no billing, so the worst case is someone using up the free Gemini quota.
-
-### 3. Deploy to Connected Phone
-
-1. Connect your phone to your computer via USB and verify USB debugging is authorized.
-2. Install the app from your laptop:
-   ```bash
-   npx cap run android
-   ```
-3. **Troubleshooting Target Issues / Direct Deployment:**
-   If the Capacitor CLI fails to detect your device, or throws target mismatches (e.g. `Invalid target ID`), you can deploy manually using Gradle and ADB:
-   ```bash
-   # 1. Compile the debug APK
-   cd android
-   ./gradlew assembleDebug
-   cd ..
-
-   # 2. Deploy directly via ADB (Update target ID with your own device ID from 'adb devices')
-   adb install -r android/app/build/outputs/apk/debug/app-debug.apk
-
-   # 3. Launch the app on the phone
-   adb shell monkey -p com.bobbyos.app -c android.intent.category.LAUNCHER 1
-   ```
+3. Run `npm run dev`, which already listens on your network.
 
 ---
 
-## 🔒 Firebase Security Rules (Firestore)
-
-To enable data separation between users, set up the following security rules in your **Firebase Console ➔ Firestore ➔ Rules**:
-
-```javascript
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-    }
-  }
-}
-```
-
----
-
-## 🚀 Production Deployment (PWA)
-
-To compile the application as a standalone Progressive Web App (PWA):
+## 🚀 Deploy (Firebase Hosting)
 
 ```bash
-# Compile PWA build
 npm run build
-
-# Preview production build locally
-npm run preview
+npx firebase-tools deploy --only hosting,firestore:rules --project bobbyos-e7ba5
 ```
 
-Once hosted, users can tap **"Add to Home Screen"** on their mobile browsers for complete app installation with full offline capabilities.
+Firestore security rules live in [`firestore.rules`](firestore.rules): each signed-in user can read and write only their own `users/{uid}` document, and everything else is denied.
+
+Once deployed, the app can be installed from the browser (**Install app** / **Add to Home Screen**) and keeps working offline.
 
 ---
 
-_Developed with precision for the next generation of power users._
-*© 2026 BOBBY.OS *
+_Developed with precision for the next generation of power users._  
+_© 2026 BOBBY.OS_
