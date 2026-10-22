@@ -5,11 +5,15 @@ import { jest } from '@jest/globals';
 const firebase = { app: { name: 'app' }, auth: { currentUser: null } };
 const generateContent = jest.fn();
 const store = {};
+let modelConfig;
 
 jest.unstable_mockModule('../../js/firebase.js', () => firebase);
 jest.unstable_mockModule('firebase/ai', () => ({
   getAI: jest.fn(() => ({})),
-  getGenerativeModel: jest.fn(() => ({ generateContent })),
+  getGenerativeModel: jest.fn((ai, config) => {
+    modelConfig = config;
+    return { generateContent };
+  }),
   GoogleAIBackend: jest.fn(),
   ThinkingLevel: { MINIMAL: 'MINIMAL' },
 }));
@@ -53,13 +57,28 @@ test('sends the user context and returns the model text', async () => {
 });
 
 test('rate-limits repeat requests for 30 seconds', async () => {
-  generateContent.mockResolvedValue(reply('ok'));
+  generateContent.mockResolvedValue(reply('Revise joins'));
   await getStudyAdvice('u1');
   expect(await getStudyAdvice('u1')).toMatch(/^⏳ Wait \d+s/);
   expect(generateContent).toHaveBeenCalledTimes(1);
 });
 
-test('reports API errors instead of throwing', async () => {
-  generateContent.mockRejectedValue(new Error('quota exceeded'));
+test('reports API errors instead of throwing, and allows an immediate retry', async () => {
+  generateContent.mockRejectedValueOnce(new Error('quota exceeded'));
   expect(await getStudyAdvice('u1')).toBe('AI Advisor unavailable: quota exceeded');
+  generateContent.mockResolvedValue(reply('Revise **joins** now.'));
+  expect(await getStudyAdvice('u1')).toBe('Revise **joins** now.');
+});
+
+test('retries are allowed right after a garbage reply', async () => {
+  generateContent.mockResolvedValueOnce(reply('"**0/"'));
+  expect(await getStudyAdvice('u1')).toMatch(/unreadable reply/);
+  generateContent.mockResolvedValue(reply('Sleep **earlier** tonight.'));
+  expect(await getStudyAdvice('u1')).toBe('Sleep **earlier** tonight.');
+});
+
+test('keeps Gemini 3 at its default temperature', async () => {
+  const config = modelConfig?.generationConfig;
+  expect(config).toBeDefined();
+  expect(config.temperature).toBeUndefined();
 });

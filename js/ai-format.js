@@ -32,7 +32,16 @@ export function extractAdvice(data) {
         : 'Gemini returned an empty response.'
     );
   }
+  // Reject degenerate replies (e.g. "**0/") that have no real words in them.
+  if (!isUsableAdvice(text)) {
+    throw new Error('AI returned an unreadable reply. Tap again to retry.');
+  }
   return text;
+}
+
+/** True when the text contains at least one real word (3+ letters, any script). */
+export function isUsableAdvice(text) {
+  return /[\p{L}\p{M}]{3,}/u.test(String(text));
 }
 
 /**

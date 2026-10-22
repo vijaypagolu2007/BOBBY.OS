@@ -36,6 +36,7 @@
     "@capacitor/cli": "^8.5.2",
     "@capacitor/core": "^8.5.2",
     "@capacitor/local-notifications": "^8.3.1",
+    "chart.js": "^4.5.1",
     "firebase": "^12.19.0"
   }
 }

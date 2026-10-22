@@ -72,8 +72,9 @@ function getModel() {
       model: AI_MODEL,
       // Thinking tokens count against maxOutputTokens, so keep thinking minimal
       // and leave headroom; the prompt itself still asks for <150 characters.
+      // No temperature: Gemini 3 models are tuned for the default 1.0, and lower
+      // values can cause looping or garbage output (seen on Android as "**0/").
       generationConfig: {
-        temperature: 0.7,
         maxOutputTokens: 512,
         thinkingConfig: { thinkingLevel: ThinkingLevel.MINIMAL },
       },
@@ -165,6 +166,8 @@ export async function getStudyAdvice(uid) {
     // Same response shape as the REST API, so the shared parser applies.
     return extractAdvice({ candidates: result.response.candidates });
   } catch (error) {
+    // A failed call shouldn't lock the user out for 30s.
+    localStorage.removeItem(RATE_KEY);
     console.error('Gemini API Error:', error.message);
     return `AI Advisor unavailable: ${error.message}`;
   }
