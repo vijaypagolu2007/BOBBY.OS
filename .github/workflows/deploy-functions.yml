@@ -103,4 +103,13 @@ jobs:
       - name: Deploy Firebase Functions
         env:
           FIREBASE_TOKEN: ${{ steps.firebase-token.outputs.token }}
-        run: npx firebase-tools@latest deploy --only functions --project "$FIREBASE_PROJECT_ID"
+        shell: bash
+        run: |
+          set -o pipefail
+          if ! npx firebase-tools@latest deploy --only functions --project "$FIREBASE_PROJECT_ID" --non-interactive 2>&1 | tee deploy.log; then
+            # Surface the failure as annotations so it shows on the run summary
+            grep -iE "error|denied|permission|invalid|failed|runtime" deploy.log | tail -n 15 | while IFS= read -r line; do
+              echo "::error title=firebase deploy::${line}"
+            done
+            exit 1
+          fi
