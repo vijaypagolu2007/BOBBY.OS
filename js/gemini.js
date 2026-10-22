@@ -1,7 +1,8 @@
 import { dbLoad } from './db.js';
 import { wkKey, ck } from './utils.js';
 import { buildHabits, defSlots } from './data.js';
-import { auth } from './firebase.js';
+import { app, auth } from './firebase.js';
+import { getAI, getGenerativeModel, GoogleAIBackend, ThinkingLevel } from 'firebase/ai';
 import { extractAdvice } from './ai-format.js';
 
 // ─── Context builders ────────────────────────────────────────────────────────
@@ -55,90 +56,61 @@ async function buildCPSummary(uid) {
   }
 }
 
-// ─── Gemini API call ─────────────────────────────────────────────────────────
+// ─── Gemini via Firebase AI Logic ────────────────────────────────────────────
+// Runs on the free Spark plan: no Cloud Functions, no billing, and the Gemini key
+// never ships in the bundle. App Check (see firebase.js) guards against abuse.
 
-const CLOUD_FN_URL = import.meta.env.VITE_GEMINI_PROXY_URL || null;
-const DEV_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || null;
+const AI_MODEL = 'gemini-3.5-flash-lite';
+const RATE_LIMIT_MS = 30_000; // one request per 30s per browser
+const RATE_KEY = 'bobbyos:ai:lastCall';
 
-/** Distinguishes rate-limit rejections from real errors for better UX. */
-class RateLimitError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = 'RateLimitError';
+let model = null;
+function getModel() {
+  if (!model) {
+    const ai = getAI(app, { backend: new GoogleAIBackend() });
+    model = getGenerativeModel(ai, {
+      model: AI_MODEL,
+      // Thinking tokens count against maxOutputTokens, so keep thinking minimal
+      // and leave headroom; the prompt itself still asks for <150 characters.
+      generationConfig: {
+        temperature: 0.7,
+        maxOutputTokens: 512,
+        thinkingConfig: { thinkingLevel: ThinkingLevel.MINIMAL },
+      },
+    });
   }
+  return model;
 }
 
-/** Fetches an ID token for the current user, or null if not authenticated. */
-async function getIdToken() {
-  try {
-    return auth?.currentUser ? await auth.currentUser.getIdToken() : null;
-  } catch {
-    return null;
-  }
+/** Returns seconds left before another request is allowed, or 0. */
+function rateLimitWait() {
+  const last = Number(localStorage.getItem(RATE_KEY) || 0);
+  const left = RATE_LIMIT_MS - (Date.now() - last);
+  return left > 0 ? Math.ceil(left / 1000) : 0;
 }
 
-/**
- * Sends structured context fields to the Cloud Function proxy.
- * The function owns the prompt template — the client never sends a raw prompt.
- */
-async function callGeminiProxy(ctx) {
-  const idToken = await getIdToken();
-  if (!idToken) throw new Error('User not authenticated.');
+function buildPrompt(ctx) {
+  const { time, sleepHours, habitSummary, cpSummary, schedSummary, pendingTargets, doneTargets } =
+    ctx;
+  return `You are BOBBY.OS, an elite AI study and productivity advisor.
+The user is a computer science student preparing for PLACEMENTS.
+Here is their current state:
+- Time: ${time}
+- Sleep last night: ${sleepHours}h (target 8.0h)
+- Today's habits: ${habitSummary}
+- Codeforces: ${cpSummary}
+- Today's schedule: ${schedSummary}
+- Daily targets pending: ${pendingTargets}
+- Daily targets done: ${doneTargets}
 
-  const response = await fetch(CLOUD_FN_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${idToken}`,
-    },
-    body: JSON.stringify(ctx),
-  });
-
-  if (!response.ok) {
-    const errorBody = await response.json().catch(() => null);
-    const message = errorBody?.error || `Proxy error: ${response.status}`;
-    // Surface rate-limit as a distinct error type so callers can show friendlier UI
-    if (response.status === 429) throw new RateLimitError(message);
-    throw new Error(message);
-  }
-
-  return response.json();
-}
-
-/**
- * Direct Gemini call — dev-only, key is bundled in JS.
- * Never set VITE_GEMINI_API_KEY in a production build.
- */
-async function callGeminiDirect(prompt) {
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${DEV_API_KEY}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 512,
-          thinkingConfig: { thinkingLevel: 'MINIMAL' },
-        },
-      }),
-    }
-  );
-
-  if (!response.ok) {
-    const errorBody = await response.json().catch(() => null);
-    throw new Error(errorBody?.error?.message || `API Error: ${response.status}`);
-  }
-
-  return response.json();
+Give a VERY short, punchy 1-2 sentence piece of advice targeting their weakest area right now. Under 150 characters. Use **bolding** for key concepts. Be authoritative, no pleasantries — just the advice.`;
 }
 
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 export async function getStudyAdvice(uid) {
-  // ── Mock mode: neither proxy URL nor dev key configured ────────────────
-  if (!CLOUD_FN_URL && !DEV_API_KEY) {
+  // ── Mock mode: Firebase not configured (local-only / E2E) ──────────────
+  if (!app) {
     const hour = new Date().getHours();
     let suggestion;
     if (hour < 12) {
@@ -150,11 +122,15 @@ export async function getStudyAdvice(uid) {
       suggestion =
         "Evening wrap-up. Review today's mistakes and plan tomorrow's 3 critical targets.";
     }
-    return `[MOCK] "Analyzing schedule... ${suggestion}"\n(Add VITE_GEMINI_PROXY_URL to .env for real AI)`;
+    return `[MOCK] Analyzing schedule... ${suggestion}`;
   }
 
+  if (!auth?.currentUser) return 'Sign in to get AI advice.';
+
+  const wait = rateLimitWait();
+  if (wait) return `⏳ Wait ${wait}s before the next AI request.`;
+
   try {
-    // ── Gather context in parallel ─────────────────────────────────────
     const [targets, sleep, habitSummary, schedSummary, cpSummary] = await Promise.all([
       dbLoad(uid, 'power:targets', []),
       dbLoad(uid, 'power:sleep', { actual: 0 }),
@@ -174,8 +150,7 @@ export async function getStudyAdvice(uid) {
         .map((t) => t.text)
         .join(', ') || 'None';
 
-    // Context object — the proxy owns the prompt template
-    const ctx = {
+    const prompt = buildPrompt({
       time: new Date().toLocaleTimeString(),
       sleepHours: sleep.actual,
       habitSummary,
@@ -183,46 +158,14 @@ export async function getStudyAdvice(uid) {
       schedSummary,
       pendingTargets,
       doneTargets,
-    };
+    });
 
-    let data;
-    if (CLOUD_FN_URL) {
-      // Production path: authenticated proxy, key stays server-side
-      data = await callGeminiProxy(ctx);
-    } else {
-      // Dev path: direct call with bundled key
-      const prompt = buildDevPrompt(ctx);
-      data = await callGeminiDirect(prompt);
-    }
-
-    return extractAdvice(data);
+    localStorage.setItem(RATE_KEY, String(Date.now()));
+    const result = await getModel().generateContent(prompt);
+    // Same response shape as the REST API, so the shared parser applies.
+    return extractAdvice({ candidates: result.response.candidates });
   } catch (error) {
-    if (error instanceof RateLimitError) {
-      // Friendly UX — don't treat this like a real failure
-      return `⏳ ${error.message}`;
-    }
     console.error('Gemini API Error:', error.message);
-    return `"AI Advisor unavailable: ${error.message}"`;
+    return `AI Advisor unavailable: ${error.message}`;
   }
-}
-
-/**
- * Mirrors the server-side prompt template for the dev-only direct-call path.
- * Keep this in sync with functions/index.js buildPrompt().
- */
-function buildDevPrompt(ctx) {
-  const { time, sleepHours, habitSummary, cpSummary, schedSummary, pendingTargets, doneTargets } =
-    ctx;
-  return `You are BOBBY.OS, an elite AI study and productivity advisor.
-The user is a computer science student preparing for PLACEMENTS.
-Here is their current state:
-- Time: ${time}
-- Sleep last night: ${sleepHours}h (target 8.0h)
-- Today's habits: ${habitSummary}
-- Codeforces: ${cpSummary}
-- Today's schedule: ${schedSummary}
-- Daily targets pending: ${pendingTargets}
-- Daily targets done: ${doneTargets}
-
-Give a VERY short, punchy 1-2 sentence piece of advice targeting their weakest area right now. Under 150 characters. Use **bolding** for key concepts. Be authoritative, no pleasantries — just the advice.`;
 }
