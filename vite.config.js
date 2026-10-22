@@ -21,6 +21,43 @@ export default defineConfig(({ mode }) => {
           theme_color: '#07070f',
           background_color: '#07070f',
           display: 'standalone',
+          screenshots: [
+            {
+              src: 'screenshots/desktop-habits.webp',
+              sizes: '1869x1058',
+              type: 'image/webp',
+              form_factor: 'wide',
+              label: 'Habits dashboard with grade, streaks and heatmap',
+            },
+            {
+              src: 'screenshots/mobile-habits.webp',
+              sizes: '983x2000',
+              type: 'image/webp',
+              form_factor: 'narrow',
+              label: 'Daily habits, streaks and contribution heatmap',
+            },
+            {
+              src: 'screenshots/mobile-power-hub.webp',
+              sizes: '979x2000',
+              type: 'image/webp',
+              form_factor: 'narrow',
+              label: 'Power Hub: Pomodoro timer and live Codeforces rating',
+            },
+            {
+              src: 'screenshots/mobile-ai-advisor.webp',
+              sizes: '978x2000',
+              type: 'image/webp',
+              form_factor: 'narrow',
+              label: 'Big 3 targets and Gemini AI schedule advisor',
+            },
+            {
+              src: 'screenshots/mobile-schedule.webp',
+              sizes: '979x2000',
+              type: 'image/webp',
+              form_factor: 'narrow',
+              label: 'Weekly schedule with Smart Add',
+            },
+          ],
           icons: [
             {
               src: 'pwa-192x192.png',
