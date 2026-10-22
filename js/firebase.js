@@ -23,7 +23,11 @@ if (!useMockAuth && firebaseConfig.apiKey && firebaseConfig.apiKey !== 'your_api
   // Firebase console > App Check > Apps > Manage debug tokens.
   const recaptchaKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
   if (typeof window !== 'undefined' && recaptchaKey) {
-    if (import.meta.env.DEV) self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+    if (import.meta.env.DEV) {
+      // Use a token generated in the console (VITE_APPCHECK_DEBUG_TOKEN), or let the SDK
+      // create one and print it to the console. Dev builds only; never ship it.
+      self.FIREBASE_APPCHECK_DEBUG_TOKEN = import.meta.env.VITE_APPCHECK_DEBUG_TOKEN || true;
+    }
     initializeAppCheck(app, {
       provider: new ReCaptchaEnterpriseProvider(recaptchaKey),
       isTokenAutoRefreshEnabled: true,
