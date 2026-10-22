@@ -90,7 +90,7 @@ export function setupCPTracker(uid) {
       };
       await dbSave(uid, 'power:cp', stats);
       updateUI(stats);
-      showToast(`Synced ${handle} ðŸ“Š`);
+      showToast(`Synced ${handle} 📊`);
     } catch (error) {
       console.error('CP Error:', error);
       showToast(`CP Error: ${error.message}`);
@@ -117,7 +117,7 @@ async function setupHandleEdit(uid, onSave) {
     if (!handle) return;
     await dbSave(uid, 'power:cf_handle', { handle });
     await dbSave(uid, 'power:cp', null);
-    showToast(`Handle set to ${handle} âœ“`);
+    showToast(`Handle set to ${handle} ✓`);
     onSave();
   };
 }

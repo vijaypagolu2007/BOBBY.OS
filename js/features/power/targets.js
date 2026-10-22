@@ -9,7 +9,12 @@ const DEFAULT_TARGETS = [
 
 export async function setupTargets(uid) {
   if (!document.querySelector('.p-target-list')) return;
-  const targets = await dbLoad(uid, 'power:targets', DEFAULT_TARGETS);
+  // Clone the defaults so toggling/removing never mutates the shared constant.
+  const targets = await dbLoad(
+    uid,
+    'power:targets',
+    DEFAULT_TARGETS.map((t) => ({ ...t }))
+  );
   renderTargets(uid, targets);
 }
 
@@ -32,14 +37,14 @@ function renderTargets(uid, targets) {
       target.done = !target.done;
       await dbSave(uid, 'power:targets', targets);
       renderTargets(uid, targets);
-      if (target.done) showToast('Target Acquired ðŸŽ¯');
+      if (target.done) showToast('Target Acquired 🎯');
     };
     const text = document.createElement('span');
     text.textContent = target.text;
     left.append(checkbox, text);
 
     const remove = document.createElement('button');
-    remove.innerHTML = 'âœ•';
+    remove.innerHTML = '✕';
     remove.style.cssText =
       'background:none; border:none; color:var(--dim); cursor:pointer; font-size:12px; padding:0 5px; opacity:0.5;';
     remove.onmouseover = () => {
@@ -81,5 +86,5 @@ async function addTarget(uid, targets) {
   await dbSave(uid, 'power:targets', targets);
   input.value = '';
   renderTargets(uid, targets);
-  showToast('New objective set ðŸš€');
+  showToast('New objective set 🚀');
 }

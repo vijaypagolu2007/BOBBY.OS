@@ -30,6 +30,6 @@ export async function setupNightShift(uid) {
     await dbSave(uid, 'power:sleep', sleepData);
     updateSleepUI(actual);
     inputEl.value = '';
-    showToast('Sleep log updated ðŸŒ™');
+    showToast('Sleep log updated 🌙');
   };
 }

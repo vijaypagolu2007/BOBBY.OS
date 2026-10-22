@@ -78,10 +78,10 @@ export async function setupPomodoro(uid) {
       updateDisplay();
       if (timeLeft <= 0) {
         clearInterval(pomodoroInterval);
-        showToast('Focus Session Complete! ðŸ§˜');
+        showToast('Focus Session Complete! 🧘');
         if (habitSelect?.value) {
           await markHabitDoneToday(uid, habitSelect.value);
-          showToast('Habit automatically logged ðŸ“ˆ');
+          showToast('Habit automatically logged 📈');
         }
         resetPomodoro();
       }
