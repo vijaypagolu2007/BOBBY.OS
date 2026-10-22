@@ -2411,10 +2411,6 @@ body.compact-mode .power-card p.p-card-note {
     color: var(--red) !important;
   }
 
-  .tab.active.t-study {
-    color: var(--blue) !important;
-  }
-
   .tab.active.t-notes {
     color: var(--yellow) !important;
   }
@@ -2433,10 +2429,6 @@ body.compact-mode .power-card p.p-card-note {
 
   .tab.active.t-exam .tab-icon {
     color: var(--red) !important;
-  }
-
-  .tab.active.t-study .tab-icon {
-    color: var(--blue) !important;
   }
 
   .tab.active.t-notes .tab-icon {

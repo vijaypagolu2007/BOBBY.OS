@@ -16,7 +16,6 @@ import { DAY_N, setSlots, defSlots, getSlots } from './data.js';
 import { initPowerHub } from './power.js';
 import { initDiary } from './diary.js';
 import { setupScoreTracker } from './scores.js';
-import { initStudy } from './study.js';
 
 // Phase 3: PWA & Notifications imports
 import { registerSW } from 'virtual:pwa-register';
@@ -244,7 +243,6 @@ async function bootApp(user) {
         }
 
         if (activeTab === 'power') initPowerHub(user.uid);
-        if (activeTab === 'study') initStudy(user.uid);
         if (activeTab === 'notes') initDiary(user.uid);
 
         showToast('Database Force-Synced successfully! ⚡');
@@ -310,7 +308,6 @@ async function bootApp(user) {
     }
 
     if (activeTab === 'power') initPowerHub(user.uid);
-    if (activeTab === 'study') initStudy(user.uid);
     if (activeTab === 'notes') initDiary(user.uid);
 
     // Also sync theme & density live!
