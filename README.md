@@ -68,7 +68,7 @@ Clone the repository and install the dependencies:
 git clone https://github.com/vijaypagolu2007/BOBBY.OS.git
 
 # Enter the project directory
-cd BOBBYOS
+cd BOBBY.OS
 
 # Install npm dependencies
 npm install
