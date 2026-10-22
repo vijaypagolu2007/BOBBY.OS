@@ -1,3 +1,4 @@
+import Chart from 'chart.js/auto';
 import { dbLoad } from './db.js';
 import { iso as localISO } from './utils.js';
 
@@ -101,8 +102,6 @@ export async function renderHeatmap(uid) {
 let cpChartInstance = null;
 
 export async function renderProgressCharts(uid) {
-  if (!window.Chart) return;
-
   // CP Rating Chart
   const cpCtx = document.getElementById('cp-trend-chart');
   if (cpCtx) {
@@ -157,7 +156,6 @@ export async function renderProgressCharts(uid) {
 let scoreChartInstance = null;
 
 export async function renderScoreChart(uid) {
-  if (!window.Chart) return;
   const scoreCtx = document.getElementById('score-trend-chart');
   if (!scoreCtx) return;
 

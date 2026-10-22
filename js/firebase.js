@@ -27,6 +27,12 @@ if (!useMockAuth && firebaseConfig.apiKey && firebaseConfig.apiKey !== 'your_api
       // Use a token generated in the console (VITE_APPCHECK_DEBUG_TOKEN), or let the SDK
       // create one and print it to the console. Dev builds only; never ship it.
       self.FIREBASE_APPCHECK_DEBUG_TOKEN = import.meta.env.VITE_APPCHECK_DEBUG_TOKEN || true;
+    } else if (import.meta.env.MODE === 'android' && import.meta.env.VITE_APPCHECK_ANDROID_TOKEN) {
+      // App Check rejects reCAPTCHA tokens from the Android WebView (401), and Play
+      // Integrity needs a paid Play Console account. Android builds (`npm run android`,
+      // env from the gitignored .env.android) use a registered debug token instead.
+      // Never set this for the web build. Revoke it in the console if the APK leaks.
+      self.FIREBASE_APPCHECK_DEBUG_TOKEN = import.meta.env.VITE_APPCHECK_ANDROID_TOKEN;
     }
     initializeAppCheck(app, {
       provider: new ReCaptchaEnterpriseProvider(recaptchaKey),

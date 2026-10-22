@@ -1,4 +1,4 @@
-import { extractAdvice, renderAdvice } from '../../js/ai-format.js';
+import { extractAdvice, isUsableAdvice, renderAdvice } from '../../js/ai-format.js';
 
 const reply = (parts, finishReason = 'STOP') => ({
   candidates: [{ finishReason, content: { parts } }],
@@ -31,6 +31,23 @@ describe('extractAdvice', () => {
     expect(() => extractAdvice(reply([]))).toThrow('Gemini returned an empty response.');
     expect(() => extractAdvice(reply([{ text: 'x' }], 'SAFETY'))).toThrow('finishReason: SAFETY');
     expect(() => extractAdvice({})).toThrow('no candidates');
+  });
+
+  test('rejects degenerate replies with no real words', () => {
+    expect(() => extractAdvice(reply([{ text: '"**0/"' }]))).toThrow('unreadable reply');
+    expect(() => extractAdvice(reply([{ text: '** ** 42 !!' }]))).toThrow('unreadable reply');
+  });
+});
+
+describe('isUsableAdvice', () => {
+  test.each([
+    ['Sleep.', true],
+    ['Do **DBMS** now.', true],
+    ['नींद पूरी करो', true],
+    ['"**0/"', false],
+    ['', false],
+  ])('%j -> %s', (text, expected) => {
+    expect(isUsableAdvice(text)).toBe(expected);
   });
 });
 
